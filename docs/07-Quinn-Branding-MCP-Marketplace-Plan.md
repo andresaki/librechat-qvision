@@ -73,6 +73,19 @@ detalle y crear según permisos; rebuild de imagen cliente + smoke.
 - **Riesgo merge (igual que Skills):** rutas + `translation.json` son zonas calientes; si upstream
   shippea tienda MCP oficial, adoptar upstream y retirar `MCP/marketplace/`.
 
+## Orden sidebar: compartibles arriba — 2026-10-07
+
+Pedido: skills/prompts/MCPs (y el marketplace de agentes, que ya va fijo arriba) seguidos;
+marcadores/memorias/adjuntos después, con la línea divisoria existente. No hay opción en yaml
+(el orden vive en `useSideNavLinks.ts`), así que es fork chico y localizado:
+- `hooks/Nav/navGroups.ts` (nuevo, sin dependencias): set `SHAREABLE_NAV_IDS`
+  (skills, prompts, mcp-builder) + `orderNavLinksShareableFirst` (sort estable: respeta el orden
+  upstream dentro de cada grupo) + `isShareableNavLink`. Pensado anti-conflictos: los cambios de
+  upstream en los `push` casi nunca colisionan; si agregan upstream su propio orden, se retira.
+- `ExpandedPanel.tsx`: divisor `border-b` entre grupos solo cuando ambos existen (mismo estilo
+  del divisor actual). Alcance desktop; el drawer móvil hereda el orden sin divisor.
+- Spec `navGroups.spec.ts` (orden + clasificación). `tsc` + `ExpandedPanel.spec` vecinos en verde.
+
 ## Micro-fixes Prompts — 2026-10-06 (consumidor)
 
 1. **Auto-refresh:** `usePromptGroupsInfiniteQuery` tenía `refetchOnWindowFocus/Reconnect/Mount`

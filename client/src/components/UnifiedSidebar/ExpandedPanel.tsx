@@ -1,4 +1,4 @@
-import { memo, useCallback, Suspense } from 'react';
+import { Fragment, memo, useCallback, Suspense } from 'react';
 import { SquarePen } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { Skeleton, Sidebar, Button, TooltipAnchor } from '@librechat/client';
@@ -10,6 +10,7 @@ import { CLOSE_SIDEBAR_ID } from '~/components/Chat/Menus/OpenSidebar';
 import useDirection, { inlineSide } from '~/hooks/Nav/useDirection';
 import useNewChat from '~/hooks/Conversations/useNewChat';
 import { lazyWithRecovery } from '~/lib/assets/lazy';
+import { isShareableNavLink } from '~/hooks/Nav/navGroups';
 import { useLocalize } from '~/hooks';
 
 const AccountSettings = lazyWithRecovery(() => import('~/components/Nav/AccountSettings'));
@@ -175,23 +176,37 @@ function ExpandedPanel({
       <AgentMarketplaceButton />
       <div className="border-border-inset mx-2 border-b" />
       <div className="flex flex-col gap-1 overflow-y-auto">
-        {links.map((link) => (
-          <NavIconButton
-            key={link.id}
-            link={link}
-            isActive={
-              link.id === 'insights'
-                ? isInsightsRoute
-                : !isInsightsRoute && link.id === effectiveActive
-            }
-            expanded={expanded ?? true}
-            setActive={setActive}
-            onExpand={onExpand}
-            onCollapse={onCollapse}
-            onNavigate={onNavigate}
-            onLeaveInsights={isInsightsRoute ? onLeaveInsights : undefined}
-          />
-        ))}
+        {links.map((link, index) => {
+          /** Q-Vision: divider between the shareable group and the personal group.
+           * Renders only when both groups are present. */
+          const showDivider =
+            index > 0 && isShareableNavLink(links[index - 1].id) && !isShareableNavLink(link.id);
+          return (
+            <Fragment key={link.id}>
+              {showDivider ? (
+                <div
+                  className="mx-2 border-b border-border-light"
+                  role="separator"
+                  aria-hidden="true"
+                />
+              ) : null}
+              <NavIconButton
+                link={link}
+                isActive={
+                  link.id === 'insights'
+                    ? isInsightsRoute
+                    : !isInsightsRoute && link.id === effectiveActive
+                }
+                expanded={expanded ?? true}
+                setActive={setActive}
+                onExpand={onExpand}
+                onCollapse={onCollapse}
+                onNavigate={onNavigate}
+                onLeaveInsights={isInsightsRoute ? onLeaveInsights : undefined}
+              />
+            </Fragment>
+          );
+        })}
       </div>
 
       <div className="mt-auto">
