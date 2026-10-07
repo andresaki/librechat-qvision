@@ -30,6 +30,9 @@
 - 2026-10-06 (prompts consumidor): auto-refresh de la lista (stale 30s + refetch foco/montaje,
   paridad MCP), se oculta "Mis prompts" sin `PROMPTS.CREATE`, mensaje vacío condicional
   (`com_ui_no_prompts_shared_hint`, solo `en`). Specs 5/5 + `tsc` en verde. Requiere rebuild.
+- 2026-10-07 (sidebar Quinn): compartibles primero (skills, prompts, MCPs) + divisor hacia
+  personales (marcadores, memorias, adjuntos); helper aislado `navGroups.ts`, spec + vecinos
+  en verde. No configurable por yaml. Requiere rebuild.
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
