@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { Button, Input } from '@librechat/client';
-import { useDebounce, useLocalize } from '~/hooks';
+import { useDebounce, useLocalize, type TranslationKeys } from '~/hooks';
 
 /**
  * Props for the SearchBar component
@@ -13,6 +13,11 @@ interface SearchBarProps {
   onSearch: (query: string) => void;
   /** Additional CSS classes */
   className?: string;
+  inputId?: string;
+  placeholderKey?: TranslationKeys;
+  ariaLabelKey?: TranslationKeys;
+  instructionsKey?: TranslationKeys;
+  clearSearchKey?: TranslationKeys;
 }
 
 /**
@@ -22,7 +27,16 @@ interface SearchBarProps {
  * Includes proper ARIA attributes for accessibility and visual indicators.
  * Uses 300ms debounce delay to prevent excessive API calls during typing.
  */
-const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+  value,
+  onSearch,
+  className = '',
+  inputId = 'agent-search',
+  placeholderKey = 'com_agents_search_placeholder',
+  ariaLabelKey = 'com_agents_search_aria',
+  instructionsKey = 'com_agents_search_instructions',
+  clearSearchKey = 'com_agents_clear_search',
+}) => {
   const localize = useLocalize();
   const [searchTerm, setSearchTerm] = useState(value);
 
@@ -64,17 +78,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }
 
   return (
     <div className={`relative w-full max-w-4xl ${className}`} role="search">
-      <label htmlFor="agent-search" className="sr-only">
-        {localize('com_agents_search_instructions')}
+      <label htmlFor={inputId} className="sr-only">
+        {localize(instructionsKey)}
       </label>
       <Input
-        id="agent-search"
+        id={inputId}
         type="text"
         value={searchTerm}
         onChange={handleChange}
-        placeholder={localize('com_agents_search_placeholder')}
+        placeholder={localize(placeholderKey)}
         className="h-12 rounded-xl border-border-medium bg-transparent pl-12 pr-12 text-lg text-text-primary shadow-md transition-[border-color,box-shadow] duration-200 placeholder:text-text-secondary focus:border-border-heavy focus:shadow-lg focus:ring-0"
-        aria-label={localize('com_agents_search_aria')}
+        aria-label={localize(ariaLabelKey)}
         aria-describedby="search-instructions search-results-count"
         autoComplete="off"
         spellCheck="false"
@@ -85,7 +99,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }
       </div>
       {/* Hidden instructions for screen readers */}
       <div id="search-instructions" className="sr-only">
-        {localize('com_agents_search_instructions')}
+        {localize(instructionsKey)}
       </div>
       {/* Show clear button only when search has value - Google style */}
       {searchTerm && (
@@ -95,8 +109,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }
           type="button"
           onClick={handleClear}
           className="group absolute right-4 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-text-primary focus:ring-offset-2"
-          aria-label={localize('com_agents_clear_search')}
-          title={localize('com_agents_clear_search')}
+          aria-label={localize(clearSearchKey)}
+          title={localize(clearSearchKey)}
         >
           <X
             className="size-5 text-text-secondary transition-colors duration-200 group-hover:text-text-primary"

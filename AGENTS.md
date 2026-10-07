@@ -1,3 +1,51 @@
+> ⚠️ **LABORATORIO Q-VISION — FASE 2 (FORK ACOTADO)**
+>
+> **Fase 1 (configuración) — cerrada.** La instancia base quedó en `.env`, `librechat.yaml` y
+> `docker-compose.override.yml`. Evidencia: `CHANGELOG.md`, `BRECHAS.md`, `docs/01-*` y `docs/02-*`.
+>
+> **Fase 2 — cambios pequeños en código** para cerrar brechas que **no** se resuelven solo con
+> configuración (p. ej. marketplace de Skills en `/skills`). Este repo actúa como **fork de
+> Q-Vision**, no como contribución upstream a LibreChat.
+>
+> ### Qué se puede editar
+>
+> | Área | Uso en fase 2 |
+> |------|----------------|
+> | `client/` | **Preferido** — UI, rutas, data-provider del cliente, i18n (`locales/en`) |
+> | `packages/data-provider/` | Solo si hace falta tipo/endpoint compartido; rebuild `npm run build:data-provider` |
+> | `packages/api/`, `api/` | **Solo si imprescindible** — mínimo cableado en `/api`, lógica en `/packages/api` (TS) |
+> | `packages/data-schemas/` | Evitar salvo contrato de datos unavoidable |
+> | `.env`, `librechat.yaml`, `docker-compose.override.yml` | Sigue permitido cuando el cambio lo requiera |
+> | `docs/`, `BRECHAS.md`, `CHANGELOG.md` | Obligatorio documentar alcance, riesgo de merge y validación |
+>
+> ### Reglas del fork (prioridad sobre “contribuir a upstream”)
+>
+> - **Alcance mínimo:** un requisito Q-Vision = un diff pequeño; no refactors, no “while we’re here”.
+> - **Antes de codificar:** leer `BRECHAS.md` y `docs/`; si el pedido es nuevo, añadir nota breve en
+>   `docs/` (como `docs/04-Marketplace-Skills-Analisis-Implementacion.md`).
+> - **Patrones LibreChat:** las secciones de este archivo y `CLAUDE.md` **sí aplican** en fase 2
+>   (typecheck, tests del módulo, theming semántico, Jotai en estado nuevo, límites `/api` vs
+>   `packages/api`).
+> - **i18n:** strings visibles vía `useLocalize()`; solo claves nuevas en `client/src/locales/en/translation.json`.
+> - **Permisos:** reutilizar `PermissionTypes` / `Permissions` / ACL existentes; no hardcodear roles Q-Vision en código.
+> - **Secretos:** nunca imprimir ni commitear `.env`; credenciales solo en `.env`, nunca en yaml versionado.
+> - **Docker:** cambios en `client/` exigen **rebuild** de la imagen o frontend dev; reiniciar solo el
+>   contenedor afectado; nunca `docker compose down -v` sin preguntar.
+> - **Upstream:** no abrir PR a LibreChat salvo decisión explícita; planificar rebases desde `dev` y
+>   conflictos probables en módulos tocados (documentar en el `.md` del cambio).
+> - **Si algo es grande o arriesgado:** no implementar por inertia — dejarlo en `BRECHAS.md` y acordar alcance.
+>
+> ### Checklist al cerrar un cambio de código
+>
+> - [ ] Diff acotado al requisito; sin tocar `/api`/`/packages` de más.
+> - [ ] `npx tsc --noEmit` en el workspace tocado (y tests del spec vecino si existen).
+> - [ ] Validación manual descrita en `CHANGELOG.md` o en el doc del feature.
+> - [ ] `BRECHAS.md` actualizado (cerrado / parcial / pendiente).
+>
+> Contexto operativo: `.opencode/skills/librechat-qvision/SKILL.md` (actualizar checklist según fase).
+>
+> ---
+
 See CLAUDE.md.
 
 ## Branching and pull requests
@@ -9,6 +57,9 @@ reaches it at the next sync. Pull requests opened against `main` are retargeted 
 `Fixes #N` does not close the issue on a `dev` merge — GitHub honors closing keywords only on the
 default branch, so close linked issues by hand. Worktrees share one stash stack, so never use a bare
 `git stash pop`. See the detailed policy in `CLAUDE.md` under "Branching and Pull Requests".
+
+**Q-Vision:** el trabajo del laboratorio vive en ramas del fork (p. ej. `qvision/*`); no asumir que
+cada cambio se sube al remoto upstream de LibreChat.
 
 Write the description for a reader who has not followed the branch: what breaks, what triggers it,
 how it behaves after the change, then one or two views of the mechanism — a focused diff, a call
@@ -84,13 +135,13 @@ introduce raw palette utilities, hard-coded colors, or arbitrary theme CSS. If t
 express a reusable design need, deepen the shared primitive or versioned theme-token registry
 instead of copying classes into a feature. Keep genuine layout and behavior local, and document
 why any new custom CSS cannot be expressed by the shared system. See the detailed policy in
-`CLAUDE.md` under “Theming and styling.”
+`CLAUDE.md` under "Theming and styling."
 
 ## Backend auth cache
 
 When adding or changing code that mutates user documents, invalidate the auth user document cache
 for affected users, including bulk role and user mutations. See the detailed policy in `CLAUDE.md`
-under “Auth cache invalidation”.
+under "Auth cache invalidation".
 
 ## Client state ownership
 
@@ -105,4 +156,4 @@ through props or a small host-supplied context rather than reached for through `
 consumer sits outside the feature you are changing, leave that atom on Recoil and pass it in. Passing
 them in is what lets a feature move to its own workspace later without a rewrite, and it keeps the
 Jotai conversion scoped to the state a feature owns. See the detailed policy in `CLAUDE.md` under
-“Client State Ownership”.
+"Client State Ownership".

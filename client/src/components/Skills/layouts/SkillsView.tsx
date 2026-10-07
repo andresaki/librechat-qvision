@@ -4,6 +4,7 @@ import { Navigate, useNavigate, useParams, useLocation, useSearchParams } from '
 import SkillFileViewer from '~/components/Skills/display/SkillFileViewer';
 import { CreateSkillForm, SkillForm } from '~/components/Skills/forms';
 import { useHasAccess, useAuthContext, useLocalize } from '~/hooks';
+import { SkillsMarketplace } from '~/components/Skills/marketplace';
 import SkillDetail from '~/components/Skills/display/SkillDetail';
 import SkillState from '~/components/Skills/display/SkillState';
 import OpenSidebar from '~/components/Chat/Menus/OpenSidebar';
@@ -56,19 +57,9 @@ export default function SkillsView() {
     return <CreateView />;
   }
 
-  // No skill selected — empty state
+  // No skill selected — marketplace (list + search), same entry pattern as /agents
   if (!skillId) {
-    return (
-      <div className="flex h-full w-full flex-col bg-presentation">
-        <MobileSidebarToggle />
-        <div className="flex flex-1 flex-col items-center justify-center">
-          <SkillState
-            title={localize('com_ui_skill_no_selection')}
-            description={localize('com_ui_skill_no_selection_desc')}
-          />
-        </div>
-      </div>
-    );
+    return <SkillsMarketplace />;
   }
 
   return isEdit ? <EditView skillId={skillId} /> : <DetailView skillId={skillId} />;

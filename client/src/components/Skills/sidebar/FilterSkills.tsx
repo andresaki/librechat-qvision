@@ -1,6 +1,7 @@
 import React from 'react';
 import { FilterInput } from '@librechat/client';
 import { PermissionTypes, Permissions } from 'librechat-data-provider';
+import SkillMarketplaceSidebarButton from './SkillMarketplaceSidebarButton';
 import { CreateSkillMenu } from '~/components/Skills/buttons';
 import { useHasAccess, useLocalize } from '~/hooks';
 import { cn } from '~/utils';
@@ -22,6 +23,7 @@ export default function FilterSkills({
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
+      <SkillMarketplaceSidebarButton />
       <div role="search" className="flex items-center gap-2">
         <FilterInput
           inputId="skills-filter"

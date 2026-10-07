@@ -53,6 +53,10 @@ jest.mock('~/components/Skills/display/SkillState', () => ({ title }: { title: s
   <div>{title}</div>
 ));
 
+jest.mock('~/components/Skills/marketplace', () => ({
+  SkillsMarketplace: () => <div data-testid="skills-marketplace" />,
+}));
+
 describe('SkillsView', () => {
   beforeEach(() => {
     mockUseHasAccess.mockReset();
@@ -71,24 +75,13 @@ describe('SkillsView', () => {
     expect(screen.getByTestId('create-skill-form')).toBeInTheDocument();
   });
 
-  it('renders the sidebar toggle on small screens', () => {
-    mockUseMediaQuery.mockReturnValue(true);
+  it('renders the skills marketplace at /skills', () => {
     const router = createMemoryRouter([{ path: '/skills', element: <SkillsView /> }], {
       initialEntries: ['/skills'],
     });
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByTestId('open-sidebar')).toBeInTheDocument();
-  });
-
-  it('does not render the sidebar toggle on large screens', () => {
-    const router = createMemoryRouter([{ path: '/skills', element: <SkillsView /> }], {
-      initialEntries: ['/skills'],
-    });
-
-    render(<RouterProvider router={router} />);
-
-    expect(screen.queryByTestId('open-sidebar')).not.toBeInTheDocument();
+    expect(screen.getByTestId('skills-marketplace')).toBeInTheDocument();
   });
 });

@@ -506,9 +506,13 @@ export const usePromptGroupsInfiniteQuery = (
         // Use cursor-based pagination - ensure we return a valid cursor or undefined
         return lastPage.has_more && lastPage.after ? lastPage.after : undefined;
       },
-      refetchOnWindowFocus: false,
+      /** Q-Vision: prompt groups must surface newly shared groups without forcing
+       * the user to re-filter. Same policy as the MCP catalog (30s stale + refetch
+       * on focus/mount); the query key still changes on filter edits. */
+      staleTime: 30 * 1000,
+      refetchOnWindowFocus: true,
       refetchOnReconnect: false,
-      refetchOnMount: false,
+      refetchOnMount: true,
       ...config,
     },
   );
