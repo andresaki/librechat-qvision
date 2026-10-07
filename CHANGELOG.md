@@ -33,6 +33,9 @@
 - 2026-10-07 (sidebar Quinn): compartibles primero (skills, prompts, MCPs) + divisor hacia
   personales (marcadores, memorias, adjuntos); helper aislado `navGroups.ts`, spec + vecinos
   en verde. No configurable por yaml. Requiere rebuild.
+- 2026-10-07 (paleta Quinn A2): remap de vars semánticas a tokens `--quinn-*` en light y dark
+  + Lato; sin tocar componentes ni high-contrast. Requiere rebuild + auditoría visual
+  (contraste ámbar y header documentados en `docs/07`).
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
