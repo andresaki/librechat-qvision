@@ -34,6 +34,7 @@ import { SchedulePanel } from '~/components/SidePanel/Schedules';
 import Parameters from '~/components/SidePanel/Parameters/Panel';
 import { MemoryPanel } from '~/components/SidePanel/Memories';
 import FilesPanel from '~/components/SidePanel/Files/Panel';
+import { orderNavLinksShareableFirst } from './navGroups';
 import { PromptsAccordion } from '~/components/Prompts';
 import { SkillsAccordion } from '~/components/Skills';
 
@@ -242,7 +243,8 @@ export default function useSideNavLinks({
       });
     }
 
-    return links;
+    /** Q-Vision: shareable modules first; upstream relative order kept within each group. */
+    return orderNavLinksShareableFirst(links);
   }, [
     endpoint,
     endpointsConfig,
