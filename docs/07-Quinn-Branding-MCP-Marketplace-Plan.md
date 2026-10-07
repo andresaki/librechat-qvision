@@ -111,6 +111,11 @@ sin tocar (afinados para dark); tamaño de fuente de mensajes sin tocar.
 **Diferido a otra fase:** radios asimétricos de burbuja, botones píldora, avatar Quinn en el
 chat, CTA ámbar con texto navy (exige override del color de texto por componente).
 
+**Temas de alto contraste desactivados:** las opciones `high-contrast-light/dark` salieron del
+selector (`Appearance/Selectors.tsx`, único punto; cubre login y configuración). El motor sigue
+intacto —quien lo tenga guardado no se rompe y el contraste del SO sigue funcionando—; solo deja
+de ofrecerse. Spec actualizado.
+
 ## Micro-fixes Prompts — 2026-10-06 (consumidor)
 
 1. **Auto-refresh:** `usePromptGroupsInfiniteQuery` tenía `refetchOnWindowFocus/Reconnect/Mount`
