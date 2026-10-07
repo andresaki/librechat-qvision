@@ -74,7 +74,6 @@ detalle y crear según permisos; rebuild de imagen cliente + smoke.
   shippea tienda MCP oficial, adoptar upstream y retirar `MCP/marketplace/`.
 
 ## Orden sidebar: compartibles arriba — 2026-10-07
-
 Pedido: skills/prompts/MCPs (y el marketplace de agentes, que ya va fijo arriba) seguidos;
 marcadores/memorias/adjuntos después, con la línea divisoria existente. No hay opción en yaml
 (el orden vive en `useSideNavLinks.ts`), así que es fork chico y localizado:
@@ -85,6 +84,32 @@ marcadores/memorias/adjuntos después, con la línea divisoria existente. No hay
 - `ExpandedPanel.tsx`: divisor `border-b` entre grupos solo cuando ambos existen (mismo estilo
   del divisor actual). Alcance desktop; el drawer móvil hereda el orden sin divisor.
 - Spec `navGroups.spec.ts` (orden + clasificación). `tsc` + `ExpandedPanel.spec` vecinos en verde.
+
+## Paleta Quinn A2 — 2026-10-07 (solo remap de vars, sin tocar componentes)
+
+`client/src/style.css`: tokens crudos `--quinn-*` en `:root` + remap de la capa semántica en
+`html` (light) y `.dark` (valores sugeridos del kit). `.gizmo*` (legacy) y `high-contrast`
+(accesibilidad) intactos. Fuente Lato vía Google Fonts en `index.html` (OFL; offline cae a
+Inter/sistema por el stack de `--theme-font-family`).
+
+| Rol | Light | Dark |
+|---|---|---|
+| Canvas | mist | navy-deep `#07152A` |
+| Cards/diálogos | blanco | navy-surface `#0F2747` |
+| Texto / secundario | ink / slate | mist / slate-light `#A9B4C6` |
+| Burbuja usuario (`surface-tertiary`) | sky | navy-line `#1E3A63` |
+| CTA submit | navy (texto blanco 16.5:1) | Quinn blue (5.7:1) |
+| Links/foco/acento | Quinn blue | blue-light `#7FA8E8` |
+| Hovers/activos | sky | navy-line |
+| Bordes | quinn-line | navy-line |
+| Invertidos | navy | (sin cambio) |
+
+**Decisiones de contraste (auditar visualmente):** ámbar NO usado en superficies con texto
+fijo blanco (`text-on-status` compartido con badges rojos — blanco sobre ámbar 2.0:1, prohibido
+por el kit); header light intacto (el texto ink vive encima); estados dark y sintaxis de código
+sin tocar (afinados para dark); tamaño de fuente de mensajes sin tocar.
+**Diferido a otra fase:** radios asimétricos de burbuja, botones píldora, avatar Quinn en el
+chat, CTA ámbar con texto navy (exige override del color de texto por componente).
 
 ## Micro-fixes Prompts — 2026-10-06 (consumidor)
 
