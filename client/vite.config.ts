@@ -151,34 +151,34 @@ export default defineConfig(({ command }) => ({
       },
       includeAssets: [],
       manifest: {
-        name: 'LibreChat',
-        short_name: 'LibreChat',
+        name: 'Quinn',
+        short_name: 'Quinn',
         display: 'standalone',
-        background_color: '#000000',
-        theme_color: '#009688',
+        background_color: '#F3F5F9',
+        theme_color: '#0B1F3A',
         icons: [
           {
-            src: 'assets/favicon-32x32.png',
+            src: 'assets/quinn-favicon-32x32.png',
             sizes: '32x32',
             type: 'image/png',
           },
           {
-            src: 'assets/favicon-16x16.png',
+            src: 'assets/quinn-favicon-16x16.png',
             sizes: '16x16',
             type: 'image/png',
           },
           {
-            src: 'assets/apple-touch-icon-180x180.png',
+            src: 'assets/quinn-apple-touch-icon-180x180.png',
             sizes: '180x180',
             type: 'image/png',
           },
           {
-            src: 'assets/icon-192x192.png',
+            src: 'assets/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: 'assets/maskable-icon.png',
+            src: 'assets/icon-maskable-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
