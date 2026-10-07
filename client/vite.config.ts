@@ -101,12 +101,11 @@ export default defineConfig(({ command }) => ({
       workbox: {
         globPatterns: [
           '**/*.{js,css,html}',
-          'assets/favicon*.png',
+          'assets/quinn-*.png',
           'assets/icon-*.png',
-          'assets/apple-touch-icon*.png',
           /** `manifest.webmanifest` is not listed: vite-plugin-pwa always appends it as an
            * additional manifest entry, so globbing it too duplicates the precache entry. */
-          'assets/maskable-icon.png',
+          'assets/icon-maskable-512.png',
         ],
         globIgnores: [
           'images/**/*',
