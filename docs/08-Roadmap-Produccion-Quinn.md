@@ -43,7 +43,24 @@ Detalle técnico de cada punto en `docs/07-*`, `CHANGELOG.md` y `BRECHAS.md`.
 - [ ] Detalle visual fase 2 (píldoras, radios de burbuja, avatar Quinn, CTA ámbar)
 - [ ] Infra prod: TLS, backups, límites, rotación de secretos
 
-## 6. Guion de smoke (reusar en cada rebuild)
+## 6. Contenido anticipado (crear ahora, recrear en prod)
+
+Pedido: ir creando skills, agentes, prompts y MCPs desde ya para que prod arranque con
+funciones utilizables. Estrategia acordada: **staging en local + recreación manual en prod**
+(es lo seguro: dueños/ACLs locales no mapean al tenant real, y los saldos/usuarios del lab no
+viajan — ver explicación completa en el hilo de trabajo).
+
+- [ ] Skills por categoría (creador) + publicar a grupos cuando aplique
+- [ ] Agentes por caso de uso (con modelo del gateway cuando esté; si no, marcar pendiente de re-point)
+- [ ] Prompts por departamento/uso común
+- [ ] MCPs necesarios (los de yaml viajan en `librechat.yaml`; los de UI se recrean)
+- [ ] Roles Creador/Consumidor ya definidos (recrear matriz en prod + asignar miembros)
+- [ ] Al recrear en prod: revisar secretos (a KeyVault/`.env`, nada del lab) y re-compartir a grupos reales
+- [ ] Si el catálogo pasa ~15 items o hay skills con archivos, evaluar dump selectivo
+  (`Role`, `Agent`, `Skill`+`SkillFile`, `MCPServer`, `PromptGroup`, `AgentCategory`) + volumen
+  `uploads/` en vez de recreación manual
+
+## 7. Guion de smoke (reusar en cada rebuild)
 
 1. Login: logo Quinn, título Quinn, solo temas Sistema/Oscuro/Claro.
 2. Creador: sidebar skills → prompts → MCPs arriba + divisor; `/agents`, `/skills`, prompts con crear.
