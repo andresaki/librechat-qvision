@@ -40,6 +40,8 @@
   contraste del SO intactos. Spec actualizado. Requiere rebuild.
 - 2026-10-07 (roadmap): `docs/08-Roadmap-Produccion-Quinn.md` — qué está listo, qué espera
   SSO/gateway/decisiones, y guion de smoke reutilizable.
+- 2026-10-07 (roadmap): sección 6 en `docs/08` — contenido anticipado (staging local +
+  recreación en prod; roles, skills, agentes, prompts, MCPs).
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
