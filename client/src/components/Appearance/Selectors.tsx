@@ -21,12 +21,12 @@ export const ThemeSelector = ({
 }) => {
   const localize = useLocalize();
 
+  /** Q-Vision: only System/Dark/Light. The high-contrast themes still exist in the
+   * theme engine (and OS-level contrast keeps working), but Quinn does not offer them. */
   const themeOptions = [
     { value: 'system', label: localize('com_nav_theme_system') },
     { value: 'dark', label: localize('com_nav_theme_dark') },
     { value: 'light', label: localize('com_nav_theme_light') },
-    { value: 'high-contrast-light', label: localize('com_nav_theme_high_contrast_light') },
-    { value: 'high-contrast-dark', label: localize('com_nav_theme_high_contrast_dark') },
   ];
 
   const labelId = 'theme-selector-label';
