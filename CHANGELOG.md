@@ -38,6 +38,8 @@
   (contraste ámbar y header documentados en `docs/07`).
 - 2026-10-07 (temas alto contraste off): fuera del selector (login y configuración); motor y
   contraste del SO intactos. Spec actualizado. Requiere rebuild.
+- 2026-10-07 (roadmap): `docs/08-Roadmap-Produccion-Quinn.md` — qué está listo, qué espera
+  SSO/gateway/decisiones, y guion de smoke reutilizable.
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
