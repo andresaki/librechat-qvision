@@ -1,0 +1,82 @@
+/* Quinn · Q-Vision — design tokens
+   Fuente: Lato (Google Fonts) 300 / 400 / 700 / 900 */
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap");
+
+:root {
+  /* Marca */
+  --quinn-navy: #0B1F3A;        /* base: barra, avatar, titulares */
+  --quinn-amber: #F5A524;       /* acento: destello, CTA principal, estado activo */
+  --quinn-blue: #2563C9;        /* enlaces, botón secundario, nodos de agentes */
+  --quinn-sky: #DCE8FA;         /* burbuja del usuario, fondos suaves */
+  --quinn-amber-soft: #FDEBC8;  /* resaltados, avisos suaves, handoff a agente */
+
+  /* Neutros */
+  --quinn-ink: #1E2633;         /* texto principal */
+  --quinn-slate: #5A6475;       /* texto secundario */
+  --quinn-line: #DDE2EA;        /* bordes */
+  --quinn-mist: #F3F5F9;        /* fondo de la app */
+  --quinn-white: #FFFFFF;       /* tarjetas, burbuja de Quinn */
+
+  /* Estados */
+  --quinn-success: #1A7F55;
+  --quinn-error: #C2372F;
+
+  /* Roles semánticos */
+  --quinn-bg: var(--quinn-mist);
+  --quinn-surface: var(--quinn-white);
+  --quinn-text: var(--quinn-ink);
+  --quinn-text-muted: var(--quinn-slate);
+  --quinn-header-bg: var(--quinn-navy);
+  --quinn-header-text: var(--quinn-white);
+  --quinn-cta-bg: var(--quinn-amber);
+  --quinn-cta-text: var(--quinn-navy);   /* nunca blanco sobre ámbar (2.0:1) */
+  --quinn-link: var(--quinn-blue);
+  --quinn-bubble-user: var(--quinn-sky);
+  --quinn-bubble-bot: var(--quinn-white);
+  --quinn-focus: var(--quinn-blue);
+
+  /* Tipografía */
+  --quinn-font: "Lato", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --quinn-weight-light: 300;
+  --quinn-weight-regular: 400;
+  --quinn-weight-bold: 700;
+  --quinn-weight-black: 900;
+  --quinn-text-xs: 13px;
+  --quinn-text-sm: 15px;
+  --quinn-text-md: 17px;   /* cuerpo de chat */
+  --quinn-text-lg: 20px;
+  --quinn-text-xl: 28px;
+  --quinn-text-2xl: 40px;
+  --quinn-leading: 1.5;
+
+  /* Forma y espacio */
+  --quinn-radius-sm: 8px;
+  --quinn-radius-md: 12px;
+  --quinn-radius-lg: 20px;
+  --quinn-radius-pill: 999px;
+  --quinn-bubble-radius-bot: 4px 18px 18px 18px;
+  --quinn-bubble-radius-user: 18px 4px 18px 18px;
+  --quinn-space-1: 4px;
+  --quinn-space-2: 8px;
+  --quinn-space-3: 12px;
+  --quinn-space-4: 16px;
+  --quinn-space-5: 24px;
+  --quinn-space-6: 32px;
+  --quinn-touch: 44px;     /* alto mínimo de botones */
+  --quinn-shadow: 0 1px 2px rgba(11, 31, 58, .06), 0 8px 24px rgba(11, 31, 58, .06);
+}
+
+/* Modo oscuro sugerido */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --quinn-bg: #07152A;
+    --quinn-surface: #0F2747;
+    --quinn-text: #F3F5F9;
+    --quinn-text-muted: #A9B4C6;
+    --quinn-line: #1E3A63;
+    --quinn-header-bg: #0B1F3A;
+    --quinn-link: #7FA8E8;
+    --quinn-bubble-user: #1E3A63;
+    --quinn-bubble-bot: #0F2747;
+  }
+}

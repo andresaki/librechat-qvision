@@ -1,13 +1,13 @@
-import { Spinner } from '@librechat/client';
+import { Spinner, useMediaQuery } from '@librechat/client';
 import { PermissionTypes, Permissions } from 'librechat-data-provider';
 import { Navigate, useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom';
 import SkillFileViewer from '~/components/Skills/display/SkillFileViewer';
 import { CreateSkillForm, SkillForm } from '~/components/Skills/forms';
 import { useHasAccess, useAuthContext, useLocalize } from '~/hooks';
+import { SkillsMarketplace } from '~/components/Skills/marketplace';
 import SkillDetail from '~/components/Skills/display/SkillDetail';
 import SkillState from '~/components/Skills/display/SkillState';
 import OpenSidebar from '~/components/Chat/Menus/OpenSidebar';
-import useDrawerViewport from '~/hooks/Nav/useDrawerViewport';
 import { useGetSkillByIdQuery } from '~/data-provider';
 
 /**
@@ -39,8 +39,8 @@ export default function SkillsView() {
   const rolesLoaded = user?.role != null && roles?.[user.role] != null;
   if (!rolesLoaded) {
     return (
-      <div className="bg-surface-primary-alt flex h-full w-full items-center justify-center">
-        <Spinner tone="secondary" aria-label={localize('com_ui_loading')} />
+      <div className="flex h-full w-full items-center justify-center bg-presentation">
+        <Spinner className="text-text-secondary" aria-label={localize('com_ui_loading')} />
       </div>
     );
   }
@@ -57,19 +57,9 @@ export default function SkillsView() {
     return <CreateView />;
   }
 
-  // No skill selected — empty state
+  // No skill selected — marketplace (list + search), same entry pattern as /agents
   if (!skillId) {
-    return (
-      <div className="bg-surface-primary-alt flex h-full w-full flex-col">
-        <MobileSidebarToggle />
-        <div className="flex flex-1 flex-col items-center justify-center">
-          <SkillState
-            title={localize('com_ui_skill_no_selection')}
-            description={localize('com_ui_skill_no_selection_desc')}
-          />
-        </div>
-      </div>
-    );
+    return <SkillsMarketplace />;
   }
 
   return isEdit ? <EditView skillId={skillId} /> : <DetailView skillId={skillId} />;
@@ -77,7 +67,7 @@ export default function SkillsView() {
 
 function CreateView() {
   return (
-    <div className="bg-surface-primary-alt flex h-full w-full flex-col overflow-y-auto">
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-presentation">
       <MobileSidebarToggle />
       <CreateSkillForm />
     </div>
@@ -95,29 +85,24 @@ function DetailView({ skillId }: { skillId: string }) {
   // Show file content when a file is selected from the sidebar tree
   if (activeFile) {
     return (
-      <div className="bg-surface-primary-alt flex h-full w-full flex-col">
+      <div className="flex h-full w-full flex-col bg-presentation">
         <MobileSidebarToggle />
-        <SkillFileViewer
-          key={`${skillId}:${activeFile}`}
-          skillId={skillId}
-          relativePath={activeFile}
-          skill={skillQuery.data}
-        />
+        <SkillFileViewer skillId={skillId} relativePath={activeFile} />
       </div>
     );
   }
 
   if (skillQuery.isLoading) {
     return (
-      <div className="bg-surface-primary-alt flex h-full w-full items-center justify-center">
-        <Spinner tone="secondary" aria-label={localize('com_ui_loading')} />
+      <div className="flex h-full w-full items-center justify-center bg-presentation">
+        <Spinner className="text-text-secondary" aria-label={localize('com_ui_loading')} />
       </div>
     );
   }
 
   if (skillQuery.isError || !skillQuery.data) {
     return (
-      <div className="bg-surface-primary-alt flex h-full w-full flex-col">
+      <div className="flex h-full w-full flex-col bg-presentation">
         <MobileSidebarToggle />
         <SkillState
           variant="error"
@@ -129,7 +114,7 @@ function DetailView({ skillId }: { skillId: string }) {
   }
 
   return (
-    <div className="bg-surface-primary-alt flex h-full w-full flex-col">
+    <div className="flex h-full w-full flex-col bg-presentation">
       <MobileSidebarToggle />
       <SkillDetail
         skill={skillQuery.data}
@@ -143,7 +128,7 @@ function DetailView({ skillId }: { skillId: string }) {
 /** Edit form — reached via the Edit button or `/skills/:id/edit` URL. */
 function EditView({ skillId }: { skillId: string }) {
   return (
-    <div className="bg-surface-primary-alt flex h-full w-full flex-col overflow-y-auto">
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-presentation">
       <MobileSidebarToggle />
       <SkillForm skillId={skillId} />
     </div>
@@ -152,7 +137,7 @@ function EditView({ skillId }: { skillId: string }) {
 
 /** Sidebar reopen affordance for small screens, where the drawer is the only navigation. */
 function MobileSidebarToggle() {
-  const isSmallScreen = useDrawerViewport();
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
   if (!isSmallScreen) {
     return null;
   }

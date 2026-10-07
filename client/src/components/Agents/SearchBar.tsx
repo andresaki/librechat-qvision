@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { X } from 'lucide-react';
-import { Button, FilterInput } from '@librechat/client';
-import { useDebounce, useLocalize } from '~/hooks';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, X } from 'lucide-react';
+import { Button, Input } from '@librechat/client';
+import { useDebounce, useLocalize, type TranslationKeys } from '~/hooks';
 
 /**
  * Props for the SearchBar component
@@ -11,11 +11,13 @@ interface SearchBarProps {
   value: string;
   /** Callback fired when the search query changes */
   onSearch: (query: string) => void;
-  /**
-   * Additional CSS classes for the wrapper. The component carries no width cap of
-   * its own, so the caller owns sizing (e.g. `max-w-[420px]` in a toolbar row).
-   */
+  /** Additional CSS classes */
   className?: string;
+  inputId?: string;
+  placeholderKey?: TranslationKeys;
+  ariaLabelKey?: TranslationKeys;
+  instructionsKey?: TranslationKeys;
+  clearSearchKey?: TranslationKeys;
 }
 
 /**
@@ -25,10 +27,18 @@ interface SearchBarProps {
  * Includes proper ARIA attributes for accessibility and visual indicators.
  * Uses 300ms debounce delay to prevent excessive API calls during typing.
  */
-const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+  value,
+  onSearch,
+  className = '',
+  inputId = 'agent-search',
+  placeholderKey = 'com_agents_search_placeholder',
+  ariaLabelKey = 'com_agents_search_aria',
+  instructionsKey = 'com_agents_search_instructions',
+  clearSearchKey = 'com_agents_clear_search',
+}) => {
   const localize = useLocalize();
   const [searchTerm, setSearchTerm] = useState(value);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Debounced search value (300ms delay)
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -64,39 +74,49 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }
     onSearch('');
     // Also clear local state
     setSearchTerm('');
-    inputRef.current?.focus();
   }, [onSearch]);
 
   return (
-    <div className={`relative w-full ${className}`} role="search">
-      <FilterInput
-        inputId="agent-search"
-        label={localize('com_agents_search_aria')}
+    <div className={`relative w-full max-w-4xl ${className}`} role="search">
+      <label htmlFor={inputId} className="sr-only">
+        {localize(instructionsKey)}
+      </label>
+      <Input
+        id={inputId}
         type="text"
-        ref={inputRef}
         value={searchTerm}
         onChange={handleChange}
-        className="focus-visible:ring-text-primary pe-10 focus-visible:ring-2 focus-visible:ring-inset"
+        placeholder={localize(placeholderKey)}
+        className="h-12 rounded-xl border-border-medium bg-transparent pl-12 pr-12 text-lg text-text-primary shadow-md transition-[border-color,box-shadow] duration-200 placeholder:text-text-secondary focus:border-border-heavy focus:shadow-lg focus:ring-0"
+        aria-label={localize(ariaLabelKey)}
         aria-describedby="search-instructions search-results-count"
         autoComplete="off"
         spellCheck="false"
       />
 
+      <div className="absolute inset-y-0 left-0 flex items-center pl-4" aria-hidden="true">
+        <Search className="size-5 text-text-secondary" />
+      </div>
       {/* Hidden instructions for screen readers */}
       <div id="search-instructions" className="sr-only">
-        {localize('com_agents_search_instructions')}
+        {localize(instructionsKey)}
       </div>
       {/* Show clear button only when search has value - Google style */}
       {searchTerm && (
         <Button
-          variant="quiet"
-          size="icon-sm"
+          variant="ghost"
+          size="icon"
           type="button"
           onClick={handleClear}
-          className="absolute end-0.5 top-1/2 -translate-y-1/2 rounded-md transition-none"
-          aria-label={localize('com_agents_clear_search')}
+          className="group absolute right-4 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-text-primary focus:ring-offset-2"
+          aria-label={localize(clearSearchKey)}
+          title={localize(clearSearchKey)}
         >
-          <X className="size-4" aria-hidden="true" />
+          <X
+            className="size-5 text-text-secondary transition-colors duration-200 group-hover:text-text-primary"
+            strokeWidth={2.5}
+            aria-hidden="true"
+          />
         </Button>
       )}
     </div>
