@@ -161,9 +161,9 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
       <img
         src={agentAvatar}
         alt={name}
-        width={56}
-        height={56}
-        className="size-14 rounded-full object-cover"
+        width={40}
+        height={40}
+        className="size-10 rounded-full object-cover"
       />
     );
   } else {
@@ -171,9 +171,9 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
       <img
         src={quinnSymbolSrc}
         alt={localize('com_ui_logo', { 0: startupConfig?.appTitle ?? 'Quinn' })}
-        width={56}
-        height={56}
-        className="size-14 object-contain"
+        width={40}
+        height={40}
+        className="size-10 object-contain"
       />
     );
   }
@@ -187,7 +187,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
           className={`flex ${textHasMultipleLines ? 'flex-col' : 'flex-col md:flex-row'} items-center justify-center gap-2`}
         >
           <div
-            className={`relative flex size-14 items-center justify-center ${textHasMultipleLines ? 'mb-2' : ''}`}
+            className={`relative flex size-10 items-center justify-center ${textHasMultipleLines ? 'mb-2' : ''}`}
           >
             {landingIcon}
             {startupConfig?.showBirthdayIcon && (
