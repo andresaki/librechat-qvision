@@ -42,6 +42,9 @@
   SSO/gateway/decisiones, y guion de smoke reutilizable.
 - 2026-10-07 (roadmap): sección 6 en `docs/08` — contenido anticipado (staging local +
   recreación en prod; roles, skills, agentes, prompts, MCPs).
+- 2026-10-07 (runCode off global): `interface.runCode: false` en `librechat.yaml` — el arranque
+  escribe `RUN_CODE.USE=false` en USER y ADMIN (verificado en log; Creador/Consumidor ya estaban
+  en OFF desde el panel y el yaml no los toca). Solo restart de `api`, sin rebuild.
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
