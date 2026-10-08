@@ -49,6 +49,8 @@
   log para USER/ADMIN; Creador/Consumidor se apagan en el panel). Solo restart, sin rebuild.
 - 2026-10-08 (webSearch off global): `interface.webSearch: false` (sin proveedor contratado;
   verificado en log para USER/ADMIN; Creador/Consumidor en el panel). Solo restart, sin rebuild.
+- 2026-10-08 (legales): `interface.privacyPolicy` + `interface.termsOfService` con URLs Q-Vision
+  (`openNewTab: true`; verificado vía `/api/config`). Solo restart, sin rebuild.
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
