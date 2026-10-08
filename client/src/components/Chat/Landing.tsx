@@ -4,6 +4,7 @@ import { HatGlasses } from 'lucide-react';
 import { easings } from '@react-spring/web';
 import { EModelEndpoint } from 'librechat-data-provider';
 import { BirthdayIcon, TooltipAnchor, SplitText } from '@librechat/client';
+import type { TranslationKeys } from '~/hooks/useLocalize';
 import { useChatContext, useAgentsMapContext, useAssistantsMapContext } from '~/Providers';
 import Description, { isHtmlDescription } from '~/components/ui/Description';
 import { useGetEndpointsQuery, useGetStartupConfig } from '~/data-provider';
@@ -125,10 +126,16 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     return margin;
   }, [lineCount, description, textHasMultipleLines, contentHeight]);
 
-  const resolvedWelcome =
-    customWelcome != null && user?.name
-      ? customWelcome.replace(/{{user.name}}/g, user.name)
-      : customWelcome;
+  /* Q-Vision: customWelcome admite clave i18n (empieza con `com_`): se resuelve en el
+     idioma actual con {{name}}; si es texto plano se usa tal cual (compat upstream). */
+  let resolvedWelcome = customWelcome;
+  if (customWelcome != null) {
+    if (customWelcome.startsWith('com_')) {
+      resolvedWelcome = localize(customWelcome as TranslationKeys, { name: user?.name ?? '' });
+    } else {
+      resolvedWelcome = customWelcome.replace(/{{user.name}}/g, user?.name ?? '');
+    }
+  }
 
   const greetingText = isTemporary
     ? localize('com_ui_temporary')
