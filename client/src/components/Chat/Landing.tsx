@@ -1,8 +1,8 @@
-import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
+import { useMemo, useCallback, useState, useEffect, useRef, useContext } from 'react';
 import { HatGlasses } from 'lucide-react';
 import { easings } from '@react-spring/web';
 import { EModelEndpoint } from 'librechat-data-provider';
-import { BirthdayIcon, TooltipAnchor, SplitText, useRemScale } from '@librechat/client';
+import { BirthdayIcon, TooltipAnchor, SplitText, ThemeContext } from '@librechat/client';
 import type { TranslationKeys } from '~/hooks/useLocalize';
 import { useChatContext, useAgentsMapContext, useAssistantsMapContext } from '~/Providers';
 import Description, { isHtmlDescription } from '~/components/ui/Description';
@@ -44,6 +44,8 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
   const { data: endpointsConfig } = useGetEndpointsQuery();
   const { user } = useAuthContext();
   const localize = useLocalize();
+  const { resolvedMode } = useContext(ThemeContext);
+  const isDarkMode = resolvedMode === 'dark';
   const remScale = useRemScale();
   const { isTemporary } = useChatSettings();
 
@@ -89,6 +91,8 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
   const descriptionIsHTML = isHtmlDescription(description);
   const selectedAgent =
     isAgent && conversation?.agent_id != null ? agentsMap?.[conversation.agent_id] : undefined;
+  /* Q-Vision: en el landing el agente muestra su avatar si tiene; si no, el símbolo Quinn. */
+  const agentAvatar = isAgent ? selectedAgent?.avatar?.filepath : undefined;
 
   const customWelcome =
     typeof startupConfig?.interface?.customWelcome === 'string'
@@ -143,6 +147,40 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     ? localize('com_ui_temporary')
     : (resolvedWelcome ?? scheduledGreeting);
 
+  /* Q-Vision: icono del landing sin ternarios anidados (regla eslint del repo):
+     temporal -> gafas; agente con avatar -> su foto; resto -> símbolo Quinn según tema. */
+  const quinnSymbolSrc = isDarkMode
+    ? 'assets/quinn-simbolo-negativo.svg'
+    : 'assets/quinn-simbolo.svg';
+  let landingIcon;
+  if (isTemporary) {
+    landingIcon = (
+      <div className={containerClassName}>
+        <HatGlasses className="h-2/3 w-2/3 text-text-primary" aria-hidden="true" />
+      </div>
+    );
+  } else if (agentAvatar) {
+    landingIcon = (
+      <img
+        src={agentAvatar}
+        alt={name}
+        width={56}
+        height={56}
+        className="size-14 rounded-full object-cover"
+      />
+    );
+  } else {
+    landingIcon = (
+      <img
+        src={quinnSymbolSrc}
+        alt={localize('com_ui_logo', { 0: startupConfig?.appTitle ?? 'Quinn' })}
+        width={56}
+        height={56}
+        className="size-14 object-contain"
+      />
+    );
+  }
+
   return (
     <div
       className={`flex h-full transform-gpu flex-col items-center justify-center pb-16 transition-all duration-200 ${centerFormOnLanding ? 'max-h-full sm:max-h-0' : 'max-h-full'} ${getDynamicMargin}`}
@@ -151,22 +189,10 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
         <div
           className={`flex ${textHasMultipleLines ? 'flex-col' : 'flex-col md:flex-row'} items-center justify-center gap-2`}
         >
-          <div className={`relative size-10 justify-center ${textHasMultipleLines ? 'mb-2' : ''}`}>
-            <div className="avatar-stroke size-full rounded-full dark:after:shadow-none">
-              {isTemporary ? (
-                <div className={containerClassName}>
-                  <HatGlasses className="text-text-primary h-2/3 w-2/3" aria-hidden="true" />
-                </div>
-              ) : (
-                <div className={containerClassName}>
-                  <img
-                    src="assets/logo-quinn.svg"
-                    className="h-2/3 w-2/3 object-contain"
-                    alt={localize('com_ui_logo', { 0: startupConfig?.appTitle ?? 'Quinn' })}
-                  />
-                </div>
-              )}
-            </div>
+          <div
+            className={`relative flex size-14 items-center justify-center ${textHasMultipleLines ? 'mb-2' : ''}`}
+          >
+            {landingIcon}
             {startupConfig?.showBirthdayIcon && (
               <TooltipAnchor
                 className="absolute inset-e-2 bottom-[1.6875rem]"
