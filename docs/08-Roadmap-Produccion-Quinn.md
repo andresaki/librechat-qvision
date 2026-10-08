@@ -19,6 +19,8 @@ Detalle técnico de cada punto en `docs/07-*`, `CHANGELOG.md` y `BRECHAS.md`.
 - [ ] Feature set on/off: `runCode`, `webSearch`, `fileSearch`, `fileCitations`, `temporaryChat`, `multiConvo`, `bookmarks`, `memories` (yaml + roles Creador/Consumidor)
 - [x] `RUN_CODE.USE` en OFF por rol (hecho en panel) + `interface.runCode: false` en yaml
   (cubre USER/ADMIN; verificado en log del arranque)
+- [x] `interface.multiConvo: false` en yaml (cubre USER/ADMIN; verificado en log) + apagar
+  `MULTI_CONVO.USE` en Creador/Consumidor desde el panel (pendiente 30s en Admin Panel)
 - [ ] `customWelcome` ("Pregúntale a Quinn…"), `HELP_AND_FAQ_URL`, `privacyPolicy`, `termsOfService` con URLs Q-Vision
 - [ ] Lista de modelos curada para prod (cuando se conozcan los del gateway)
 

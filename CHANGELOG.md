@@ -45,6 +45,8 @@
 - 2026-10-07 (runCode off global): `interface.runCode: false` en `librechat.yaml` — el arranque
   escribe `RUN_CODE.USE=false` en USER y ADMIN (verificado en log; Creador/Consumidor ya estaban
   en OFF desde el panel y el yaml no los toca). Solo restart de `api`, sin rebuild.
+- 2026-10-08 (multiConvo off global): `interface.multiConvo: false` (mismo patrón; verificado en
+  log para USER/ADMIN; Creador/Consumidor se apagan en el panel). Solo restart, sin rebuild.
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
