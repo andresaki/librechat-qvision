@@ -48,6 +48,7 @@ jest.mock('~/hooks', () => ({
     const translations: Record<string, string> = {
       com_agents_contact: 'Contact',
       com_agents_no_contact_available: 'No contact available',
+      com_ui_logo: 'Quinn logo',
       com_ui_temporary: 'Temporary Chat',
       com_ui_temporary_description:
         "This chat won't appear in your history and will be deleted automatically.",
@@ -85,8 +86,6 @@ jest.mock('~/utils', () => ({
     return { entity: undefined, isAgent: false, isAssistant: false };
   },
 }));
-
-jest.mock('~/components/Endpoints/ConvoIcon', () => () => <span data-testid="convo-icon" />);
 
 function renderLanding({ isTemporary = false }: { isTemporary?: boolean } = {}) {
   return render(
@@ -230,7 +229,10 @@ describe('Landing temporary chat empty state', () => {
 
     expect(screen.getByText('Welcome')).toBeInTheDocument();
     expect(screen.queryByText('Temporary Chat')).not.toBeInTheDocument();
-    expect(screen.getByTestId('convo-icon')).toBeInTheDocument();
+    /* Q-Vision: icono Quinn fijo junto al saludo (reemplaza al ConvoIcon dinámico). */
+    const quinnIcon = screen.getByAltText('Quinn logo');
+    expect(quinnIcon).toBeInTheDocument();
+    expect(quinnIcon).toHaveAttribute('src', 'assets/logo-quinn.svg');
   });
 });
 

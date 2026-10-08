@@ -11,7 +11,6 @@ import { getIconEndpoint, getEntity, getModelSpec } from '~/utils';
 import { useLocalize, useAuthContext, useGreeting } from '~/hooks';
 import { useChatSettings } from '~/Providers/ChatSettingsContext';
 import AgentContact from '~/components/Agents/AgentContact';
-import ConvoIcon from '~/components/Endpoints/ConvoIcon';
 
 const containerClassName =
   'relative flex h-full items-center justify-center rounded-full bg-presentation text-text-primary';
@@ -159,16 +158,13 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
                   <HatGlasses className="text-text-primary h-2/3 w-2/3" aria-hidden="true" />
                 </div>
               ) : (
-                <ConvoIcon
-                  agentsMap={agentsMap}
-                  assistantMap={assistantMap}
-                  conversation={conversation}
-                  endpointsConfig={endpointsConfig}
-                  containerClassName={containerClassName}
-                  context="landing"
-                  className="text-text-primary h-2/3 w-2/3"
-                  size={41}
-                />
+                <div className={containerClassName}>
+                  <img
+                    src="assets/logo-quinn.svg"
+                    className="h-2/3 w-2/3 object-contain"
+                    alt={localize('com_ui_logo', { 0: startupConfig?.appTitle ?? 'Quinn' })}
+                  />
+                </div>
               )}
             </div>
             {startupConfig?.showBirthdayIcon && (
