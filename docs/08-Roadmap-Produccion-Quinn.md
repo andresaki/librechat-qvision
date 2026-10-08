@@ -29,7 +29,8 @@ Detalle técnico de cada punto en `docs/07-*`, `CHANGELOG.md` y `BRECHAS.md`.
 - [x] `privacyPolicy` + `termsOfService` con URLs Q-Vision (`openNewTab`; verificado en
   `/api/config`; aparecen en menú Ayuda del avatar y login)
 - [ ] `HELP_AND_FAQ_URL` en `.env` prod (link "Ayuda y FAQ" en el mismo menú; pedir URL a Infra/comms)
-- [ ] `customWelcome` con i18n (el yaml solo acepta string plano; requiere costura en `Landing.tsx`)
+- [x] `customWelcome` i18n (`com_ui_quinn_welcome` en `en`/`es`; costura en `Landing.tsx`;
+  rebuild verificado, clave presente en el bundle)
 - [ ] Lista de modelos curada para prod (cuando se conozcan los del gateway)
 
 

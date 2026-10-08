@@ -1,19 +1,21 @@
 import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
+import { useRecoilValue } from 'recoil';
 import { HatGlasses } from 'lucide-react';
 import { easings } from '@react-spring/web';
 import { EModelEndpoint } from 'librechat-data-provider';
-import { BirthdayIcon, TooltipAnchor, SplitText, useRemScale } from '@librechat/client';
+import { BirthdayIcon, TooltipAnchor, SplitText } from '@librechat/client';
+import type { TranslationKeys } from '~/hooks/useLocalize';
 import { useChatContext, useAgentsMapContext, useAssistantsMapContext } from '~/Providers';
 import Description, { isHtmlDescription } from '~/components/ui/Description';
 import { useGetEndpointsQuery, useGetStartupConfig } from '~/data-provider';
 import { getIconEndpoint, getEntity, getModelSpec } from '~/utils';
 import { useLocalize, useAuthContext, useGreeting } from '~/hooks';
-import { useChatSettings } from '~/Providers/ChatSettingsContext';
 import AgentContact from '~/components/Agents/AgentContact';
 import ConvoIcon from '~/components/Endpoints/ConvoIcon';
+import temporaryStore from '~/store/temporary';
 
 const containerClassName =
-  'relative flex h-full items-center justify-center rounded-full bg-presentation text-text-primary';
+  'shadow-stroke relative flex h-full items-center justify-center rounded-full bg-presentation text-text-primary dark:after:shadow-none ';
 
 /** Stable references: fresh literals re-initialized SplitText's springs and
  * re-rendered every grapheme span on each Landing render. */
@@ -44,8 +46,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
   const { data: endpointsConfig } = useGetEndpointsQuery();
   const { user } = useAuthContext();
   const localize = useLocalize();
-  const remScale = useRemScale();
-  const { isTemporary } = useChatSettings();
+  const isTemporary = useRecoilValue(temporaryStore.isTemporary);
 
   const [textHasMultipleLines, setTextHasMultipleLines] = useState(false);
   const [lineCount, setLineCount] = useState(1);
@@ -64,7 +65,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     });
   }, [conversation?.endpoint, conversation?.iconURL, endpointsConfig]);
 
-  const { entity, isAgent } = getEntity({
+  const { entity, isAgent, isAssistant } = getEntity({
     endpoint: endpointType,
     agentsMap,
     assistantMap,
@@ -79,10 +80,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
 
   const brandedSpecLabel = modelSpec?.showOnLanding ? modelSpec.label : '';
   const brandedSpecDescription = (modelSpec?.showOnLanding && modelSpec.description) || '';
-  const name =
-    isTemporary || startupConfig?.interface?.landingHeading === 'greeting'
-      ? ''
-      : (entity?.name ?? brandedSpecLabel);
+  const name = isTemporary ? '' : (entity?.name ?? brandedSpecLabel);
   const description = isTemporary
     ? localize('com_ui_temporary_description')
     : ((entity?.description || brandedSpecDescription || conversation?.greeting) ?? '');
@@ -106,7 +104,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     if (contentRef.current) {
       setContentHeight(contentRef.current.offsetHeight);
     }
-  }, [lineCount, description, selectedAgent, remScale]);
+  }, [lineCount, description, selectedAgent]);
 
   const getDynamicMargin = useMemo(() => {
     let margin = 'mb-0';
@@ -128,10 +126,16 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
     return margin;
   }, [lineCount, description, textHasMultipleLines, contentHeight]);
 
-  const resolvedWelcome =
-    customWelcome != null && user?.name
-      ? customWelcome.replace(/{{user.name}}/g, user.name)
-      : customWelcome;
+  /* Q-Vision: customWelcome admite clave i18n (empieza con `com_`): se resuelve en el
+     idioma actual con {{name}}; si es texto plano se usa tal cual (compat upstream). */
+  let resolvedWelcome = customWelcome;
+  if (customWelcome != null) {
+    if (customWelcome.startsWith('com_')) {
+      resolvedWelcome = localize(customWelcome as TranslationKeys, { name: user?.name ?? '' });
+    } else {
+      resolvedWelcome = customWelcome.replace(/{{user.name}}/g, user?.name ?? '');
+    }
+  }
 
   const greetingText = isTemporary
     ? localize('com_ui_temporary')
@@ -146,27 +150,25 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
           className={`flex ${textHasMultipleLines ? 'flex-col' : 'flex-col md:flex-row'} items-center justify-center gap-2`}
         >
           <div className={`relative size-10 justify-center ${textHasMultipleLines ? 'mb-2' : ''}`}>
-            <div className="avatar-stroke size-full rounded-full dark:after:shadow-none">
-              {isTemporary ? (
-                <div className={containerClassName}>
-                  <HatGlasses className="text-text-primary h-2/3 w-2/3" aria-hidden="true" />
-                </div>
-              ) : (
-                <ConvoIcon
-                  agentsMap={agentsMap}
-                  assistantMap={assistantMap}
-                  conversation={conversation}
-                  endpointsConfig={endpointsConfig}
-                  containerClassName={containerClassName}
-                  context="landing"
-                  className="text-text-primary h-2/3 w-2/3"
-                  size={41}
-                />
-              )}
-            </div>
+            {isTemporary ? (
+              <div className={containerClassName}>
+                <HatGlasses className="h-2/3 w-2/3 text-text-primary" aria-hidden="true" />
+              </div>
+            ) : (
+              <ConvoIcon
+                agentsMap={agentsMap}
+                assistantMap={assistantMap}
+                conversation={conversation}
+                endpointsConfig={endpointsConfig}
+                containerClassName={containerClassName}
+                context="landing"
+                className="h-2/3 w-2/3 text-text-primary"
+                size={41}
+              />
+            )}
             {startupConfig?.showBirthdayIcon && (
               <TooltipAnchor
-                className="absolute inset-e-2 bottom-[1.6875rem]"
+                className="absolute bottom-[27px] right-2"
                 description={localize('com_ui_happy_birthday')}
                 aria-label={localize('com_ui_happy_birthday')}
               >
@@ -174,12 +176,12 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
               </TooltipAnchor>
             )}
           </div>
-          {name ? (
+          {((isAgent || isAssistant) && name) || name ? (
             <div className="flex flex-col items-center gap-0 p-2">
               <SplitText
                 key={`split-text-${name}`}
                 text={name}
-                className={`${getTextSizeClass(name)} text-text-primary font-medium`}
+                className={`${getTextSizeClass(name)} font-medium text-text-primary`}
                 delay={50}
                 textAlign="center"
                 animationFrom={greetingAnimationFrom}
@@ -194,7 +196,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
             <SplitText
               key={`split-text-${greetingText}${user?.name ? '-user' : ''}`}
               text={greetingText}
-              className={`${getTextSizeClass(greetingText)} text-text-primary font-medium`}
+              className={`${getTextSizeClass(greetingText)} font-medium text-text-primary`}
               delay={50}
               textAlign="center"
               animationFrom={greetingAnimationFrom}
@@ -211,7 +213,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
           description={description}
           className={
             descriptionIsHTML
-              ? 'animate-fadeIn text-text-primary mt-4 flex max-w-md items-center justify-center gap-2 text-center text-sm font-normal [&_img]:inline-block [&_img]:h-4 [&_img]:w-4'
+              ? 'animate-fadeIn mt-4 flex max-w-md items-center justify-center gap-2 text-center text-sm font-normal text-text-primary [&_img]:inline-block [&_img]:h-4 [&_img]:w-4'
               : `animate-fadeIn mt-4 max-w-md text-center text-sm font-normal ${isTemporary ? 'text-text-secondary' : 'text-text-primary'}`
           }
         />
