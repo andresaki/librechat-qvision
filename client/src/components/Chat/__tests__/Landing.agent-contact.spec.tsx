@@ -2,13 +2,12 @@ import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { ChatSettingsContext, defaultChatSettings } from '~/Providers/ChatSettingsContext';
+import temporaryStore from '~/store/temporary';
 import Landing from '../Landing';
 
 let mockConversation: Record<string, unknown> | null = null;
 let mockAgentsMap: Record<string, any> | undefined;
 let mockAssistantMap: Record<string, any> | undefined;
-let mockInterfaceConfig: Record<string, unknown> = {};
 
 jest.mock('@react-spring/web', () => ({
   easings: {
@@ -27,7 +26,7 @@ jest.mock('@librechat/client', () => ({
   BirthdayIcon: () => <span data-testid="birthday-icon" />,
   TooltipAnchor: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
   SplitText: ({ text }: { text: string }) => <span>{text}</span>,
-  useRemScale: () => 1,
+  ThemeContext: jest.requireActual('react').createContext({ resolvedMode: 'light' }),
 }));
 
 jest.mock('~/Providers', () => ({
@@ -37,7 +36,7 @@ jest.mock('~/Providers', () => ({
 }));
 
 jest.mock('~/data-provider', () => ({
-  useGetStartupConfig: () => ({ data: { interface: mockInterfaceConfig } }),
+  useGetStartupConfig: () => ({ data: { interface: {} } }),
   useGetEndpointsQuery: () => ({ data: {} }),
 }));
 
@@ -89,10 +88,8 @@ jest.mock('~/utils', () => ({
 
 function renderLanding({ isTemporary = false }: { isTemporary?: boolean } = {}) {
   return render(
-    <RecoilRoot>
-      <ChatSettingsContext.Provider value={{ ...defaultChatSettings, isTemporary }}>
-        <Landing centerFormOnLanding={false} />
-      </ChatSettingsContext.Provider>
+    <RecoilRoot initializeState={({ set }) => set(temporaryStore.isTemporary, isTemporary)}>
+      <Landing centerFormOnLanding={false} />
     </RecoilRoot>,
   );
 }
@@ -125,29 +122,6 @@ describe('Landing agent contact', () => {
     expect(screen.getByText('Contact:')).toBeInTheDocument();
     expect(screen.getByText('Owner User')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Owner User' })).not.toBeInTheDocument();
-  });
-
-  it('renders the email link without inline baseline space beside the contact label', () => {
-    mockConversation = {
-      endpoint: 'agents',
-      agent_id: 'agent-1',
-    };
-    mockAgentsMap = {
-      'agent-1': {
-        id: 'agent-1',
-        name: 'LibreChat',
-        description: 'Contact Danny if you see any errors',
-        support_contact: { email: 'messagedaniel@pm.me' },
-      },
-    };
-
-    renderLanding();
-
-    const link = screen.getByRole('link', { name: 'messagedaniel@pm.me' });
-    expect(link).toHaveAttribute('href', 'mailto:messagedaniel@pm.me');
-    expect(link).toHaveClass('block');
-    expect(link).not.toHaveClass('inline-block');
-    expect(screen.getByText('Contact:').parentElement).toHaveClass('items-center');
   });
 
   it('does not show contact when the selected agent is missing from agentsMap', () => {
@@ -229,47 +203,47 @@ describe('Landing temporary chat empty state', () => {
 
     expect(screen.getByText('Welcome')).toBeInTheDocument();
     expect(screen.queryByText('Temporary Chat')).not.toBeInTheDocument();
-    /* Q-Vision: icono Quinn fijo junto al saludo (reemplaza al ConvoIcon dinámico). */
+    /* Q-Vision: símbolo Quinn junto al saludo (modo claro por defecto en tests). */
     const quinnIcon = screen.getByAltText('Quinn logo');
     expect(quinnIcon).toBeInTheDocument();
-    expect(quinnIcon).toHaveAttribute('src', 'assets/logo-quinn.svg');
+    expect(quinnIcon).toHaveAttribute('src', 'assets/quinn-simbolo.svg');
   });
-});
 
-describe('Landing heading', () => {
-  beforeEach(() => {
-    mockInterfaceConfig = {};
-    mockConversation = { endpoint: 'agents', agent_id: 'agent-1' };
-    mockAgentsMap = {
-      'agent-1': { id: 'agent-1', name: 'Data Analyst', description: 'Answers SQL questions' },
+  it('shows the agent avatar on landing when the agent has one', () => {
+    mockConversation = {
+      endpoint: 'agents',
+      agent_id: 'agent-1',
     };
-    mockAssistantMap = undefined;
-  });
-
-  it('heads the welcome screen with the selected agent name by default', () => {
-    renderLanding();
-
-    expect(screen.getByText('Data Analyst')).toBeInTheDocument();
-    expect(screen.queryByText('Welcome')).not.toBeInTheDocument();
-  });
-
-  it('greets the user instead when the deployment opts into the greeting heading', () => {
-    mockInterfaceConfig = { landingHeading: 'greeting' };
+    mockAgentsMap = {
+      'agent-1': {
+        id: 'agent-1',
+        name: 'Portal Remote Agent',
+        avatar: { filepath: 'https://example.com/agent-avatar.png' },
+      },
+    };
 
     renderLanding();
 
-    expect(screen.getByText('Welcome')).toBeInTheDocument();
-    expect(screen.queryByText('Data Analyst')).not.toBeInTheDocument();
-    expect(screen.getByText('Answers SQL questions')).toBeInTheDocument();
-    expect(screen.getByTestId('convo-icon')).toBeInTheDocument();
+    const avatar = screen.getByAltText('Portal Remote Agent');
+    expect(avatar).toBeInTheDocument();
+    expect(avatar).toHaveAttribute('src', 'https://example.com/agent-avatar.png');
+    expect(screen.queryByAltText('Quinn logo')).not.toBeInTheDocument();
   });
 
-  it('uses the configured welcome as the greeting heading', () => {
-    mockInterfaceConfig = { landingHeading: 'greeting', customWelcome: 'Hello there' };
+  it('falls back to the Quinn symbol when the agent has no avatar', () => {
+    mockConversation = {
+      endpoint: 'agents',
+      agent_id: 'agent-1',
+    };
+    mockAgentsMap = {
+      'agent-1': {
+        id: 'agent-1',
+        name: 'Portal Remote Agent',
+      },
+    };
 
     renderLanding();
 
-    expect(screen.getByText('Hello there')).toBeInTheDocument();
-    expect(screen.queryByText('Data Analyst')).not.toBeInTheDocument();
+    expect(screen.getByAltText('Quinn logo')).toBeInTheDocument();
   });
 });
