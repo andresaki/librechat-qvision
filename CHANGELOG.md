@@ -68,6 +68,7 @@
   `assets/quinn-*.svg` en `vite.config.ts`. `Landing` muestra avatar del agente si tiene, si no el
   símbolo según `ThemeContext.resolvedMode`; fuera el círculo gris y tamaño 56px. `tsc` limpio,
   spec `Landing` 8/8, SVGs 200 en prod local tras rebuild.
+- 2026-10-08 (icono landing 40px): ajuste a `size-10` (40x40) tras validación visual.
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
