@@ -72,6 +72,5 @@ LibreChat upstream lista skills en el **sidebar** pero `/skills` sin id mostraba
 **Sigue en brecha (requisito 4.1 completo):** un único marketplace con tabs Agentes / Skills / MCP / Tools — hoy agentes y skills tienen vistas separadas; MCP/tools siguen en el builder de agentes.
 
 ## Schedules de agentes — no arrancó el scheduler — no bloquea este laboratorio todavía
-
 Log del API: el scheduler no arranca sin `USE_REDIS_STREAMS` o `SCHEDULES_SINGLE_PROCESS=true`. Las escrituras de schedules responden 503. Confirmar más adelante si hace falta automatización programada; no afecta login, Mongo ni RAG.
 
