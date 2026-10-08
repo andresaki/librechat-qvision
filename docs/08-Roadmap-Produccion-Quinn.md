@@ -21,6 +21,9 @@ Detalle técnico de cada punto en `docs/07-*`, `CHANGELOG.md` y `BRECHAS.md`.
   (cubre USER/ADMIN; verificado en log del arranque)
 - [x] `interface.multiConvo: false` en yaml (cubre USER/ADMIN; verificado en log) + apagar
   `MULTI_CONVO.USE` en Creador/Consumidor desde el panel (pendiente 30s en Admin Panel)
+- [x] `interface.webSearch: false` en yaml (sin proveedor; verificado en log) + apagar
+  `WEB_SEARCH.USE` en Creador/Consumidor desde el panel. Lo nativo de cada proveedor se gobierna
+  con la lista de modelos del gateway, no con este toggle.
 - [ ] `customWelcome` ("Pregúntale a Quinn…"), `HELP_AND_FAQ_URL`, `privacyPolicy`, `termsOfService` con URLs Q-Vision
 - [ ] Lista de modelos curada para prod (cuando se conozcan los del gateway)
 
