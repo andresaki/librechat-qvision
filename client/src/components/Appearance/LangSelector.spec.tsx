@@ -51,11 +51,11 @@ describe('LangSelector', () => {
 
     await clickDropdown(dropdownButton);
 
-    const italianOption = getByRole('option', { name: 'Italiano' });
-    await clickDropdown(italianOption);
+    const spanishOption = getByRole('option', { name: 'Español' });
+    await clickDropdown(spanishOption);
 
     await waitFor(() => {
-      expect(mockOnChange).toHaveBeenCalledWith('it-IT');
+      expect(mockOnChange).toHaveBeenCalledWith('es-ES');
     });
   });
 

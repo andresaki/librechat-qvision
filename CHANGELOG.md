@@ -55,6 +55,11 @@
   `Landing.tsx` (si empieza con `com_` se resuelve con `useLocalize()` e `{{name}}`; texto plano
   sigue válido). Claves en `en` + `es` (excepción fork: sin clave `es`, la UI en español cae al
   inglés). `tsc` limpio, 17 tests en verde, rebuild frontend verificado (clave en el bundle).
+- 2026-10-08 (idiomas): `LangSelector` solo Auto/English/Español (mismo patrón que temas);
+  spec actualizado (`Español`/`es-ES`; los nombres van en autónimo). `auto` sigue al navegador.
+- 2026-10-08 (icono Quinn fijo): `Landing.tsx` muestra `assets/logo-quinn.svg` junto al saludo en
+  lugar del `ConvoIcon` dinámico (temporal sigue con HatGlasses). Spec `Landing` actualizado
+  (assert por `src`+`alt`). Rebuild verificado (`logo-quinn` x2 en el bundle).
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 

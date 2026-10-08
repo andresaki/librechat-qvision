@@ -11,7 +11,6 @@ import { useGetEndpointsQuery, useGetStartupConfig } from '~/data-provider';
 import { getIconEndpoint, getEntity, getModelSpec } from '~/utils';
 import { useLocalize, useAuthContext, useGreeting } from '~/hooks';
 import AgentContact from '~/components/Agents/AgentContact';
-import ConvoIcon from '~/components/Endpoints/ConvoIcon';
 import temporaryStore from '~/store/temporary';
 
 const containerClassName =
@@ -155,16 +154,15 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
                 <HatGlasses className="h-2/3 w-2/3 text-text-primary" aria-hidden="true" />
               </div>
             ) : (
-              <ConvoIcon
-                agentsMap={agentsMap}
-                assistantMap={assistantMap}
-                conversation={conversation}
-                endpointsConfig={endpointsConfig}
-                containerClassName={containerClassName}
-                context="landing"
-                className="h-2/3 w-2/3 text-text-primary"
-                size={41}
-              />
+              /* Q-Vision: icono Quinn fijo junto al saludo (en lugar del icono
+                 dinámico por endpoint/agente). */
+              <div className={containerClassName}>
+                <img
+                  src="assets/logo-quinn.svg"
+                  className="h-2/3 w-2/3 object-contain"
+                  alt={localize('com_ui_logo', { 0: startupConfig?.appTitle ?? 'Quinn' })}
+                />
+              </div>
             )}
             {startupConfig?.showBirthdayIcon && (
               <TooltipAnchor
