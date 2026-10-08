@@ -51,6 +51,10 @@
   verificado en log para USER/ADMIN; Creador/Consumidor en el panel). Solo restart, sin rebuild.
 - 2026-10-08 (legales): `interface.privacyPolicy` + `interface.termsOfService` con URLs Q-Vision
   (`openNewTab: true`; verificado vía `/api/config`). Solo restart, sin rebuild.
+- 2026-10-08 (customWelcome i18n): `customWelcome: com_ui_quinn_welcome` en yaml + costura en
+  `Landing.tsx` (si empieza con `com_` se resuelve con `useLocalize()` e `{{name}}`; texto plano
+  sigue válido). Claves en `en` + `es` (excepción fork: sin clave `es`, la UI en español cae al
+  inglés). `tsc` limpio, 17 tests en verde, rebuild frontend verificado (clave en el bundle).
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 
