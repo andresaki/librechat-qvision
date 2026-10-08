@@ -49,6 +49,9 @@
   log para USER/ADMIN; Creador/Consumidor se apagan en el panel). Solo restart, sin rebuild.
 - 2026-10-08 (webSearch off global): `interface.webSearch: false` (sin proveedor contratado;
   verificado en log para USER/ADMIN; Creador/Consumidor en el panel). Solo restart, sin rebuild.
+- 2026-10-08 (catálogo staging): `catalogo-qvision/` — 10 skills, 12 prompts, 8 agentes,
+  5 MCP con campo-valor listos para registro manual en UI + recreación en prod.
+  Detalle y validación en `docs/09-Catalogo-QVision-Staging-Prod.md`. Sin código.
 - 2026-10-08 (legales): `interface.privacyPolicy` + `interface.termsOfService` con URLs Q-Vision
   (`openNewTab: true`; verificado vía `/api/config`). Solo restart, sin rebuild.
 - 2026-10-08 (customWelcome i18n): `customWelcome: com_ui_quinn_welcome` en yaml + costura en
@@ -60,6 +63,11 @@
 - 2026-10-08 (icono Quinn fijo): `Landing.tsx` muestra `assets/logo-quinn.svg` junto al saludo en
   lugar del `ConvoIcon` dinámico (temporal sigue con HatGlasses). Spec `Landing` actualizado
   (assert por `src`+`alt`). Rebuild verificado (`logo-quinn` x2 en el bundle).
+- 2026-10-08 (símbolo Quinn por tema): `quinn-simbolo.svg` (claro) y `quinn-simbolo-negativo.svg`
+  (oscuro) copiados de `quinn-brand-kit/svg` a `client/public/assets` + precache
+  `assets/quinn-*.svg` en `vite.config.ts`. `Landing` muestra avatar del agente si tiene, si no el
+  símbolo según `ThemeContext.resolvedMode`; fuera el círculo gris y tamaño 56px. `tsc` limpio,
+  spec `Landing` 8/8, SVGs 200 en prod local tras rebuild.
 
 ## 2026-09-25 — Marketplace de Skills (fork frontend)
 

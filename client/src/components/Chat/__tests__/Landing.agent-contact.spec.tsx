@@ -26,6 +26,7 @@ jest.mock('@librechat/client', () => ({
   BirthdayIcon: () => <span data-testid="birthday-icon" />,
   TooltipAnchor: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
   SplitText: ({ text }: { text: string }) => <span>{text}</span>,
+  ThemeContext: jest.requireActual('react').createContext({ resolvedMode: 'light' }),
 }));
 
 jest.mock('~/Providers', () => ({
@@ -202,9 +203,47 @@ describe('Landing temporary chat empty state', () => {
 
     expect(screen.getByText('Welcome')).toBeInTheDocument();
     expect(screen.queryByText('Temporary Chat')).not.toBeInTheDocument();
-    /* Q-Vision: icono Quinn fijo junto al saludo (reemplaza al ConvoIcon dinámico). */
+    /* Q-Vision: símbolo Quinn junto al saludo (modo claro por defecto en tests). */
     const quinnIcon = screen.getByAltText('Quinn logo');
     expect(quinnIcon).toBeInTheDocument();
-    expect(quinnIcon).toHaveAttribute('src', 'assets/logo-quinn.svg');
+    expect(quinnIcon).toHaveAttribute('src', 'assets/quinn-simbolo.svg');
+  });
+
+  it('shows the agent avatar on landing when the agent has one', () => {
+    mockConversation = {
+      endpoint: 'agents',
+      agent_id: 'agent-1',
+    };
+    mockAgentsMap = {
+      'agent-1': {
+        id: 'agent-1',
+        name: 'Portal Remote Agent',
+        avatar: { filepath: 'https://example.com/agent-avatar.png' },
+      },
+    };
+
+    renderLanding();
+
+    const avatar = screen.getByAltText('Portal Remote Agent');
+    expect(avatar).toBeInTheDocument();
+    expect(avatar).toHaveAttribute('src', 'https://example.com/agent-avatar.png');
+    expect(screen.queryByAltText('Quinn logo')).not.toBeInTheDocument();
+  });
+
+  it('falls back to the Quinn symbol when the agent has no avatar', () => {
+    mockConversation = {
+      endpoint: 'agents',
+      agent_id: 'agent-1',
+    };
+    mockAgentsMap = {
+      'agent-1': {
+        id: 'agent-1',
+        name: 'Portal Remote Agent',
+      },
+    };
+
+    renderLanding();
+
+    expect(screen.getByAltText('Quinn logo')).toBeInTheDocument();
   });
 });
