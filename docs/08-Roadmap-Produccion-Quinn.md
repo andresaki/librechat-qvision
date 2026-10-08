@@ -17,7 +17,8 @@ Detalle técnico de cada punto en `docs/07-*`, `CHANGELOG.md` y `BRECHAS.md`.
 ## 2. Configuración prod (requiere decisiones, sin código)
 
 - [ ] Feature set on/off: `runCode`, `webSearch`, `fileSearch`, `fileCitations`, `temporaryChat`, `multiConvo`, `bookmarks`, `memories` (yaml + roles Creador/Consumidor)
-- [ ] `RUN_CODE.USE` en OFF por rol (no hay sandbox; el botón hoy da error)
+- [x] `RUN_CODE.USE` en OFF por rol (hecho en panel) + `interface.runCode: false` en yaml
+  (cubre USER/ADMIN; verificado en log del arranque)
 - [ ] `customWelcome` ("Pregúntale a Quinn…"), `HELP_AND_FAQ_URL`, `privacyPolicy`, `termsOfService` con URLs Q-Vision
 - [ ] Lista de modelos curada para prod (cuando se conozcan los del gateway)
 
