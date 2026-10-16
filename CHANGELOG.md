@@ -2,6 +2,57 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-10-16 — MCP en el repo; Run Code apagado para el despliegue
+
+- `librechat.yaml` y `docker-compose.override.yml` dejan de estar en `.gitignore`. Secretos siguen en `.env` (`OPENID_CLIENT_*`, `MS365_MCP_TENANT_ID`, `GATEWAY_API_KEY`).
+- Outlook OAuth usa `${MS365_MCP_TENANT_ID}` en authorize/token (antes el tenant de laboratorio iba fijo en el yaml).
+- Browser MCP publicado solo en `127.0.0.1:8932`. La API habla por la red de Compose (`browser-mcp`, `m365-mcp` en `NO_PROXY`).
+- `interface.runCode: false` y se quita `execute_code` de las capabilities. El code-interpreter no va en este compose; el chat no lo necesita para arrancar.
+- `browser_mcp/` entra al repo (el compose lo construye). El eslint del monorepo no lo cubre: es un servidor Node aparte.
+- Callback que Infra debe registrar en la app de prod (plataforma Web): `https://quin.q-vision.co/api/mcp/outlook/oauth/callback`. Permisos delegados con admin consent: `Mail.ReadWrite`, `Mail.Send`, `MailboxSettings.ReadWrite`, `Calendars.ReadWrite`.
+
+## 2026-10-13 — Quitar spec por defecto Quinn (navegador)
+
+- Eliminado `modelSpecs.list` `quinn-browser` (`default: true`). Un chat nuevo vuelve al selector normal; Browser MCP se activa a mano.
+
+## 2026-10-13 — MCP Microsoft 365 (Softeria) en Compose
+
+- Servicio `m365-mcp` en `docker-compose.override.yml`: imagen `ghcr.io/softeria/ms-365-mcp-server:0.165.0`, HTTP `127.0.0.1:9003` → `/mcp`, preset `outlook` y `--discovery` (3 tools; el preset completo no cabe en el contexto de 34k).
+- Credenciales: reutiliza `OPENID_CLIENT_ID` / `OPENID_CLIENT_SECRET`. Tenant en `MS365_MCP_TENANT_ID` (no va en yaml).
+- `librechat.yaml`: `mcpSettings.allowedAddresses` incluye `m365-mcp:9003`. `mcpServers.outlook` con OAuth de Entra y `send_resource_parameter: false` (sin eso Entra responde `invalid_target`).
+- Detalle: `docs/12-MCP-Microsoft-365-Softeria.md`.
+
+## 2026-10-13 — Browser MCP fix: pin Playwright 1.63.0 (BROWSER_NOT_AVAILABLE)
+
+- Causa: `browser_mcp/package.json` pedía `playwright ^1.56.0` y el `Dockerfile` no copiaba `package-lock.json`; el build resolvía 1.64 mientras la imagen base `v1.63.0-noble` trae Chromium para 1.63 → `chromium.launch()` fallaba.
+- Fix: `playwright` pinnado a `1.63.0` exacto + `Dockerfile` copia el lockfile y usa `npm ci`.
+- Validación: `tsc --noEmit` limpio, jest 6/6 (64/64), rebuild + probe in-container: `session_create` + `navigate https://example.com` → `Example Domain`, 0 errores.
+
+## 2026-10-13 — Browser MCP (búsqueda/scraping) en Quinn
+
+- Servicio `browser-mcp` en `docker-compose.override.yml` (build `./browser_mcp`, HTTP `:8932/mcp`, `shm_size: 1gb`).
+- `librechat.yaml`: `mcpServers.browser`, `mcpSettings.allowedAddresses`, spec `quinn-browser` (`mcpServers: [browser]`, `default: true`) y `defaultPinnedTools`.
+- `interface.webSearch` sigue en `false` (no hay proveedor Serper/Tavily). Detalle: `docs/11-Browser-MCP-Quinn.md`.
+- Agentes guardados: hay que añadir el MCP Browser en el builder; el yaml no los modifica.
+
+## 2026-10-13 — Code Interpreter: doc lab vs README vs prod
+
+- Nuevo `docs/10-Code-Interpreter-Windows-Lab-y-Produccion.md`: por qué clonar + Compose no bastó en Windows, cadena de fallos (pkgs, healthcheck, manifiesto, BOM/CRLF) y cambios para producción (Linux/KVM, no copiar el override nokvm).
+
+## 2026-10-13 — Code Interpreter: wrapper bash Windows (BOM/CRLF)
+
+- `code-interpreter/data/pkgs/bash/5.2.0/run` y `.env` reescritos en UTF-8 LF sin BOM (`exec /bin/bash "$@"`).
+- Causa del 127 en chat: shebang con BOM + `script.sh\r`. Smoke bash CSV y Python `print` → code 0.
+
+## 2026-10-09 — Code Interpreter local (JWT) + Quinn runCode
+
+- Servicio **code-interpreter** `v1.10.4` en `../code-interpreter` (Docker Compose desde Windows; override sin KVM).
+- LibreChat `.env`: `LIBRECHAT_CODE_BASEURL=http://host.docker.internal:3112/v1`, `CODEAPI_AUTH_PROVIDER=librechat-jwt` y par `CODEAPI_JWT_*` (generados con `scripts/setup-local-auth-env.js`).
+- `librechat.yaml`: `interface.runCode: true`, `endpoints.agents.capabilities` incluye `execute_code`.
+- Roles: yaml sincroniza USER/ADMIN; Mongo actualizado para Creador/Consumidor (`RUN_CODE.USE`).
+- Sandbox Windows: poblar `code-interpreter/data/pkgs` (Python 3.14.4 + pip stack); override añade healthcheck runtimes, `SANDBOX_PIPE_ADDON`, hardened manifest.
+- Validación: health 200; JWT OK; `GET /api/v2/runtimes` con python/bash; smoke `POST /v1/exec` desde contenedor LibreChat → 200. Falta smoke manual en chat Quinn (Excel/.xlsx).
+
 ## 2026-10-06 — Ticket Infra para producción (Entra ID)
 
 - Nuevo `docs/05-Pase-a-Produccion-Ticket-Infra-Entra-ID.md`: pasos de App registration,

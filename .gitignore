@@ -76,9 +76,9 @@ api/tsconfig.json
 .floo
 .flooignore
 
-#config file
-librechat.yaml
-librechat.yml
+# Upstream ignora librechat.yaml (cada deploy tenía copia privada).
+# Q-Vision lo versiona, junto con docker-compose.override.yml, para llevar
+# los MCP browser y Outlook al mismo compose. Secretos solo en .env.
 
 # Environment
 .env*
@@ -110,10 +110,6 @@ config.local.ts
 junit.xml
 **/.venv/
 **/venv/
-
-# docker override file
-docker-compose.override.yaml
-docker-compose.override.yml
 
 # meilisearch
 meilisearch
@@ -195,3 +191,4 @@ scripts/activity-labels/results/
 /e2e/lighthouse/.test-results/
 
 /catalogo-qvision
+tmp-codeapi-*.js

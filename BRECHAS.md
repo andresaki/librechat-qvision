@@ -57,9 +57,21 @@ Los defaults de `USER` dejan `AGENTS.CREATE` y `SKILLS.CREATE` en true (y `MARKE
 
 `access:admin` está concedido al rol `ADMIN`. Las dos cuentas OpenID entraron como `USER` (el alta local sí promueve a la primera cuenta; OpenID no, salvo `OPENID_ADMIN_ROLE`). Sin un `ADMIN`, el panel muestra login y luego "Access denied". Se promovió `ad102131@outlook.com` a `ADMIN` en Mongo y se registró `admin.lab@qvision.local` como admin local, porque el SSO del panel pide la contraseña de Microsoft en el navegador y no había sesión.
 
-## Code Interpreter — fuera de alcance de este bloque — error confirmado en UI
+## Code Interpreter — stack local operativo (2026-10-13); chat Quinn OK (CSV)
 
-El 2026-09-23 **Run Code** devolvió «Se produjo un error al ejecutar el código». El Compose de LibreChat no incluye ClickHouse/code-interpreter. No se monta ese stack en este laboratorio. `RUN_CODE.USE` sigue en los roles; no hay sandbox detrás.
+Narrativa completa (README vs realidad Windows, fallos, prod): `docs/10-Code-Interpreter-Windows-Lab-y-Produccion.md`.
+
+Stack **LibreChat-AI/code-interpreter** `v1.10.4` en `C:\Users\AndresDanielHerrera\Documents\Laboratorio\code-interpreter` (API `:3112`, JWT). LibreChat: `LIBRECHAT_CODE_BASEURL=http://host.docker.internal:3112/v1`, `CODEAPI_AUTH_PROVIDER=librechat-jwt`. Sandbox **NsJail directo** en Windows (`KVM_ENABLED=false`, override `docker-compose.windows-nokvm.override.yml`: caps, `SANDBOX_USE_CGROUPV2=false`, healthcheck `GET /api/v2/runtimes`, `SANDBOX_PIPE_ADDON=/usr/local/lib/anonymous-pipes.node`, `CODEAPI_HARDENED_SANDBOX_MODE=true`).
+
+**Runtime packages:** obligatorio poblar `data/pkgs` (`build-packages.sh`; en Windows usar **Git Bash** con `MSYS_NO_PATHCONV=1` o completar vía `docker cp`/`docker exec` — ver `scripts/` en el repo code-interpreter). Sin `.package-installed` en `/host-packages`, `GET /api/v2/runtimes` devuelve `[]` y el chat muestra “Code execution temporarily unavailable” / 502.
+
+**Confirmado:** `GET /v1/health` → 200; JWT OK; runtimes `python-3.14.4` + `bash-5.2.0`; `service-worker` arranca con el compose. Smoke `POST /v1/exec` Python y bash (incl. `usuarios.csv` en `/mnt/data`) → **200 / code 0**.
+
+**Fix 2026-10-13:** el wrapper `data/pkgs/bash/5.2.0/run` se había escrito en Windows con **BOM UTF-8 + CRLF**. NsJail interpretaba `﻿#!/bin/bash` y `script.sh\r` → exit **127**. Cualquier `bash_tool` / CSV en el chat fallaba aunque el runtime estuviera registrado. Reescrito en UTF-8 LF, shebang `/bin/bash`, `exec /bin/bash "$@"`.
+
+**UI:** generación de CSV en chat confirmada 2026-10-13. **Opcional:** Node/Bun en `data/pkgs` si hace falta JS en sandbox.
+
+**Prod (2026-10-16):** `interface.runCode: false` y sin `execute_code` en el yaml que se despliega. El stack de arriba es el laboratorio Windows; no se copia al servidor de Quinn. Cuando exista una VM Linux con KVM, se vuelve a encender.
 
 ## RAG con GPT-5 / 4o y .txt — Chat Completions solo admite PDF como `file`
 
@@ -70,6 +82,12 @@ Un `.txt` indexado por `rag_api` sí se consulta con Claude Opus 5. Con GPT-5 y 
 LibreChat upstream lista skills en el **sidebar** pero `/skills` sin id mostraba solo empty state; no hay opción en `librechat.yaml` para activar una “tienda” como `/agents`. Implementación Q-Vision: `client/src/components/Skills/marketplace/*` + cableado en `SkillsView`. Análisis y mantenimiento: `docs/04-Marketplace-Skills-Analisis-Implementacion.md`.
 
 **Sigue en brecha (requisito 4.1 completo):** un único marketplace con tabs Agentes / Skills / MCP / Tools — hoy agentes y skills tienen vistas separadas; MCP/tools siguen en el builder de agentes.
+
+## Browser MCP — chats nuevos sí; agentes guardados no se actualizan solos
+
+Cableado 2026-10-13 (`docs/11-Browser-MCP-Quinn.md`): contenedor + `mcpServers.browser` + spec `quinn-browser`. El spec deja el MCP activo en **chat nuevo**. LibreChat no tiene palanca yaml para inyectar un MCP en **todos** los agentes persistidos; cada agente del builder debe incluir el tool Browser. Quien cambie de spec o desmarque el desplegable MCP deja de usarlo en esa conversación.
+
+**Fix launch 2026-10-13 (resuelto):** `BROWSER_NOT_AVAILABLE` por desajuste Playwright npm 1.64 vs imagen base 1.63 → pinnado a `1.63.0` + `npm ci` con lockfile; probe `example.com` → `Example Domain`.
 
 ## Schedules de agentes — no arrancó el scheduler — no bloquea este laboratorio todavía
 Log del API: el scheduler no arranca sin `USE_REDIS_STREAMS` o `SCHEDULES_SINGLE_PROCESS=true`. Las escrituras de schedules responden 503. Confirmar más adelante si hace falta automatización programada; no afecta login, Mongo ni RAG.

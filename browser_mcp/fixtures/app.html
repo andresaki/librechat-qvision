@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Browser MCP App</title>
+    <style>
+      #submenu { display: none; }
+      #menu:hover #submenu { display: block; }
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <h1>Browser MCP App</h1>
+
+    <form id="signup">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" />
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" />
+
+      <label for="country">Country</label>
+      <select id="country" name="country">
+        <option value="">Choose</option>
+        <option value="CO">Colombia</option>
+        <option value="US">United States</option>
+      </select>
+
+      <label for="terms">Accept terms</label>
+      <input id="terms" name="terms" type="checkbox" />
+
+      <button type="submit" id="submit">Submit</button>
+      <button type="button" id="disabled-button" disabled>Disabled action</button>
+    </form>
+
+    <p id="result" class="hidden">Waiting</p>
+
+    <div id="menu">
+      <span id="menu-trigger">Menu</span>
+      <div id="submenu"><button type="button" id="submenu-action">Submenu action</button></div>
+    </div>
+
+    <p><a id="popup-link" href="/index.html" target="_blank">Open in new tab</a></p>
+    <p><a id="download-link" href="/report.csv" download>Download report</a></p>
+    <p><button type="button" id="alert-button">Show alert</button></p>
+    <p><button type="button" id="replace-dom">Replace content</button></p>
+
+    <div id="dynamic"><button type="button" id="old-button">Old button</button></div>
+
+    <script>
+      document.getElementById('signup').addEventListener('submit', function (event) {
+        event.preventDefault();
+        var result = document.getElementById('result');
+        setTimeout(function () {
+          result.textContent = 'Operation completed';
+          result.classList.remove('hidden');
+        }, 300);
+      });
+
+      document.getElementById('alert-button').addEventListener('click', function () {
+        window.alert('a blocking alert');
+        document.title = 'Alert handled';
+      });
+
+      document.getElementById('replace-dom').addEventListener('click', function () {
+        document.getElementById('dynamic').innerHTML =
+          '<button type="button" id="new-button">New button</button>';
+      });
+    </script>
+  </body>
+</html>
