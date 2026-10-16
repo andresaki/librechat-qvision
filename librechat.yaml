@@ -1,0 +1,140 @@
+version: 1.3.16
+
+# Q-Vision: kill-switches globales de features. OJO: cada clave aquí SOBRESCRIBE el
+# permiso en los roles de sistema USER y ADMIN en cada arranque (los roles
+# personalizados Creador/Consumidor NO los toca el yaml: se gobiernan en el panel).
+# runCode en false = nadie puede ejecutar código aunque su rol lo tuviera en true
+# (además ya está en OFF en Creador/Consumidor desde el panel; esto cubre a quien
+# quede en USER y al ADMIN). El sandbox (code-interpreter) no va en este compose:
+# se despliega aparte y solo entonces se vuelve a poner en true.
+interface:
+  runCode: false
+  # Q-Vision: multi-conversación multiplica el consumo xN por mensaje.
+  # Como runCode: cubre USER/ADMIN en cada arranque; Creador/Consumidor se
+  # apagan en el panel (MULTI_CONVO.USE).
+  multiConvo: false
+  # Q-Vision: sin proveedor de búsqueda contratado (Serper/Tavily/SearXNG...).
+  # Apaga la tool de búsqueda lado-LibreChat; lo nativo de cada proveedor se
+  # gobierna con la lista de modelos del gateway (ver docs/08).
+  webSearch: false
+  # Q-Vision: enlaces legales (aparecen en el menú Ayuda del avatar y en el login).
+  privacyPolicy:
+    externalUrl: 'https://qvisiontechnologies.com/politica/'
+    openNewTab: true
+  termsOfService:
+    externalUrl: 'https://bucket-izytesting.s3.us-east-2.amazonaws.com/TyC+IzyTesting+V2.pdf'
+    openNewTab: true
+  # Q-Vision: clave i18n (no texto): Landing.tsx la resuelve en el idioma actual
+  # (com_ui_quinn_welcome en en/es). Texto plano con {{user.name}} sigue válido.
+  customWelcome: com_ui_quinn_welcome
+  # Pin del desplegable MCP (y del server `browser`) en chats nuevos.
+  defaultPinnedTools:
+    - mcp
+    - browser
+
+# Laboratorio Q-Vision. Balance desactivado (sin tope de créditos en la UI).
+balance:
+  enabled: false
+
+# Sección 10: el chat de este endpoint sale hacia el gateway simulado,
+# no hacia OpenAI ni Anthropic. La clave vive en .env (GATEWAY_API_KEY).
+endpoints:
+  agents:
+    capabilities:
+      - deferred_tools
+      - file_search
+      - web_search
+      - artifacts
+      - subagents
+      - actions
+      - context
+      - skills
+      - memory
+      - ask_user_question
+      - tools
+      - chain
+      - ocr
+  custom:
+    - name: "AI-Gateway-QVision"
+      apiKey: "${GATEWAY_API_KEY}"
+      baseURL: "http://ai-gateway:4000/v1"
+      models:
+        default: ["qvision-sim"]
+        fetch: true
+      titleConvo: true
+      titleModel: "qvision-sim"
+      modelDisplayLabel: "AI Gateway QVision"
+
+# Chat Completions de OpenAI solo acepta PDF como parte `file`. Un .txt
+# adjunto con destino "provider" produce el 400 de MIME text/plain.
+# Forzar texto plano como texto en el mensaje, no como file_data.
+fileConfig:
+  textFallbackWithoutTools: true
+  defaultLLMDeliveryPath:
+    fallback: text
+    overrides:
+      text/plain: text
+      text/markdown: text
+      application/pdf: provider
+  endpoints:
+    openAI:
+      defaultLLMDeliveryPath:
+        fallback: text
+        overrides:
+          text/plain: text
+          text/markdown: text
+          application/pdf: provider
+    anthropic:
+      defaultLLMDeliveryPath:
+        fallback: text
+        overrides:
+          text/plain: text
+          text/markdown: text
+          application/pdf: provider
+
+# SSRF: sin esto LibreChat bloquea el host interno del MCP (red Docker).
+mcpSettings:
+  allowedAddresses:
+    - 'browser-mcp:8932'
+    - 'm365-mcp:9003'
+
+# Browser MCP (carpeta ./browser_mcp, servicio Compose `browser-mcp`).
+# No es la tool nativa webSearch (sigue apagada: no hay Serper/Tavily).
+mcpServers:
+  browser:
+    type: streamable-http
+    url: http://browser-mcp:8932/mcp
+    title: Browser
+    description: Chromium headless (Playwright) para navegar, buscar y extraer contenido de páginas.
+    timeout: 300000
+    initTimeout: 30000
+    startup: true
+    chatMenu: true
+    serverInstructions: true
+  # Softeria en m365-mcp. send_resource_parameter: false porque Entra v2
+  # rechaza resource=http://m365-mcp:9003/mcp con invalid_target.
+  # El Creador no puede guardar ese flag; una entrada UI llamada Outlook lo tapa.
+  # Callback (lo arma LibreChat con DOMAIN_SERVER; hay que registrarlo en Entra, plataforma Web):
+  #   prod: https://quin.q-vision.co/api/mcp/outlook/oauth/callback
+  #   lab:  http://localhost:3080/api/mcp/outlook/oauth/callback
+  # Permisos delegados (admin consent), además de los del login: Mail.ReadWrite,
+  # Mail.Send, MailboxSettings.ReadWrite, Calendars.ReadWrite. No van en OPENID_SCOPE.
+  outlook:
+    type: streamable-http
+    url: http://m365-mcp:9003/mcp
+    title: Outlook
+    description: Correo y calendario M365 vía Graph (delegado).
+    timeout: 120000
+    initTimeout: 30000
+    startup: false
+    requiresOAuth: true
+    chatMenu: true
+    oauth:
+      client_id: '${OPENID_CLIENT_ID}'
+      client_secret: '${OPENID_CLIENT_SECRET}'
+      authorization_url: 'https://login.microsoftonline.com/${MS365_MCP_TENANT_ID}/oauth2/v2.0/authorize'
+      token_url: 'https://login.microsoftonline.com/${MS365_MCP_TENANT_ID}/oauth2/v2.0/token'
+      # Prefijo Graph: esta app también expone access_as_user; sin él Entra
+      # emite un token para LibreChat y Graph responde 401.
+      scope: 'openid profile https://graph.microsoft.com/User.Read https://graph.microsoft.com/Mail.ReadWrite https://graph.microsoft.com/Mail.Send https://graph.microsoft.com/MailboxSettings.ReadWrite https://graph.microsoft.com/Calendars.ReadWrite'
+      send_resource_parameter: false

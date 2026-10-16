@@ -1,0 +1,21 @@
+# Standalone run of the Browser MCP, for development without the LibreChat stack.
+# Inside the LibreChat stack the service is declared in ../docker-compose.override.yml.
+services:
+  browser-mcp:
+    build:
+      context: .
+    container_name: browser-mcp
+    init: true
+    restart: unless-stopped
+    environment:
+      - MCP_TRANSPORT=http
+      - MCP_PORT=8932
+      - BROWSER_HEADLESS=true
+      - ACTION_TIMEOUT=${ACTION_TIMEOUT:-30000}
+      - NAVIGATION_TIMEOUT=${NAVIGATION_TIMEOUT:-60000}
+      - OBSERVATION_TIMEOUT=${OBSERVATION_TIMEOUT:-10000}
+      - SESSION_IDLE_TIMEOUT=${SESSION_IDLE_TIMEOUT:-1800}
+      - MAX_SESSIONS=${MAX_SESSIONS:-10}
+      - ALLOWED_DOMAINS=${ALLOWED_DOMAINS:-}
+    ports:
+      - "127.0.0.1:8932:8932"
