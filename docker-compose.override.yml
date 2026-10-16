@@ -1,0 +1,100 @@
+# Laboratorio Q-Vision — ajustes locales de Docker.
+# Compose fusiona este archivo con docker-compose.yml automáticamente.
+# En Windows, UID/GID del .env suelen estar vacíos y el `user: "${UID}:${GID}"`
+# del compose base queda inválido. Docker Desktop (WSL2) corre estos servicios
+# como root dentro del VM.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: librechat-qvision:local
+    user: "0:0"
+    volumes:
+      - type: bind
+        source: ./librechat.yaml
+        target: /app/librechat.yaml
+    environment:
+      # Los MCP viven en la red de Compose. Si el .env trae proxy, sin esto
+      # LibreChat saldría a internet para hablar con browser-mcp y m365-mcp.
+      - NO_PROXY=${NO_PROXY:-localhost,127.0.0.1,::1},mongodb,chat-mongodb,meilisearch,chat-meilisearch,rag_api,vectordb,host.docker.internal,browser-mcp,m365-mcp
+      - no_proxy=${no_proxy:-localhost,127.0.0.1,::1},mongodb,chat-mongodb,meilisearch,chat-meilisearch,rag_api,vectordb,host.docker.internal,browser-mcp,m365-mcp
+  mongodb:
+    user: "0:0"
+  meilisearch:
+    user: "0:0"
+  ai-gateway:
+    image: python:3.12-alpine
+    container_name: ai-gateway-qvision
+    restart: unless-stopped
+    environment:
+      - GATEWAY_API_KEY=${GATEWAY_API_KEY}
+    command: ["python", "-u", "/gateway/server.py"]
+    volumes:
+      - type: bind
+        source: ./ai-gateway/server.py
+        target: /gateway/server.py
+        read_only: true
+  # Browser MCP (Playwright/Chromium): búsqueda y scraping para Quinn.
+  # Streamable HTTP en :8932/mcp. Misma red Compose que `api` → host `browser-mcp`.
+  browser-mcp:
+    build:
+      context: ./browser_mcp
+      dockerfile: Dockerfile
+    image: qvision-browser-mcp:local
+    container_name: browser-mcp
+    init: true
+    restart: unless-stopped
+    shm_size: "1gb"
+    environment:
+      - MCP_TRANSPORT=http
+      - MCP_PORT=8932
+      - BROWSER_HEADLESS=true
+      - ACTION_TIMEOUT=${ACTION_TIMEOUT:-30000}
+      - NAVIGATION_TIMEOUT=${NAVIGATION_TIMEOUT:-60000}
+      - OBSERVATION_TIMEOUT=${OBSERVATION_TIMEOUT:-10000}
+      - SESSION_IDLE_TIMEOUT=${SESSION_IDLE_TIMEOUT:-1800}
+      - MAX_SESSIONS=${MAX_SESSIONS:-10}
+      - ALLOWED_DOMAINS=${ALLOWED_DOMAINS:-}
+    ports:
+      - "127.0.0.1:8932:8932"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:8932/mcp').then(()=>process.exit(0)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 25s
+  # Microsoft 365 MCP (Softeria): Graph delegado, Streamable HTTP en :9003/mcp.
+  # Misma app Entra que el login (OPENID_CLIENT_*). El tenant va en MS365_MCP_TENANT_ID.
+  # Preset outlook = correo + calendario + contactos. --discovery deja 3 tools
+  # (search/schema/execute); el preset completo son ~91 schemas y no caben en 34k tokens.
+  m365-mcp:
+    image: ghcr.io/softeria/ms-365-mcp-server:0.165.0
+    container_name: m365-mcp
+    restart: unless-stopped
+    command: ["--http", "9003", "--preset", "outlook", "--discovery", "--no-dynamic-registration"]
+    environment:
+      MS365_MCP_CLIENT_ID: ${OPENID_CLIENT_ID}
+      MS365_MCP_CLIENT_SECRET: ${OPENID_CLIENT_SECRET}
+      MS365_MCP_TENANT_ID: ${MS365_MCP_TENANT_ID}
+    ports:
+      - "127.0.0.1:9003:9003"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:9003/mcp').then(()=>process.exit(0)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
