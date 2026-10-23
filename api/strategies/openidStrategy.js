@@ -686,6 +686,7 @@ async function processOpenIDAuth(tokenset, existingUsersOnly = false) {
       name: fullName,
       idOnTheSource: userinfo.oid,
       openidIssuer,
+      role: 'Consumidor',
     };
 
     const balanceConfig = getBalanceConfig(appConfig);

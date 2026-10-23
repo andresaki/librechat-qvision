@@ -428,6 +428,7 @@ describe('setupOpenId', () => {
         username: userinfo.preferred_username,
         email: userinfo.email,
         name: `${userinfo.given_name} ${userinfo.family_name}`,
+        role: 'Consumidor',
       }),
       { enabled: false },
       true,
@@ -1203,7 +1204,7 @@ describe('setupOpenId', () => {
       const { user } = await validate(tokenset);
 
       expect(user).toBeTruthy();
-      expect(user.role).toBeUndefined();
+      expect(user.role).toBe('Consumidor');
     });
 
     it('reuses already-resolved overage groups for admin role check (no duplicate Graph call)', async () => {
@@ -1294,7 +1295,7 @@ describe('setupOpenId', () => {
 
       // No Graph call since admin uses access token (not id)
       expect(undici.fetch).not.toHaveBeenCalled();
-      expect(user.role).toBeUndefined();
+      expect(user.role).toBe('Consumidor');
     });
 
     it('resolves admin via Graph independently when OPENID_REQUIRED_ROLE is not configured', async () => {
@@ -1338,7 +1339,7 @@ describe('setupOpenId', () => {
 
       const { user } = await validate(tokenset);
       expect(user).toBeTruthy();
-      expect(user.role).toBeUndefined();
+      expect(user.role).toBe('Consumidor');
     });
 
     it('denies login and logs error when OBO exchange throws', async () => {
@@ -1618,18 +1619,77 @@ describe('setupOpenId', () => {
     expect(user.role).toBe('ADMIN');
   });
 
-  it('should not set user role if OPENID_ADMIN_ROLE is set but the user does not have that role', async () => {
-    // Arrange – simulate a token without the admin permission
+  it('assigns Consumidor when a new OpenID user is not granted admin', async () => {
     jwtDecode.mockReturnValue({
       roles: ['requiredRole'],
       permissions: ['not-admin'],
     });
 
-    // Act
     const { user } = await validate(tokenset);
 
-    // Assert – verify that the user role is not defined
-    expect(user.role).toBeUndefined();
+    expect(user.role).toBe('Consumidor');
+    expect(createUser).toHaveBeenCalledWith(
+      expect.objectContaining({ role: 'Consumidor' }),
+      expect.anything(),
+      true,
+      true,
+    );
+  });
+
+  it('keeps an existing role on a later Microsoft login', async () => {
+    delete process.env.OPENID_ADMIN_ROLE;
+    delete process.env.OPENID_ADMIN_ROLE_PARAMETER_PATH;
+    delete process.env.OPENID_ADMIN_ROLE_TOKEN_KIND;
+
+    const existingUser = {
+      _id: 'existingUserId',
+      provider: 'openid',
+      email: tokenset.claims().email,
+      openidId: tokenset.claims().sub,
+      username: 'creator',
+      name: 'Creator User',
+      role: 'Creador',
+    };
+
+    findUser.mockImplementation(async (query) => {
+      if (query.openidId === tokenset.claims().sub || query.email === tokenset.claims().email) {
+        return existingUser;
+      }
+      return null;
+    });
+
+    const { user } = await validate(tokenset);
+
+    expect(createUser).not.toHaveBeenCalled();
+    expect(user.role).toBe('Creador');
+  });
+
+  it('keeps a manually assigned ADMIN role on a later Microsoft login', async () => {
+    delete process.env.OPENID_ADMIN_ROLE;
+    delete process.env.OPENID_ADMIN_ROLE_PARAMETER_PATH;
+    delete process.env.OPENID_ADMIN_ROLE_TOKEN_KIND;
+
+    const existingAdminUser = {
+      _id: 'existingAdminId',
+      provider: 'openid',
+      email: tokenset.claims().email,
+      openidId: tokenset.claims().sub,
+      username: 'adminuser',
+      name: 'Admin User',
+      role: 'ADMIN',
+    };
+
+    findUser.mockImplementation(async (query) => {
+      if (query.openidId === tokenset.claims().sub || query.email === tokenset.claims().email) {
+        return existingAdminUser;
+      }
+      return null;
+    });
+
+    const { user } = await validate(tokenset);
+
+    expect(createUser).not.toHaveBeenCalled();
+    expect(user.role).toBe('ADMIN');
   });
 
   describe('OpenID role sync', () => {
@@ -1665,7 +1725,7 @@ describe('setupOpenId', () => {
 
       const { user } = await validate(tokenset);
 
-      expect(user.role).toBeUndefined();
+      expect(user.role).toBe('Consumidor');
       expect(findRolesByNames).not.toHaveBeenCalled();
     });
 
@@ -2207,7 +2267,7 @@ describe('setupOpenId', () => {
 
       const { user } = await validate(tokenset);
 
-      expect(user.role).toBeUndefined();
+      expect(user.role).toBe('Consumidor');
     });
 
     it('should handle array admin role value', async () => {
@@ -2241,7 +2301,7 @@ describe('setupOpenId', () => {
 
       const { user } = await validate(tokenset);
 
-      expect(user.role).toBeUndefined();
+      expect(user.role).toBe('Consumidor');
     });
 
     it('should grant admin when admin role claim is a space-separated string containing the admin role', async () => {
@@ -2280,8 +2340,8 @@ describe('setupOpenId', () => {
       // Act
       const { user } = await validate(tokenset);
 
-      // Assert – admin role is not granted
-      expect(user.role).toBeUndefined();
+      // Assert – admin role is not granted; the new account keeps Consumidor
+      expect(user.role).toBe('Consumidor');
     });
 
     it('should handle nested path with special characters in keys', async () => {

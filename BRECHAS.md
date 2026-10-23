@@ -2,9 +2,11 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
-## Asignación automática de roles por OpenID (Requiere cambio en backend): 
+## Asignación automática de roles por OpenID — alta nueva en Consumidor (2026-10-23)
 
-LibreChat no permite setear por configuración (ni en .env ni en librechat.yaml) un rol por defecto diferente de USER para los usuarios autenticados mediante SSO/OpenID. Para que los usuarios autenticados por Entra ID hereden automáticamente un rol específico al iniciar sesión (por ejemplo, Consumidor en lugar de USER), sería necesario modificar la estrategia de autenticación en el backend de Node.js. Actualmente la alternativa nativa es la asignación manual posterior desde el Admin Panel.
+El primer ingreso por Microsoft crea la cuenta con `role: 'Consumidor'` en `api/strategies/openidStrategy.js`. Quien ya existe conserva su rol (`ADMIN`, `Creador` u otro); no se reescribe en logins siguientes. La degradación nativa a `USER` solo corre si `OPENID_ADMIN_ROLE` está configurado y el token deja de traer ese valor; en este laboratorio esas variables no están definidas.
+
+Sigue pendiente la sincronía grupo de Entra → rol. `OPENID_ROLE_SYNC_FALLBACK_ROLE` no se usa: reasignaría el rol en cada login y pisaría un `Creador` puesto a mano.
 
 
 ## Sincronía de grupos (Graph OBO) resuelta — pero grupo≠rol, sigue sin confirmar
