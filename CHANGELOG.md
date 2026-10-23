@@ -2,6 +2,13 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-10-23 — Alta OpenID con rol Consumidor
+
+- El primer login de Microsoft crea el usuario con `role: 'Consumidor'` en `api/strategies/openidStrategy.js`. Una cuenta que ya existe no cambia de rol.
+- No se activa `OPENID_ROLE_SYNC_*`: ese fallback reescribe el rol en cada login.
+- Riesgo de merge: el archivo lo toca upstream con frecuencia. El cambio es una propiedad en el objeto del alta.
+- Validación: `cd api && npx jest strategies/openidStrategy.spec.js`.
+
 ## 2026-10-16 — MCP en el repo; Run Code apagado para el despliegue
 
 - `librechat.yaml` y `docker-compose.override.yml` dejan de estar en `.gitignore`. Secretos siguen en `.env` (`OPENID_CLIENT_*`, `MS365_MCP_TENANT_ID`, `GATEWAY_API_KEY`).
