@@ -36,11 +36,15 @@ export default function FilterPrompts({
         label: localize('com_ui_all_proper'),
         icon: <ListFilter className="text-text-primary h-4 w-4" />,
       },
-      {
-        value: SystemCategories.MY_PROMPTS,
-        label: localize('com_ui_my_prompts'),
-        icon: <User className="text-text-primary h-4 w-4" />,
-      },
+      ...(hasCreateAccess
+        ? [
+            {
+              value: SystemCategories.MY_PROMPTS,
+              label: localize('com_ui_my_prompts'),
+              icon: <User className="h-4 w-4 text-text-primary" />,
+            },
+          ]
+        : []),
       {
         value: SystemCategories.SHARED_PROMPTS,
         label: localize('com_ui_shared_prompts'),
