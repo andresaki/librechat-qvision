@@ -2,7 +2,7 @@ import { useMemo, useCallback, useState, useEffect, useRef, useContext } from 'r
 import { HatGlasses } from 'lucide-react';
 import { easings } from '@react-spring/web';
 import { EModelEndpoint } from 'librechat-data-provider';
-import { BirthdayIcon, TooltipAnchor, SplitText, ThemeContext } from '@librechat/client';
+import { BirthdayIcon, TooltipAnchor, SplitText, ThemeContext, useRemScale } from '@librechat/client';
 import type { TranslationKeys } from '~/hooks/useLocalize';
 import { useChatContext, useAgentsMapContext, useAssistantsMapContext } from '~/Providers';
 import Description, { isHtmlDescription } from '~/components/ui/Description';

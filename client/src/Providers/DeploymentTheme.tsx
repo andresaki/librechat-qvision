@@ -225,8 +225,9 @@ export function useDeploymentThemeOverride(ready: boolean, theme: DeploymentThem
 
 /**
  * Supplies the deployment theme from the startup config to `ThemeProvider`.
- * Precedence: high-contrast modes (inside the provider), then `interface.theme`,
- * then the `REACT_APP_THEME_*` build colors, then the user's stored theme. The
+ * Precedence: `interface.theme`, then the `REACT_APP_THEME_*` build colors, then
+ * the user's stored theme. Q-Vision disables high-contrast overrides in this
+ * deployment provider while retaining the shared provider's opt-in support. The
  * deployment theme is never persisted to the user's theme keys, so the stored theme
  * survives its removal; a separate cache (`./themeCache`) paints it before the
  * config answers on a reload.
@@ -309,6 +310,7 @@ export default function DeploymentTheme({ children }: { children: React.ReactNod
   );
 
   const props: Omit<ComponentProps<typeof ThemeProvider>, 'children'> = {
+    disableHighContrast: true,
     ...(envTheme && { initialTheme: 'system', themeRGB: envTheme }),
     ...(themeDefinition && { themeDefinition }),
     ...(storedTheme && 'definition' in storedTheme && { themeDefinition: storedTheme.definition }),

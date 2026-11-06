@@ -101,7 +101,7 @@ function AuthLayout({
       </BlinkAnimation>
       <DisplayError />
       <div className="absolute inset-s-0 bottom-0 md:m-4">
-        <ThemeSelector />
+        <ThemeSelector disableContrast />
       </div>
 
       <main className="flex grow items-center justify-center">

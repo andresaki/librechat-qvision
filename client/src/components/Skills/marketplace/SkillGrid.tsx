@@ -2,7 +2,6 @@ import { useEffect, useMemo, type RefObject } from 'react';
 import { Search } from 'lucide-react';
 import { Spinner } from '@librechat/client';
 import type { TSkillSummary } from 'librechat-data-provider';
-import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 import SkillMarketplaceCard from './SkillMarketplaceCard';
 import { useSkillsInfiniteQuery } from '~/data-provider';
 import { useLocalize } from '~/hooks';
@@ -19,6 +18,7 @@ export default function SkillGrid({ searchQuery, scrollElementRef }: SkillGridPr
     search: searchQuery.trim() || undefined,
     limit: 12,
   });
+  const { fetchNextPage, hasNextPage, isFetching } = listQuery;
 
   const skills = useMemo((): TSkillSummary[] => {
     if (!listQuery.data?.pages) {
@@ -27,24 +27,28 @@ export default function SkillGrid({ searchQuery, scrollElementRef }: SkillGridPr
     return listQuery.data.pages.flatMap((page) => page.skills);
   }, [listQuery.data?.pages]);
 
-  const { setScrollElement } = useInfiniteScroll({
-    hasNextPage: listQuery.hasNextPage ?? false,
-    isLoading: listQuery.isFetching || listQuery.isFetchingNextPage,
-    fetchNextPage: () => {
-      if (listQuery.hasNextPage && !listQuery.isFetching) {
-        listQuery.fetchNextPage();
-      }
-    },
-    threshold: 0.85,
-    throttleMs: 200,
-  });
-
   useEffect(() => {
     const scrollElement = scrollElementRef?.current;
-    if (scrollElement) {
-      setScrollElement(scrollElement);
+    if (!scrollElement) {
+      return;
     }
-  }, [scrollElementRef, setScrollElement]);
+
+    const handleScroll = () => {
+      const nearBottom =
+        scrollElement.scrollTop + scrollElement.clientHeight >= scrollElement.scrollHeight * 0.85;
+      if (nearBottom && hasNextPage && !isFetching) {
+        void fetchNextPage();
+      }
+    };
+
+    scrollElement.addEventListener('scroll', handleScroll, { passive: true });
+    return () => scrollElement.removeEventListener('scroll', handleScroll);
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    scrollElementRef,
+  ]);
 
   if (listQuery.isLoading && skills.length === 0) {
     return (

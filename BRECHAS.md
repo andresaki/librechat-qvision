@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Estilos tras actualizar sobre main — resuelto (2026-11-06)
+
+La rama Q-Vision quedó rebasada sobre `upstream/main` conservando el pipeline Tailwind v4. El frontend se recompiló correctamente con `npm run build:client`; también se reconstruyó `data-provider`, que debe regenerarse antes de levantar Vite cuando cambia el contrato compartido. El 404 de `site.webmanifest` era independiente y ya existe `client/public/site.webmanifest`.
+
+El error restante del marketplace (`useInfiniteScroll` eliminado por `main`) se resolvió con paginación ligada al contenedor de Skills. El log de Schedules/MCP no explica una interfaz sin estilos; afecta funciones de schedules/MCP, no la carga del CSS.
+
 ## Asignación automática de roles por OpenID — alta nueva en Consumidor (2026-10-23)
 
 El primer ingreso por Microsoft crea la cuenta con `role: 'Consumidor'` en `api/strategies/openidStrategy.js`. Quien ya existe conserva su rol (`ADMIN`, `Creador` u otro); no se reescribe en logins siguientes. La degradación nativa a `USER` solo corre si `OPENID_ADMIN_ROLE` está configurado y el token deja de traer ese valor; en este laboratorio esas variables no están definidas.

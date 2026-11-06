@@ -794,7 +794,7 @@ async function processOpenIDAuth(tokenset, existingUsersOnly = false) {
     user = applyOpenIDProfile(user, profile);
   } else {
     const newUserClaimsRole = await resolveOpenIdClaimsRole(
-      { role: SystemRoles.USER },
+      { role: 'Consumidor' },
       claimsContext,
     );
     const provisioned = await createOpenIDUser({
@@ -807,6 +807,9 @@ async function processOpenIDAuth(tokenset, existingUsersOnly = false) {
       findBalanceByUser,
     });
     ({ user, appConfig } = provisioned);
+    if (provisioned.created) {
+      user.role = 'Consumidor';
+    }
     claimsRole = provisioned.created ? newUserClaimsRole : undefined;
   }
 

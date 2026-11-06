@@ -131,6 +131,8 @@ export interface ThemeProviderProps {
   persistThemeDefinition?: boolean;
   themeName?: string;
   initialTheme?: string;
+  /** Prevents deployment consumers from applying OS or stored high-contrast modes. */
+  disableHighContrast?: boolean;
 }
 
 /**
@@ -187,6 +189,16 @@ export const resolvesToHighContrast = (theme: string): boolean =>
 
 const isAppearanceMode = (value: string): value is AppearanceMode =>
   themeModes.includes(value as AppearanceMode);
+
+const withoutHighContrast = (theme: AppearanceMode): AppearanceMode => {
+  if (theme === 'high-contrast-light') {
+    return 'light';
+  }
+  if (theme === 'high-contrast-dark') {
+    return 'dark';
+  }
+  return theme;
+};
 
 const isValidThemeColors = (value: unknown): value is IThemeRGB => {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -472,6 +484,7 @@ export function ThemeProvider({
   persistThemeDefinition = true,
   themeName: propThemeName,
   initialTheme,
+  disableHighContrast = false,
 }: ThemeProviderProps): JSX.Element {
   const initialThemeState = useRef<InitialThemeState | undefined>(undefined);
   if (!initialThemeState.current) {
@@ -498,8 +511,11 @@ export function ThemeProvider({
     }
   }
 
-  const initialAppearance =
+  const requestedInitialAppearance =
     initialTheme && isAppearanceMode(initialTheme) ? initialTheme : getInitialTheme();
+  const initialAppearance = disableHighContrast
+    ? withoutHighContrast(requestedInitialAppearance)
+    : requestedInitialAppearance;
   const [theme, setThemeState] = useState<AppearanceMode>(initialAppearance);
   /**
    * Seeded from the mode string alone, never from a media query, so a server
@@ -510,7 +526,9 @@ export function ThemeProvider({
   const [resolvedMode, setResolvedMode] = useState<ThemeMode>(
     initialAppearance !== 'system' && isDark(initialAppearance) ? 'dark' : 'light',
   );
-  const [highContrast, setHighContrast] = useState<boolean>(isHighContrast(initialAppearance));
+  const [highContrast, setHighContrast] = useState<boolean>(
+    !disableHighContrast && isHighContrast(initialAppearance),
+  );
   const [themeDefinition, setThemeDefinitionState] = useState<ThemeDefinition | undefined>(
     initialThemeState.current.definition,
   );
@@ -655,9 +673,10 @@ export function ThemeProvider({
     if (!isAppearanceMode(newTheme)) {
       return;
     }
-    setThemeState(newTheme);
-    writeStorage(THEME_KEY, newTheme);
-  }, []);
+    const nextTheme = disableHighContrast ? withoutHighContrast(newTheme) : newTheme;
+    setThemeState(nextTheme);
+    writeStorage(THEME_KEY, nextTheme);
+  }, [disableHighContrast]);
 
   const commitThemeTransition = useCallback(
     ({ state, writes }: ThemeTransition) => {
@@ -727,7 +746,7 @@ export function ThemeProvider({
     (currentTheme: AppearanceMode) => {
       const root = window.document.documentElement;
       const mode: ThemeMode = isDark(currentTheme) ? 'dark' : 'light';
-      const highContrast = resolvesToHighContrast(currentTheme);
+      const highContrast = !disableHighContrast && resolvesToHighContrast(currentTheme);
       /** Publish both so consumers rerender when an OS preference flips under
        *  `system`, where `theme` itself never changes. */
       setResolvedMode(mode);
@@ -778,7 +797,7 @@ export function ThemeProvider({
         console.error('Unable to apply theme definition', error);
       }
     },
-    [legacyThemeRGB, prepareThemeDOM, restoreAppliedTheme, themeDefinition],
+    [disableHighContrast, legacyThemeRGB, prepareThemeDOM, restoreAppliedTheme, themeDefinition],
   );
 
   useBeforePaintEffect(() => {

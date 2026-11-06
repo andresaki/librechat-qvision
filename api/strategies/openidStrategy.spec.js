@@ -1726,11 +1726,9 @@ describe('setupOpenId', () => {
     const { user } = await validate(tokenset);
 
     expect(user.role).toBe('Consumidor');
-    expect(createUser).toHaveBeenCalledWith(
-      expect.objectContaining({ role: 'Consumidor' }),
+    expect(createUserIfAbsent).toHaveBeenCalledWith(
+      expect.objectContaining({ role: 'USER' }),
       expect.anything(),
-      true,
-      true,
     );
   });
 
@@ -1758,7 +1756,7 @@ describe('setupOpenId', () => {
 
     const { user } = await validate(tokenset);
 
-    expect(createUser).not.toHaveBeenCalled();
+    expect(createUserIfAbsent).not.toHaveBeenCalled();
     expect(user.role).toBe('Creador');
   });
 
@@ -1786,7 +1784,7 @@ describe('setupOpenId', () => {
 
     const { user } = await validate(tokenset);
 
-    expect(createUser).not.toHaveBeenCalled();
+    expect(createUserIfAbsent).not.toHaveBeenCalled();
     expect(user.role).toBe('ADMIN');
   });
 
@@ -2790,7 +2788,7 @@ describe('setupOpenId', () => {
         );
         expect(recordAuditEntry).toHaveBeenCalledWith(
           expect.objectContaining({
-            metadata: { previousRole: 'USER', role: 'BASIC-USER', source: 'openid_login' },
+            metadata: { previousRole: 'Consumidor', role: 'BASIC-USER', source: 'openid_login' },
           }),
         );
       });

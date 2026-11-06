@@ -2,9 +2,9 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useRecoilState } from 'recoil';
 import { ListFilter, User, Share2 } from 'lucide-react';
 import { Dropdown, FilterInput } from '@librechat/client';
-import { SystemCategories } from 'librechat-data-provider';
+import { PermissionTypes, Permissions, SystemCategories } from 'librechat-data-provider';
 import type { Option } from '~/common';
-import { useLocalize, useCategories, useDebounce } from '~/hooks';
+import { useHasAccess, useLocalize, useCategories, useDebounce } from '~/hooks';
 import CreatePromptButton from '../buttons/CreatePromptButton';
 import { usePromptGroupsContext } from '~/Providers';
 import { PanelHeader } from '~/components/ui';
@@ -23,6 +23,10 @@ export default function FilterPrompts({
 }) {
   const localize = useLocalize();
   const { name, setName, hasAccess, promptGroups } = usePromptGroupsContext() ?? {};
+  const hasCreateAccess = useHasAccess({
+    permissionType: PermissionTypes.PROMPTS,
+    permission: Permissions.CREATE,
+  });
   const { categories } = useCategories({ className: 'h-4 w-4', hasAccess });
   const [searchTerm, setSearchTerm] = useState(name || '');
   const [categoryFilter, setCategory] = useRecoilState(store.promptsCategory);
@@ -63,7 +67,7 @@ export default function FilterPrompts({
         ];
 
     return [...baseOptions, ...categoryOptions];
-  }, [categories, localize]);
+  }, [categories, hasCreateAccess, localize]);
 
   const onSelect = useCallback(
     (value: string) => {

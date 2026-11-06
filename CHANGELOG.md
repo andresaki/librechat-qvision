@@ -2,6 +2,21 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-06 — Tema visual Quinn y alto contraste desactivado
+
+- `librechat.yaml` define la paleta Quinn para los modos claro y oscuro mediante `interface.theme`.
+- El proveedor de tema del despliegue ya no aplica preferencias de alto contraste del sistema o almacenadas; el selector conserva solo Sistema/Oscuro/Claro.
+- El login y la verificación de correo ya no muestran el botón de contraste.
+- Se conserva el estilo normal de placeholders al eliminar la clase de alto contraste durante el arranque del frontend.
+- Validación pendiente: reconstruir el frontend/API y comprobar login, chat y marketplace en ambos modos.
+
+## 2026-11-06 — Rebase sobre main y compatibilidad del frontend
+
+- Se reaplicaron los 20 commits Q-Vision sobre `upstream/main`, conservando el pipeline Tailwind v4 de `main`; el encabezado Tailwind v3 del commit antiguo de paleta no se reincorpora.
+- Se reconstruyeron `data-provider`, `data-schemas`, `api`, `client` y `chat`. El build del frontend queda operativo y genera CSS/PWA.
+- Se adaptó el marketplace de Skills al `main` actual (el hook `useInfiniteScroll` ya no existe) y se conservó el alta OpenID nueva como `Consumidor`, con admisión bajo `USER` para respetar las políticas de dominio.
+- Validación: `npm run build:client`, builds de paquetes y pruebas enfocadas de OpenID (8/8).
+
 ## 2026-10-23 — Alta OpenID con rol Consumidor
 
 - El primer login de Microsoft crea el usuario con `role: 'Consumidor'` en `api/strategies/openidStrategy.js`. Una cuenta que ya existe no cambia de rol.
