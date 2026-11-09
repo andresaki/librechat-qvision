@@ -19,7 +19,7 @@ export default function composerClearance({
     return 'sm:mb-4';
   }
   if (isLandingPage && floating) {
-    return 'transition-all duration-200 sm:mb-28';
+    return 'transition-all duration-200 sm:mb-8';
   }
   return 'sm:mb-10';
 }

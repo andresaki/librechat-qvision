@@ -30,8 +30,8 @@ describe('composerSubmitClasses', () => {
   it('draws its fill and disabled state from semantic roles', () => {
     const classes = composerSubmitClasses();
 
-    expect(classes).toContain('bg-surface-inverted');
-    expect(classes).toContain('text-text-inverted');
+    expect(classes).toContain('bg-accent-primary');
+    expect(classes).toContain('text-text-on-media');
     expect(classes).not.toContain('bg-text-primary');
     expect(classes).toContain('disabled:text-text-secondary');
     expect(classes).not.toMatch(/#[0-9a-f]{3,6}|rgb\(|hsl\(/i);

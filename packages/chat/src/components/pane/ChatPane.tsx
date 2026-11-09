@@ -124,7 +124,6 @@ export default function ChatPane(props: ChatPaneProps): ReactElement {
             isLanding && 'max-w-3xl transition-all duration-200 xl:max-w-4xl',
           )}
         >
-          {isLanding && starters}
           {readOnlyNote != null ? (
             <div
               className="text-text-secondary mx-auto w-full max-w-3xl px-4 py-3 text-center text-sm xl:max-w-4xl"
@@ -135,6 +134,7 @@ export default function ChatPane(props: ChatPaneProps): ReactElement {
           ) : (
             composer
           )}
+          {isLanding && starters}
           {bandFooter}
         </div>
         {renderMascot?.(bandRef)}

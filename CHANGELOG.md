@@ -2,6 +2,12 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-09 — Shell de chat Quinn alineado al mockup
+
+- El rail contraído muestra el símbolo de Quinn y revela el control de menú al pasar el mouse o recibir foco; los módulos siguen abriendo sus paneles propios al expandirlo.
+- Nuevo chat usa el icono “+” con una variante local azul, más separación respecto al símbolo Quinn y módulos con iconos ligeramente más compactos.
+- El canvas claro del chat usa blanco, el botón de envío usa `accent-primary` con icono contrastado y el landing de conversación nueva muestra cuatro acciones rápidas y el enlace al marketplace debajo del input.
+
 ## 2026-11-09 — Acceso administrativo oculto en login
 
 - El formulario local de email/contraseña, su separador y el botón Continuar quedan ocultos para el acceso normal por Q-Vision OpenID.
@@ -140,8 +146,8 @@
   personales (marcadores, memorias, adjuntos); helper aislado `navGroups.ts`, spec + vecinos
   en verde. No configurable por yaml. Requiere rebuild.
 - 2026-10-07 (paleta Quinn A2): remap de vars semánticas a tokens `--quinn-*` en light y dark
-  + Lato; sin tocar componentes ni high-contrast. Requiere rebuild + auditoría visual
-  (contraste ámbar y header documentados en `docs/07`).
+  - Lato; sin tocar componentes ni high-contrast. Requiere rebuild + auditoría visual
+    (contraste ámbar y header documentados en `docs/07`).
 - 2026-10-07 (temas alto contraste off): fuera del selector (login y configuración); motor y
   contraste del SO intactos. Spec actualizado. Requiere rebuild.
 - 2026-10-07 (roadmap): `docs/08-Roadmap-Produccion-Quinn.md` — qué está listo, qué espera
@@ -184,9 +190,11 @@
 ## 2026-09-23 — Gateway, RAG y Code Interpreter (pruebas de UI)
 
 ### AI Gateway (`endpoints.custom`)
+
 Chat en la UI con **AI-Gateway-QVision** / `qvision-sim`: el mensaje sale al contenedor `ai-gateway-qvision`, no a OpenAI ni Anthropic. El patrón de la sección 10 queda cubierto.
 
 ### RAG / File Search
+
 Índice: `rag_api` recibió `POST /text` HTTP 200 al subir `lab/qvision-conocimiento.txt`.
 
 - **Claude Opus 5**: respondió con código **QV-ARCHIVO-4817**, responsable **Marina Soler**, ubicación **piso 3, sala B**, vigencia **15 de marzo de 2027**.
@@ -195,6 +203,7 @@ Chat en la UI con **AI-Gateway-QVision** / `qvision-sim`: el mensaje sale al con
 Ajuste en `librechat.yaml` (`fileConfig.defaultLLMDeliveryPath`): `text/plain` y `text/markdown` van como **texto** en el mensaje, no como archivo nativo. Hace falta **chat nuevo y volver a subir** el `.txt` (el archivo viejo ya quedó con destino `provider`). Claude no necesita ese reintento.
 
 ### Code Interpreter
+
 No se persigue en este laboratorio. **Run Code** en la UI: «Se produjo un error al ejecutar el código». No hay servicio sandbox en este Compose. Ver `BRECHAS.md`.
 
 ## 2026-09-23 — Endpoint custom AI-Gateway-QVision (simulado)
@@ -225,7 +234,7 @@ En Mongo hay **un** documento de `balances` para esa cuenta. Tras las dos respue
 
 ## 2026-09-24 — Fix de sincronía de grupos vía Graph (OBO) — resuelto, y prueba de ACL por grupo confirmada
 
-Se agregó en Azure Portal, App registration: **Expose an API** con el Application ID URI (`api://87c90a81-.../access_as_user`), scope delegado `access_as_user` habilitado, el mismo Client ID autorizado en *Authorized client applications*, y `Grant admin consent` (posible porque en el tenant sandbox soy admin). Se agregó el scope a `OPENID_SCOPE` en `.env` y se reinició el contenedor `LibreChat`.
+Se agregó en Azure Portal, App registration: **Expose an API** con el Application ID URI (`api://87c90a81-.../access_as_user`), scope delegado `access_as_user` habilitado, el mismo Client ID autorizado en _Authorized client applications_, y `Grant admin consent` (posible porque en el tenant sandbox soy admin). Se agregó el scope a `OPENID_SCOPE` en `.env` y se reinició el contenedor `LibreChat`.
 
 Login nuevo de `dev1@ad102131outlook.onmicrosoft.com` (2026-09-24 14:09):
 
@@ -234,7 +243,7 @@ Login nuevo de `dev1@ad102131outlook.onmicrosoft.com` (2026-09-24 14:09):
 [PermissionService.syncUserEntraGroupMemberships] Successfully synced groups for user 6ab40d04a742687e33232f77
 ```
 
-Ya no aparece el error `exchangeTokenForGraphAccess` / *server responded with an error in the response body* que estaba en `BRECHAS.md`. El intercambio on-behalf-of con Graph queda cerrado.
+Ya no aparece el error `exchangeTokenForGraphAccess` / _server responded with an error in the response body_ que estaba en `BRECHAS.md`. El intercambio on-behalf-of con Graph queda cerrado.
 
 **Nota de alcance:** esto sincroniza grupos para ACL (con quién se comparte un recurso), no asigna el rol Creador/Consumidor automáticamente por pertenecer a un grupo. La asignación de rol sigue siendo manual desde el Admin Panel (ver entrada de Roles más arriba). No se confirmó si existe un mapeo automático grupo→rol para roles personalizados; queda anotado en `BRECHAS.md`.
 
@@ -242,15 +251,14 @@ Ya no aparece el error `exchangeTokenForGraphAccess` / *server responded with an
 
 Con la cuenta `Creador`, se creó un MCP de prueba y se probó en sus 4 formas de compartir:
 
-| Compartido como | Con quién | Resultado en el marketplace de `dev1` (miembro del grupo sincronizado) |
-|---|---|---|
-| Privado | Nadie | No aparece para ningún otro usuario, solo para el creador. |
-| Grupo | El grupo de Entra ID sincronizado (el mismo al que pertenece `dev1`) | Aparece automáticamente en el marketplace de `dev1`, sin agregarlo manualmente. Confirma que la sincronía de grupos (arriba) alimenta el ACL en la práctica, no solo en el log. |
-| Personas específicas | Un usuario puntual (sin usar el grupo) | Solo el usuario elegido lo ve; otros miembros del mismo grupo NO lo ven, aunque compartan grupo con esa persona. |
-| Público | Toda la instancia (requiere `SHARE_PUBLIC`, solo disponible en rol `Creador`, no en `Consumidor`) | Visible para cualquier usuario autenticado, incluidos quienes no pertenecen a ningún grupo relacionado. |
+| Compartido como      | Con quién                                                                                         | Resultado en el marketplace de `dev1` (miembro del grupo sincronizado)                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Privado              | Nadie                                                                                             | No aparece para ningún otro usuario, solo para el creador.                                                                                                                      |
+| Grupo                | El grupo de Entra ID sincronizado (el mismo al que pertenece `dev1`)                              | Aparece automáticamente en el marketplace de `dev1`, sin agregarlo manualmente. Confirma que la sincronía de grupos (arriba) alimenta el ACL en la práctica, no solo en el log. |
+| Personas específicas | Un usuario puntual (sin usar el grupo)                                                            | Solo el usuario elegido lo ve; otros miembros del mismo grupo NO lo ven, aunque compartan grupo con esa persona.                                                                |
+| Público              | Toda la instancia (requiere `SHARE_PUBLIC`, solo disponible en rol `Creador`, no en `Consumidor`) | Visible para cualquier usuario autenticado, incluidos quienes no pertenecen a ningún grupo relacionado.                                                                         |
 
 Esto cierra la validación del requisito 6.1/6.3 de `docs/01-Requisitos-LibreChat-QVision.md`: la visibilidad privado/grupo/persona-específica/público funciona como se esperaba. No se probó agregar a alguien nuevo al grupo en Entra ID y verificar que lo hereda sin reloguearse dos veces; queda como prueba adicional si hay tiempo.
-
 
 Hecho desde el panel (`http://localhost:3000/access`), no desde `librechat.yaml`. El bloque `interface` del yaml solo inicializa el rol de sistema `USER`; no declara roles personalizados.
 
@@ -261,10 +269,10 @@ Cuentas con acceso al panel (hace falta `ADMIN`):
 
 Roles creados y leídos de vuelta en Mongo (`roles`):
 
-| Rol | Crear Agentes / MCP / Skills | Usar + Marketplace | Compartir con equipo | Publicar a toda la instancia |
-|---|---|---|---|---|
-| Creador | sí | sí | sí (`SHARE`) | no (`SHARE_PUBLIC` apagado) |
-| Consumidor | no | sí | no | no |
+| Rol        | Crear Agentes / MCP / Skills | Usar + Marketplace | Compartir con equipo | Publicar a toda la instancia |
+| ---------- | ---------------------------- | ------------------ | -------------------- | ---------------------------- |
+| Creador    | sí                           | sí                 | sí (`SHARE`)         | no (`SHARE_PUBLIC` apagado)  |
+| Consumidor | no                           | sí                 | no                   | no                           |
 
 Ambos pueden chatear (bookmarks, multi-conversación, chat temporal, run code, web search, file search, memorias) y ver usuarios, grupos y roles en el people picker. Prompts: solo usar. Remote agents y shared links: apagados.
 
@@ -274,10 +282,10 @@ Ambos pueden chatear (bookmarks, multi-conversación, chat temporal, run code, w
 2. Barra izquierda → **Access** → pestaña **Roles**.
 3. **Create role** (a la derecha del buscador; si no se ve, ensanchar la ventana).
 4. **Details**: nombre `Creador` y la descripción de que puede crear y compartir con su equipo, sin publicar a toda la organización.
-5. **Permissions** y activar, sin usar "Select all" en Agentes/MCP/Skills (eso enciende también *Share publicly*):
-   - **Agents**: Use, Create, Share. Dejar *Share publicly* apagado.
-   - **MCP servers**: Use, Create, Share. Dejar *Share publicly* y *Configure on-behalf-of* apagados.
-   - **Skills**: Use, Create, Share. Dejar *Share publicly* apagado.
+5. **Permissions** y activar, sin usar "Select all" en Agentes/MCP/Skills (eso enciende también _Share publicly_):
+   - **Agents**: Use, Create, Share. Dejar _Share publicly_ apagado.
+   - **MCP servers**: Use, Create, Share. Dejar _Share publicly_ y _Configure on-behalf-of_ apagados.
+   - **Skills**: Use, Create, Share. Dejar _Share publicly_ apagado.
    - **Prompts**: solo Use.
    - **Memories**: Select all.
    - **People picker**: Select all.

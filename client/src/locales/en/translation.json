@@ -3814,5 +3814,18 @@
   "com_ui_code_setup_approve": "Approve setup",
   "com_ui_code_setup_deny": "Deny setup",
   "com_ui_code_setup_saving": "Saving your decision…",
-  "com_ui_terms_accept_failed": "Could not accept the terms. Please try again."
+  "com_ui_terms_accept_failed": "Could not accept the terms. Please try again.",
+  "com_qvision_quick_resume_title": "Summarize a document",
+  "com_qvision_quick_resume_description": "Extract the key points",
+  "com_qvision_quick_resume_prompt": "Summarize the key points of this document.",
+  "com_qvision_quick_email_title": "Draft an email",
+  "com_qvision_quick_email_description": "Clear, polished and to the point",
+  "com_qvision_quick_email_prompt": "Help me draft a clear and professional email.",
+  "com_qvision_quick_meeting_title": "Prepare a meeting",
+  "com_qvision_quick_meeting_description": "Agenda, talking points and questions",
+  "com_qvision_quick_meeting_prompt": "Help me prepare an agenda and talking points for a meeting.",
+  "com_qvision_quick_ideas_title": "Brainstorm ideas",
+  "com_qvision_quick_ideas_description": "For a challenge or project",
+  "com_qvision_quick_ideas_prompt": "Help me brainstorm ideas for a project or challenge.",
+  "com_qvision_explore_agents": "Looking for something more specific? Explore Q-Vision agents →"
 }

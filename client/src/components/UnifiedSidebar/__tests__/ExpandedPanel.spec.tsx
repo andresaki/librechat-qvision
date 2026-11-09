@@ -220,8 +220,18 @@ describe('ExpandedPanel', () => {
       renderPanel({ expanded: true });
 
       expect(screen.getByTestId('close-sidebar-button')).toHaveClass('hover:bg-surface-nav-hover');
-      expect(screen.getByTestId('new-chat-button')).toHaveClass('hover:bg-surface-nav-hover');
+      expect(screen.getByTestId('new-chat-button')).toHaveClass('bg-header-primary');
+      expect(screen.getByTestId('new-chat-button')).toHaveClass('text-text-on-media');
       expect(screen.getByTestId('new-chat-button')).not.toHaveClass('hover:bg-surface-hover');
+    });
+
+    it('shows the Quinn symbol in the collapsed toggle', () => {
+      renderPanel({ expanded: false });
+
+      expect(screen.getByTestId('open-sidebar-button').querySelector('img')).toHaveAttribute(
+        'src',
+        'assets/quinn-simbolo.svg',
+      );
     });
   });
 

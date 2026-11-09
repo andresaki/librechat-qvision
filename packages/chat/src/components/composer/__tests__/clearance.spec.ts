@@ -3,7 +3,7 @@ import composerClearance from '../clearance';
 describe('composerClearance', () => {
   test('reserves the footer band on the welcome screen, doubled while the composer floats', () => {
     expect(composerClearance({ isLandingPage: true, footerBelow: true, floating: true })).toBe(
-      'transition-all duration-200 sm:mb-28',
+      'transition-all duration-200 sm:mb-8',
     );
     expect(composerClearance({ isLandingPage: true, footerBelow: true, floating: false })).toBe(
       'sm:mb-10',

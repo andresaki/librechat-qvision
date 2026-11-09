@@ -1,16 +1,16 @@
-import { Fragment, memo, useCallback, Suspense } from 'react';
-import { SquarePen } from 'lucide-react';
+import { Fragment, memo, useCallback, Suspense, useContext } from 'react';
+import { Plus } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import { Skeleton, Sidebar, Button, TooltipAnchor } from '@librechat/client';
+import { Skeleton, Sidebar, Button, TooltipAnchor, ThemeContext } from '@librechat/client';
 import type { NavLink } from '~/common';
 import { useShortcutAriaKey, useShortcutHint } from '~/hooks/useKeyboardShortcuts';
 import { useActivePanel, resolveActivePanel, DEFAULT_PANEL } from '~/Providers';
 import AgentMarketplaceButton from '~/components/Nav/AgentMarketplaceButton';
 import { CLOSE_SIDEBAR_ID } from '~/components/Chat/Menus/OpenSidebar';
 import useDirection, { inlineSide } from '~/hooks/Nav/useDirection';
+import { isShareableNavLink } from '~/hooks/Nav/navGroups';
 import useNewChat from '~/hooks/Conversations/useNewChat';
 import { lazyWithRecovery } from '~/lib/assets/lazy';
-import { isShareableNavLink } from '~/hooks/Nav/navGroups';
 import { useLocalize } from '~/hooks';
 
 const AccountSettings = lazyWithRecovery(() => import('~/components/Nav/AccountSettings'));
@@ -45,10 +45,10 @@ const NewChatButton = memo(function NewChatButton({
           data-testid="new-chat-button"
           aria-label={localize('com_ui_new_chat')}
           aria-keyshortcuts={ariaKey}
-          className="hover:bg-surface-nav-hover flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
+          className="bg-header-primary text-text-on-media hover:bg-header-hover dark:bg-surface-secondary dark:hover:bg-surface-tertiary mt-3 flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
           onClick={handleNewChatClick}
         >
-          <SquarePen className="text-text-primary h-5 w-5" />
+          <Plus className="text-text-on-media h-5 w-5" />
         </a>
       }
     />
@@ -112,10 +112,10 @@ const NavIconButton = memo(function NavIconButton({
           aria-pressed={isActive}
           disabled={link.disabled}
           data-testid={`nav-panel-${link.id}`}
-          className="h-9 w-9 rounded-lg"
+          className="dark:aria-pressed:text-text-on-media h-9 w-9 rounded-lg"
           onClick={handleClick}
         >
-          <link.icon className="h-5 w-5" aria-hidden="true" />
+          <link.icon className="h-4 w-4" aria-hidden="true" />
         </Button>
       }
     />
@@ -140,6 +140,7 @@ function ExpandedPanel({
   switchToHistory: boolean;
 }) {
   const localize = useLocalize();
+  const { resolvedMode } = useContext(ThemeContext);
   const tooltipSide = inlineSide(useDirection(), 'end');
   const location = useLocation();
   const { active, setActive } = useActivePanel();
@@ -150,6 +151,8 @@ function ExpandedPanel({
   const toggleClick = expanded ? onCollapse : onExpand;
   const toggleSidebarHint = useShortcutHint('toggleSidebar', localize(toggleLabel));
   const toggleSidebarAriaKey = useShortcutAriaKey('toggleSidebar');
+  const quinnSymbolSrc =
+    resolvedMode === 'dark' ? 'assets/quinn-simbolo-negativo.svg' : 'assets/quinn-simbolo.svg';
 
   return (
     <div className="border-border-inset bg-surface-sidebar flex h-full shrink-0 flex-col gap-2 border-e px-2 py-2">
@@ -165,10 +168,25 @@ function ExpandedPanel({
             aria-label={localize(toggleLabel)}
             aria-expanded={expanded}
             aria-keyshortcuts={toggleSidebarAriaKey}
-            className="h-9 w-9"
+            className="group relative h-9 w-9"
             onClick={toggleClick}
           >
-            <Sidebar aria-hidden="true" className="text-text-primary h-5 w-5 rtl:-scale-x-100" />
+            {expanded ? (
+              <Sidebar aria-hidden="true" className="text-text-primary h-5 w-5 rtl:-scale-x-100" />
+            ) : (
+              <>
+                <img
+                  src={quinnSymbolSrc}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-5 w-5 object-contain transition-opacity duration-150 group-hover:opacity-0 group-focus-visible:opacity-0"
+                />
+                <Sidebar
+                  aria-hidden="true"
+                  className="text-text-primary absolute h-5 w-5 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 rtl:-scale-x-100"
+                />
+              </>
+            )}
           </Button>
         }
       />
@@ -185,7 +203,7 @@ function ExpandedPanel({
             <Fragment key={link.id}>
               {showDivider ? (
                 <div
-                  className="mx-2 border-b border-border-light"
+                  className="border-border-light mx-2 border-b"
                   role="separator"
                   aria-hidden="true"
                 />

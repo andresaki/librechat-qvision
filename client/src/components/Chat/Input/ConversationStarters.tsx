@@ -1,5 +1,7 @@
 import { useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { EModelEndpoint, Constants } from 'librechat-data-provider';
+import { CalendarDays, FileText, Lightbulb, Mail } from 'lucide-react';
 import {
   useGetAssistantDocsQuery,
   useGetEndpointsQuery,
@@ -7,9 +9,10 @@ import {
 } from '~/data-provider';
 import { useChatContext, useAgentsMapContext, useAssistantsMapContext } from '~/Providers';
 import { getIconEndpoint, getEntity, getModelSpec } from '~/utils';
-import { useSubmitMessage } from '~/hooks';
+import { useLocalize, useSubmitMessage } from '~/hooks';
 
 const ConversationStarters = () => {
+  const localize = useLocalize();
   const { conversation } = useChatContext();
   const agentsMap = useAgentsMapContext();
   const assistantMap = useAssistantsMapContext();
@@ -68,7 +71,61 @@ const ConversationStarters = () => {
   );
 
   if (!conversation_starters.length) {
-    return null;
+    if (entity || modelSpec) {
+      return null;
+    }
+
+    const quickActions = [
+      {
+        icon: FileText,
+        title: localize('com_qvision_quick_resume_title'),
+        description: localize('com_qvision_quick_resume_description'),
+        prompt: localize('com_qvision_quick_resume_prompt'),
+      },
+      {
+        icon: Mail,
+        title: localize('com_qvision_quick_email_title'),
+        description: localize('com_qvision_quick_email_description'),
+        prompt: localize('com_qvision_quick_email_prompt'),
+      },
+      {
+        icon: CalendarDays,
+        title: localize('com_qvision_quick_meeting_title'),
+        description: localize('com_qvision_quick_meeting_description'),
+        prompt: localize('com_qvision_quick_meeting_prompt'),
+      },
+      {
+        icon: Lightbulb,
+        title: localize('com_qvision_quick_ideas_title'),
+        description: localize('com_qvision_quick_ideas_description'),
+        prompt: localize('com_qvision_quick_ideas_prompt'),
+      },
+    ];
+
+    return (
+      <div className="mt-2 mb-8 flex w-full max-w-4xl flex-col items-center gap-4 px-4">
+        <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {quickActions.map(({ icon: Icon, title, description, prompt }) => (
+            <button
+              key={title}
+              type="button"
+              onClick={() => sendConversationStarter(prompt)}
+              className="border-border-light bg-surface-card text-text-primary hover:bg-surface-card-hover focus-visible:ring-ring-primary rounded-theme-surface-lg flex min-h-24 flex-col items-start gap-1 border p-3 text-left transition-colors focus-visible:ring-2 focus-visible:outline-hidden"
+            >
+              <Icon className="text-link h-4 w-4" aria-hidden="true" />
+              <span className="text-sm font-semibold">{title}</span>
+              <span className="text-text-secondary line-clamp-2 text-xs">{description}</span>
+            </button>
+          ))}
+        </div>
+        <Link
+          to="/agents"
+          className="text-accent-primary hover:text-accent-primary-hover focus-visible:ring-ring-primary rounded px-2 py-1 text-center text-sm font-medium focus-visible:ring-2 focus-visible:outline-hidden"
+        >
+          {localize('com_qvision_explore_agents')}
+        </Link>
+      </div>
+    );
   }
 
   return (

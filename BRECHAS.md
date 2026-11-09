@@ -2,6 +2,21 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Shell de chat Quinn — parcial (2026-11-09)
+
+El mockup se aproximó sin convertir los módulos en una sola vista: el rail conserva el patrón
+nativo de LibreChat y el panel expandido sigue mostrando la vista específica de Chats, Skills,
+Agentes, MCP, Memorias y demás funciones según permisos. El rail contraído muestra el símbolo
+Quinn y el control de menú aparece al pasar el mouse o recibir foco.
+
+El landing de conversación nueva ahora tiene acciones rápidas localizadas y un acceso directo al
+marketplace de agentes debajo del input. La superficie clara del canvas se fijó en blanco y el
+botón de envío usa `accent-primary` con `text-on-media`.
+
+Sigue siendo una diferencia intencional frente al mockup: LibreChat no muestra simultáneamente el
+contenido de cada módulo en la barra fija; cada módulo necesita su panel o ruta para conservar su
+flujo, permisos y estado.
+
 ## Login Quinn alineado al mockup — resuelto (2026-11-06)
 
 La pantalla de autenticación ya usa una composición dividida responsive: panel de marca Q-Vision,
@@ -37,12 +52,12 @@ El primer ingreso por Microsoft crea la cuenta con `role: 'Consumidor'` en `api/
 
 Sigue pendiente la sincronía grupo de Entra → rol. `OPENID_ROLE_SYNC_FALLBACK_ROLE` no se usa: reasignaría el rol en cada login y pisaría un `Creador` puesto a mano.
 
-
 ## Sincronía de grupos (Graph OBO) resuelta — pero grupo≠rol, sigue sin confirmar
- 
+
 El fix de "Expose an API" (`access_as_user`, ver `CHANGELOG.md` 2026-09-24) cerró el error de intercambio on-behalf-of; ahora los grupos de Entra ID sí se sincronizan y alimentan el ACL (compartir por grupo funciona, confirmado con prueba de las 4 visibilidades). Lo que sigue sin confirmar: si existe algún mecanismo nativo para que, al pertenecer a un grupo de Entra ID específico, a un usuario se le asigne automáticamente un **rol personalizado** (Creador/Consumidor) en vez de tener que hacerlo a mano desde el Admin Panel → Members. No se encontró esa opción en el panel durante este laboratorio; se documenta como pendiente de confirmar en la documentación oficial o en una versión futura, no como algo intentado y fallido.
 
 ## Nota de metodología — SSO / sincronía de grupos
+
 Validado contra un tenant de Microsoft 365 Developer Program (sandbox propio,
 no el tenant de producción @qvision.us), porque el consentimiento de admin
 en el tenant real de Q-Vision requiere aprobación de Infra (tiempo estimado
@@ -121,5 +136,5 @@ Cableado 2026-10-13 (`docs/11-Browser-MCP-Quinn.md`): contenedor + `mcpServers.b
 **Fix launch 2026-10-13 (resuelto):** `BROWSER_NOT_AVAILABLE` por desajuste Playwright npm 1.64 vs imagen base 1.63 → pinnado a `1.63.0` + `npm ci` con lockfile; probe `example.com` → `Example Domain`.
 
 ## Schedules de agentes — no arrancó el scheduler — no bloquea este laboratorio todavía
-Log del API: el scheduler no arranca sin `USE_REDIS_STREAMS` o `SCHEDULES_SINGLE_PROCESS=true`. Las escrituras de schedules responden 503. Confirmar más adelante si hace falta automatización programada; no afecta login, Mongo ni RAG.
 
+Log del API: el scheduler no arranca sin `USE_REDIS_STREAMS` o `SCHEDULES_SINGLE_PROCESS=true`. Las escrituras de schedules responden 503. Confirmar más adelante si hace falta automatización programada; no afecta login, Mongo ni RAG.

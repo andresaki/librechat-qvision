@@ -1215,5 +1215,18 @@
   "com_ui_zoom_in": "Acercar",
   "com_ui_zoom_level": "Nivel de zoom",
   "com_ui_zoom_out": "Alejar",
-  "com_user_message": "Usted"
+  "com_user_message": "Usted",
+  "com_qvision_quick_resume_title": "Resume un documento",
+  "com_qvision_quick_resume_description": "Extrae los puntos clave",
+  "com_qvision_quick_resume_prompt": "Resume los puntos clave de este documento.",
+  "com_qvision_quick_email_title": "Redacta un correo",
+  "com_qvision_quick_email_description": "Claro, cordial y al punto",
+  "com_qvision_quick_email_prompt": "Ayúdame a redactar un correo claro y profesional.",
+  "com_qvision_quick_meeting_title": "Prepara una reunión",
+  "com_qvision_quick_meeting_description": "Agenda, puntos y preguntas",
+  "com_qvision_quick_meeting_prompt": "Ayúdame a preparar la agenda y los puntos de conversación para una reunión.",
+  "com_qvision_quick_ideas_title": "Dame ideas",
+  "com_qvision_quick_ideas_description": "Para un reto o proyecto",
+  "com_qvision_quick_ideas_prompt": "Ayúdame a generar ideas para un proyecto o reto.",
+  "com_qvision_explore_agents": "¿Buscas algo más específico? Explora los agentes de Q-Vision →"
 }
