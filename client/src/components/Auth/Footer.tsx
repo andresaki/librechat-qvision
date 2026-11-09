@@ -11,37 +11,38 @@ function Footer({ startupConfig }: { startupConfig: TStartupConfig | null | unde
    *  screen and a link back to this page on another. */
   const { privacyPolicyUrl, termsOfServiceUrl } = policyUrls(startupConfig);
 
-  const privacyPolicyRender = privacyPolicyUrl != null && (
-    <a
-      className="text-accent-primary hover:text-accent-primary-hover hover:decoration-accent-primary-hover focus:text-accent-primary-hover focus:decoration-accent-primary-hover text-sm underline decoration-transparent transition-all duration-200"
-      href={privacyPolicyUrl}
-      // Removed for WCAG compliance
-      // target={privacyPolicy.openNewTab ? '_blank' : undefined}
-      rel="noreferrer"
-    >
-      {localize('com_ui_privacy_policy')}
-    </a>
-  );
-
-  const termsOfServiceRender = termsOfServiceUrl != null && (
-    <a
-      className="text-accent-primary hover:text-accent-primary-hover hover:decoration-accent-primary-hover focus:text-accent-primary-hover focus:decoration-accent-primary-hover text-sm underline decoration-transparent transition-all duration-200"
-      href={termsOfServiceUrl}
-      // Removed for WCAG compliance
-      // target={termsOfService.openNewTab ? '_blank' : undefined}
-      rel="noreferrer"
-    >
-      {localize('com_ui_terms_of_service')}
-    </a>
-  );
+  const linkClassName =
+    'text-text-secondary hover:text-accent-primary focus:text-accent-primary underline-offset-2 transition-colors hover:underline focus:underline';
+  const renderLink = (label: string, href?: string) =>
+    href ? (
+      <a className={linkClassName} href={href} rel="noreferrer">
+        {label}
+      </a>
+    ) : (
+      <span className="text-text-secondary">{label}</span>
+    );
 
   return (
-    <div className="m-4 flex justify-center gap-2" role="contentinfo">
-      {privacyPolicyRender}
-      {privacyPolicyRender && termsOfServiceRender && (
-        <div className="border-border-medium border-e" />
-      )}
-      {termsOfServiceRender}
+    <div
+      className="text-text-secondary mt-auto px-6 pb-6 pt-2 text-center text-[11px]"
+      role="contentinfo"
+    >
+      <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+        {renderLink(localize('com_auth_footer_privacy'), privacyPolicyUrl)}
+        <span className="text-accent-primary" aria-hidden="true">
+          ·
+        </span>
+        {renderLink(localize('com_auth_footer_terms'), termsOfServiceUrl)}
+        <span className="text-accent-primary" aria-hidden="true">
+          ·
+        </span>
+        {renderLink(localize('com_auth_footer_responsible_ai'))}
+        <span className="text-accent-primary" aria-hidden="true">
+          ·
+        </span>
+        {renderLink(localize('com_auth_footer_help'), startupConfig.helpAndFaqURL)}
+      </div>
+      <p className="mt-1">{localize('com_auth_footer_disclaimer')}</p>
     </div>
   );
 }

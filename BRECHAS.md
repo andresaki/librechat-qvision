@@ -2,6 +2,29 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Login Quinn alineado al mockup — resuelto (2026-11-06)
+
+La pantalla de autenticación ya usa una composición dividida responsive: panel de marca Q-Vision,
+tarjeta clara de acceso, textos y chips del mockup, CTA naranja y botones SSO secundarios.
+La lógica existente de sesión, errores, captcha, passkeys, recuperación y consentimiento se conserva.
+Queda pendiente únicamente la comprobación visual final en el contenedor reconstruido y en las
+resoluciones objetivo.
+
+Los ajustes posteriores alinearon el CTA y la palabra “Quinn” con `accent-primary`, ocultaron el
+registro local desde la pantalla, personalizaron el acceso Q-Vision y añadieron el footer legal y
+de responsabilidad de IA del mockup.
+
+El pulido posterior internacionalizó los textos restantes, movió el selector de tema a la esquina
+superior derecha, aumentó la jerarquía del panel izquierdo y ajustó las superficies semánticas de
+inputs/OpenID para mejorar light y dark mode.
+
+La paleta del panel izquierdo quedó fijada en `#0B1F3A` para claro y `#060C19` para oscuro;
+el derecho dark conserva `#111624`, los controles usan una superficie más profunda y los badges
+conservan borde visible. El botón Q-Vision alterna el símbolo normal y negativo según el modo.
+
+El formulario local queda oculto por defecto para priorizar Q-Vision OpenID; el acceso administrativo
+se revela con `Ctrl+Shift+L` (`Cmd+Shift+L` en macOS) durante la sesión actual.
+
 ## Estilos tras actualizar sobre main — resuelto (2026-11-06)
 
 La rama Q-Vision quedó rebasada sobre `upstream/main` conservando el pipeline Tailwind v4. El frontend se recompiló correctamente con `npm run build:client`; también se reconstruyó `data-provider`, que debe regenerarse antes de levantar Vite cuando cambia el contrato compartido. El 404 de `site.webmanifest` era independiente y ya existe `client/public/site.webmanifest`.

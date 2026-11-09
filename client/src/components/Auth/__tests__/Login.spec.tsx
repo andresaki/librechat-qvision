@@ -1,4 +1,6 @@
 import * as reactRouter from 'react-router-dom';
+import { fireEvent } from '@testing-library/react';
+import { getDefaultStore } from 'jotai/vanilla';
 import userEvent from '@testing-library/user-event';
 import type { TStartupConfig } from 'librechat-data-provider';
 import { getByTestId, render, waitFor } from 'test/layout-test-utils';
@@ -8,6 +10,7 @@ import * as authMutations from '~/data-provider/Auth/mutations';
 import * as authQueries from '~/data-provider/Auth/queries';
 import AuthLayout from '~/components/Auth/AuthLayout';
 import Login from '~/components/Auth/Login';
+import { adminLoginVisibleAtom } from '~/store/adminLogin';
 
 jest.mock('librechat-data-provider/react-query');
 
@@ -45,6 +48,7 @@ const mockStartupConfig = {
 };
 
 const setup = ({
+  revealEmailLogin = true,
   useGetUserQueryReturnValue = {
     isLoading: false,
     isError: false,
@@ -73,6 +77,8 @@ const setup = ({
     data: {},
   },
 } = {}) => {
+  getDefaultStore().set(adminLoginVisibleAtom, false);
+
   const mockUseLoginUser = jest
     .spyOn(authMutations, 'useLoginUserMutation')
     //@ts-ignore - we don't need all parameters of the QueryObserverSuccessResult
@@ -108,6 +114,9 @@ const setup = ({
       <Login />
     </AuthLayout>,
   );
+  if (revealEmailLogin) {
+    fireEvent.keyDown(window, { key: 'l', ctrlKey: true, shiftKey: true });
+  }
   return {
     ...renderResult,
     mockUseLoginUser,
@@ -132,8 +141,7 @@ test('renders login form', () => {
   expect(getByLabelText(/email/i)).toBeInTheDocument();
   expect(getByLabelText(/password/i)).toBeInTheDocument();
   expect(getByTestId(document.body, 'login-button')).toBeInTheDocument();
-  expect(getByRole('link', { name: /Sign up/i })).toBeInTheDocument();
-  expect(getByRole('link', { name: /Sign up/i })).toHaveAttribute('href', '/register');
+  expect(getByRole('link', { name: /Ingresar con cuenta Q-Vision/i })).toBeInTheDocument();
   expect(getByRole('link', { name: /Continue with Google/i })).toBeInTheDocument();
   expect(getByRole('link', { name: /Continue with Google/i })).toHaveAttribute(
     'href',
@@ -159,6 +167,14 @@ test('renders login form', () => {
     'href',
     'mock-server/oauth/saml',
   );
+});
+
+test('hides the local login form until the admin shortcut is pressed', () => {
+  setup({ revealEmailLogin: false });
+
+  expect(document.querySelector('[aria-label="Formulario de inicio de sesión"]')).toBeNull();
+  fireEvent.keyDown(window, { key: 'l', ctrlKey: true, shiftKey: true });
+  expect(document.querySelector('[aria-label="Formulario de inicio de sesión"]')).toBeInTheDocument();
 });
 
 test('calls loginUser.mutate on login', async () => {

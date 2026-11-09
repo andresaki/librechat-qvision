@@ -2,7 +2,6 @@ import { TStartupConfig } from 'librechat-data-provider';
 import {
   GoogleIcon,
   FacebookIcon,
-  OpenIDIcon,
   GithubIcon,
   DiscordIcon,
   AppleIcon,
@@ -17,9 +16,11 @@ function SocialLoginRender({
   startupConfig,
   /** Passkeys sign an existing account in, so they are offered on login only. */
   showPasskey = false,
+  showEmailLogin = true,
 }: {
   startupConfig: TStartupConfig | null | undefined;
   showPasskey?: boolean;
+  showEmailLogin?: boolean;
 }) {
   const localize = useLocalize();
 
@@ -89,14 +90,17 @@ function SocialLoginRender({
         enabled={startupConfig.openidLoginEnabled}
         serverDomain={startupConfig.serverDomain}
         oauthPath="openid"
-        Icon={() =>
-          startupConfig.openidImageUrl ? (
-            <img src={startupConfig.openidImageUrl} alt="OpenID Logo" className="h-5 w-5" />
-          ) : (
-            <OpenIDIcon />
-          )
-        }
-        label={startupConfig.openidLabel}
+        Icon={() => (
+          <span className="inline-flex size-5" aria-hidden="true">
+            <img src="assets/quinn-simbolo.svg" alt="" className="h-5 w-5 dark:hidden" />
+            <img
+              src="assets/quinn-simbolo-negativo.svg"
+              alt=""
+              className="hidden h-5 w-5 dark:block"
+            />
+          </span>
+        )}
+        label={localize('com_auth_qvision_login')}
         id="openid"
       />
     ),
@@ -129,10 +133,10 @@ function SocialLoginRender({
 
   return (
     <>
-      {startupConfig.emailLoginEnabled && (
+      {startupConfig.emailLoginEnabled && showEmailLogin && (
         <>
           <div className="border-border-medium relative mt-6 flex w-full items-center justify-center border border-t uppercase">
-            <div className="bg-surface-primary text-text-primary absolute px-3 text-xs">
+            <div className="bg-surface-primary-alt text-text-primary absolute px-3 text-xs">
               {localize('com_auth_or')}
             </div>
           </div>

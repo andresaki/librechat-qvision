@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { OpenIDIcon, useToastContext } from '@librechat/client';
-import { ErrorTypes, registerPage } from 'librechat-data-provider';
+import { useAtomValue } from 'jotai';
+import { useToastContext } from '@librechat/client';
+import { ErrorTypes } from 'librechat-data-provider';
 import { useOutletContext, useSearchParams, useLocation } from 'react-router-dom';
 import type { TLoginLayoutContext } from '~/common';
 import type { TranslationKeys } from '~/hooks';
@@ -10,6 +11,7 @@ import SocialButton from '~/components/Auth/SocialButton';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { useLocalize } from '~/hooks';
 import LoginForm from './LoginForm';
+import { adminLoginVisibleAtom } from '~/store/adminLogin';
 
 interface LoginLocationState {
   redirect_to?: string;
@@ -33,6 +35,7 @@ function Login() {
   const disableAutoRedirect = searchParams.get('redirect') === 'false';
 
   const [isAutoRedirectDisabled, setIsAutoRedirectDisabled] = useState(disableAutoRedirect);
+  const showEmailLogin = useAtomValue(adminLoginVisibleAtom);
 
   useEffect(() => {
     const redirectTo = searchParams.get('redirect_to');
@@ -96,14 +99,17 @@ function Login() {
             enabled={startupConfig.openidLoginEnabled}
             serverDomain={startupConfig.serverDomain}
             oauthPath="openid"
-            Icon={() =>
-              startupConfig.openidImageUrl ? (
-                <img src={startupConfig.openidImageUrl} alt="OpenID Logo" className="h-5 w-5" />
-              ) : (
-                <OpenIDIcon />
-              )
-            }
-            label={startupConfig.openidLabel}
+            Icon={() => (
+              <span className="inline-flex size-5" aria-hidden="true">
+                <img src="assets/quinn-simbolo.svg" alt="" className="h-5 w-5 dark:hidden" />
+                <img
+                  src="assets/quinn-simbolo-negativo.svg"
+                  alt=""
+                  className="hidden h-5 w-5 dark:block"
+                />
+              </span>
+            )}
+            label={localize('com_auth_qvision_login')}
             id="openid"
           />
         </div>
@@ -114,7 +120,7 @@ function Login() {
   return (
     <>
       {error != null && <ErrorMessage>{localize(getLoginError(error))}</ErrorMessage>}
-      {startupConfig?.emailLoginEnabled === true && (
+      {startupConfig?.emailLoginEnabled === true && showEmailLogin && (
         <LoginForm
           onSubmit={login}
           startupConfig={startupConfig}
@@ -122,16 +128,11 @@ function Login() {
           setError={setError}
         />
       )}
-      {startupConfig?.registrationEnabled === true && (
-        <p className="text-text-secondary my-4 text-center text-sm font-light">
-          {' '}
-          {localize('com_auth_no_account')}{' '}
-          <a
-            href={registerPage()}
-            className="text-accent-primary hover:text-accent-primary-hover hover:decoration-accent-primary-hover focus:text-accent-primary-hover focus:decoration-accent-primary-hover inline-flex p-1 text-sm font-medium underline decoration-transparent transition-all duration-200"
-          >
-            {localize('com_auth_sign_up')}
-          </a>
+      {startupConfig?.emailLoginEnabled === true && (
+        <p className="sr-only" aria-live="polite">
+          {showEmailLogin
+            ? localize('com_auth_admin_login_form_enabled')
+            : localize('com_auth_admin_login_form_hidden')}
         </p>
       )}
     </>

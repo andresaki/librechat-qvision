@@ -8,7 +8,6 @@ import {
   Button,
   Input,
   isDark,
-  floatingLabel,
 } from '@librechat/client';
 import type { TLoginUser, TStartupConfig } from 'librechat-data-provider';
 import type { TAuthContext } from '~/common';
@@ -95,59 +94,57 @@ const LoginForm: React.FC<TLoginFormProps> = ({ onSubmit, startupConfig, error, 
         </div>
       )}
       <form
-        className="mt-6"
-        aria-label="Login form"
+        className="mt-5"
+        aria-label={localize('com_auth_login_form')}
         method="POST"
         onSubmit={handleSubmit((data) => onSubmit(data))}
       >
         <div className="mb-4">
-          <div className="relative">
-            <Input
-              colorTransition
-              type="text"
-              id="email"
-              autoComplete={emailAutoComplete}
-              aria-label={localize('com_auth_email')}
-              {...register('email', {
-                required: localize('com_auth_email_required'),
-                maxLength: { value: 120, message: localize('com_auth_email_max_length') },
-                validate: useUsernameLogin
-                  ? undefined
-                  : (value) => validateEmail(value, localize('com_auth_email_pattern')),
-              })}
-              aria-invalid={!!errors.email}
-              variant="floating"
-              placeholder=" "
-            />
-            <label htmlFor="email" className={floatingLabel}>
-              {useUsernameLogin
-                ? localize('com_auth_username').replace(/ \(.*$/, '')
-                : localize('com_auth_email_address')}
-            </label>
-          </div>
+          <label htmlFor="email" className="text-text-primary mb-2 block text-xs font-medium">
+            {useUsernameLogin
+              ? localize('com_auth_username').replace(/ \(.*$/, '')
+              : localize('com_auth_email_address')}
+          </label>
+          <Input
+            colorTransition
+            type="text"
+            id="email"
+            autoComplete={emailAutoComplete}
+            aria-label={localize('com_auth_email')}
+            {...register('email', {
+              required: localize('com_auth_email_required'),
+              maxLength: { value: 120, message: localize('com_auth_email_max_length') },
+              validate: useUsernameLogin
+                ? undefined
+                : (value) => validateEmail(value, localize('com_auth_email_pattern')),
+            })}
+            aria-invalid={!!errors.email}
+            placeholder={localize('com_auth_email_placeholder')}
+            className="!bg-surface-primary-alt h-theme-auth-field dark:!bg-surface-primary"
+          />
           {renderError('email')}
         </div>
         <div className="mb-2">
-          <div className="relative">
-            <SecretInput
-              colorTransition
-              id="password"
-              autoComplete="current-password"
-              aria-label={localize('com_auth_password')}
-              {...register('password', {
-                required: localize('com_auth_password_required'),
-                minLength: {
-                  value: startupConfig?.minPasswordLength || 8,
-                  message: localize('com_auth_password_min_length'),
-                },
-                maxLength: { value: 128, message: localize('com_auth_password_max_length') },
-              })}
-              aria-invalid={!!errors.password}
-              variant="floating"
-              placeholder=" "
-              label={localize('com_auth_password')}
-            />
-          </div>
+          <label htmlFor="password" className="text-text-primary mb-2 block text-xs font-medium">
+            {localize('com_auth_password')}
+          </label>
+          <SecretInput
+            colorTransition
+            id="password"
+            autoComplete="current-password"
+            aria-label={localize('com_auth_password')}
+            {...register('password', {
+              required: localize('com_auth_password_required'),
+              minLength: {
+                value: startupConfig?.minPasswordLength || 8,
+                message: localize('com_auth_password_min_length'),
+              },
+              maxLength: { value: 128, message: localize('com_auth_password_max_length') },
+            })}
+            aria-invalid={!!errors.password}
+            placeholder={localize('com_auth_password_placeholder')}
+            className="!bg-surface-primary-alt h-theme-auth-field dark:!bg-surface-primary"
+          />
           {renderError('password')}
         </div>
         {startupConfig.passwordResetEnabled && (
@@ -183,7 +180,7 @@ const LoginForm: React.FC<TLoginFormProps> = ({ onSubmit, startupConfig, error, 
             variant="submit"
             shape="soft"
             size="auth"
-            className="w-full"
+            className="!bg-accent-primary !text-text-on-media hover:!bg-accent-primary-hover w-full"
           >
             {isSubmitting ? <Spinner /> : localize('com_auth_continue')}
           </Button>

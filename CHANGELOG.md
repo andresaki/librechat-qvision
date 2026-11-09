@@ -2,6 +2,39 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-09 — Acceso administrativo oculto en login
+
+- El formulario local de email/contraseña, su separador y el botón Continuar quedan ocultos para el acceso normal por Q-Vision OpenID.
+- El administrador puede alternarlos con `Ctrl+Shift+L` (o `Cmd+Shift+L` en macOS); el estado se anuncia para lectores de pantalla y no persiste entre rutas.
+
+## 2026-11-09 — Separador español del login
+
+- Se agregó la traducción española de `com_auth_or` como “O”.
+- El fondo del separador ahora usa la superficie blanca del formulario y no el gris del canvas.
+
+## 2026-11-06 — Ajuste de paleta oscura del login Quinn
+
+- La paleta del panel izquierdo usa `#0B1F3A` en claro y `#060C19` en oscuro; el área derecha dark conserva `#111624`.
+- El botón Q-Vision alterna entre el símbolo claro y negativo según el modo activo.
+- Inputs y OpenID usan una superficie ligeramente más oscura en dark mode; los badges usan `border-medium` para conservar contraste.
+
+## 2026-11-06 — Pulido de internacionalización y temas del login
+
+- Se pasaron a claves de localización los textos restantes del branding del login y del formulario.
+- El selector de tema se ubicó en la esquina superior derecha; los separadores del footer usan el acento Quinn.
+- Se aumentó la jerarquía tipográfica del panel izquierdo y se ajustaron superficies semánticas para inputs, OpenID y ambos modos de tema.
+
+## 2026-11-06 — Ajustes finales del login Quinn
+
+- Se aplicó el acento Quinn al nombre destacado y al botón principal, se eliminó el enlace de registro y se renombró el acceso OpenID a “Ingresar con cuenta Q-Vision” con el símbolo Quinn.
+- La tarjeta dejó de usar apariencia modal; el footer ahora incluye escudo, privacidad, términos, uso responsable de IA, ayuda y el disclaimer de Quinn.
+
+## 2026-11-06 — Rediseño visual del login Quinn
+
+- Se reemplazó la pantalla de autenticación genérica por una composición dividida alineada al mockup de Quinn: panel navy de marca, tarjeta de acceso clara, copy de bienvenida, chips de casos de uso y branding Q-Vision.
+- Se ajustaron campos, CTA naranja, enlaces y botones SSO sin cambiar la lógica de autenticación, captcha, passkeys, recuperación de contraseña ni consentimiento legal.
+- Validación prevista: typecheck del cliente, pruebas enfocadas de Auth y revisión visual responsive después del rebuild del frontend.
+
 ## 2026-11-06 — Tema visual Quinn y alto contraste desactivado
 
 - `librechat.yaml` define la paleta Quinn para los modos claro y oscuro mediante `interface.theme`.

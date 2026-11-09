@@ -88,6 +88,15 @@ const consent = () => screen.queryByText(/By continuing/i);
 const footerBar = () => document.querySelector('[role="contentinfo"]');
 
 describe('AuthLayout legal placement', () => {
+  test('renders the Quinn split login shell', () => {
+    setup({ pathname: 'login' });
+
+    expect(screen.getByRole('heading', { name: 'Hola de nuevo' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Pregúntale a Quinn.' })).toBeInTheDocument();
+    expect(screen.getByText('Resolver una duda')).toBeInTheDocument();
+    expect(screen.getByLabelText('Quinn by Q-Vision')).toBeInTheDocument();
+  });
+
   /** The registration form states the consent itself, under its own submit
    *  button (Registration.spec covers that); the layout's part is dropping the
    *  footer bar so the same two policies are not linked twice. */
@@ -98,22 +107,22 @@ describe('AuthLayout legal placement', () => {
     expect(consent()).not.toBeInTheDocument();
   });
 
-  test('the login screen states it too', () => {
+  test('the login screen keeps legal links in the footer only', () => {
     setup({ pathname: 'login', socialLoginEnabled: true, interfaceConfig: policies });
 
-    expect(consent()).toBeInTheDocument();
+    expect(consent()).not.toBeInTheDocument();
     expect(document.querySelectorAll(`a[href="${PRIVACY_URL}"]`)).toHaveLength(1);
     expect(document.querySelectorAll(`a[href="${TERMS_URL}"]`)).toHaveLength(1);
-    expect(footerBar()).toBeNull();
+    expect(footerBar()).not.toBeNull();
   });
 
   /** No provider button is needed for the screen to be a way in: a first LDAP
    *  sign-in creates the account through this very form. */
-  test('a login screen with no provider button states it as well', () => {
+  test('a login screen with no provider button omits the consent sentence', () => {
     setup({ pathname: 'login', socialLoginEnabled: false, interfaceConfig: policies });
 
-    expect(consent()).toBeInTheDocument();
-    expect(footerBar()).toBeNull();
+    expect(consent()).not.toBeInTheDocument();
+    expect(footerBar()).not.toBeNull();
   });
 
   /** The second factor is not a way in of its own; the screen that sent the
@@ -146,7 +155,7 @@ describe('AuthLayout legal placement', () => {
       },
     });
 
-    expect(consent()).toBeInTheDocument();
+    expect(consent()).not.toBeInTheDocument();
     expect(document.querySelectorAll(`a[href="${TERMS_URL}"]`)).toHaveLength(1);
     expect(document.querySelector('a[href^="javascript" i]')).toBeNull();
     expect(screen.queryByRole('link', { name: /privacy policy/i })).toBeNull();
@@ -173,13 +182,11 @@ describe('AuthLayout legal placement', () => {
     expect(footerBar()).not.toBeNull();
   });
 
-  /** The login screen states it itself, so a background refetch of an already
-   *  known config must not swap the sentence for the bar and back. */
-  test('the login screen keeps the consent across a background refetch', () => {
+  test('the login screen keeps the footer across a background refetch', () => {
     setup({ pathname: 'login', isFetching: true, interfaceConfig: policies });
 
-    expect(consent()).toBeInTheDocument();
-    expect(footerBar()).toBeNull();
+    expect(consent()).not.toBeInTheDocument();
+    expect(footerBar()).not.toBeNull();
   });
 
   /** A deployment that asks for explicit acceptance in a modal after sign-in
