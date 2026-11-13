@@ -198,6 +198,8 @@ jest.mock('@librechat/agents', () => ({
 }));
 
 jest.mock('@librechat/api', () => ({
+  resolveLangfuseAgentIdentity: (...args) =>
+    jest.requireActual('@librechat/api').resolveLangfuseAgentIdentity(...args),
   createFileProvisionRecovery: () =>
     jest.requireActual('@librechat/api').createFileProvisionRecovery(),
   getAgentErrorMetadata: (...args) =>
@@ -768,6 +770,7 @@ describe('createResponse controller', () => {
     );
     const { createRun } = require('@librechat/api');
     const processStream = await createRun.mock.results.at(-1).value;
+    expect(processStream.processStream.mock.calls[0][1].runName).toBe('agent:test-agent');
     expect(mockExecution.beginProviderExecution).toHaveBeenCalledTimes(1);
     expect(mockExecution.beginProviderExecution.mock.invocationCallOrder[0]).toBeLessThan(
       require('@librechat/api').initializeAgent.mock.invocationCallOrder[0],

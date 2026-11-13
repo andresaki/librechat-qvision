@@ -11,6 +11,7 @@ const {
 } = require('librechat-data-provider');
 const {
   createRun,
+  resolveLangfuseAgentIdentity,
   applyContextToAgent,
   buildInitialToolSessions,
   buildRunToolSet,
@@ -1367,7 +1368,7 @@ const executeResponse = async (envelope, { req, res }) => {
 
         // Process the stream
         const config = {
-          runName: 'AgentRun',
+          runName: resolveLangfuseAgentIdentity(agent).traceName,
           configurable: {
             thread_id: conversationId,
             user_id: userId,
@@ -1606,7 +1607,7 @@ const executeResponse = async (envelope, { req, res }) => {
         }
 
         const config = {
-          runName: 'AgentRun',
+          runName: resolveLangfuseAgentIdentity(agent).traceName,
           configurable: {
             thread_id: conversationId,
             user_id: userId,

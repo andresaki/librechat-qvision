@@ -1,5 +1,9 @@
 import { logger } from '@librechat/data-schemas';
-import { buildLangfuseTraceMetadata, resolveLangfuseTraceUserId } from './identity';
+import {
+  buildLangfuseTraceMetadata,
+  resolveLangfuseAgentIdentity,
+  resolveLangfuseTraceUserId,
+} from './identity';
 
 const user = {
   id: 'user-1',
@@ -51,6 +55,32 @@ describe('resolveLangfuseTraceUserId', () => {
     expect(warn).toHaveBeenCalledTimes(1);
     expect(warn.mock.calls[0][0]).toContain('not an allowed user field');
     warn.mockRestore();
+  });
+});
+
+describe('resolveLangfuseAgentIdentity', () => {
+  it.each([
+    ['emojis', 'agent:emojis'],
+    ['quinn-emojis', 'agent:quinn-emojis'],
+  ])('formats %s as %s', (name, traceName) => {
+    expect(resolveLangfuseAgentIdentity({ name, id: 'agent-1' })).toMatchObject({
+      traceName,
+      agentName: name,
+      agentId: 'agent-1',
+      agentType: 'librechat_agent',
+    });
+  });
+
+  it('normalizes names and falls back to the agent ID', () => {
+    expect(resolveLangfuseAgentIdentity({ name: '  Quinn   Emojis!? ', id: 'agent-42' })).toEqual({
+      traceName: 'agent:quinn-emojis',
+      agentName: 'quinn-emojis',
+      agentId: 'agent-42',
+      agentType: 'librechat_agent',
+    });
+    expect(resolveLangfuseAgentIdentity({ name: ' ', id: 'agent-42' }).traceName).toBe(
+      'agent:agent-42',
+    );
   });
 });
 
@@ -150,5 +180,23 @@ describe('buildLangfuseTraceMetadata', () => {
         context: undefined,
       }),
     ).toBeUndefined();
+  });
+
+  it('always includes safe agent identity metadata without exporting secrets', () => {
+    expect(
+      buildLangfuseTraceMetadata({
+        trace: undefined,
+        user: { ...user, federatedTokens: 'secret' } as never,
+        context: {
+          agentName: 'quinn-emojis',
+          agentId: 'agent-42',
+          instructions: 'do not export this' as never,
+        } as never,
+      }),
+    ).toEqual({
+      agent_name: 'quinn-emojis',
+      agent_id: 'agent-42',
+      agent_type: 'librechat_agent',
+    });
   });
 });

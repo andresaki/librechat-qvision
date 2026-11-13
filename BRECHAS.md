@@ -2,6 +2,16 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Nombres dinámicos de traces de agentes en Langfuse — resuelto el 2026-11-12
+
+El runtime de agentes ahora nombra la observación raíz como `agent:<nombre-normalizado>`,
+usando `agent.name` y recurriendo a `agent.id` cuando el nombre no existe. La metadata
+raíz incluye `agent_name`, `agent_id` y `agent_type`, sin copiar contenido de prompts,
+mensajes, credenciales o API keys. Se mantienen `AgentGraph`, `AgentRun`, modelos,
+herramientas, MCP, latencia, tokens, costes y errores. No se encontró un Experiment Runner
+implementado dentro de este checkout; los triggers/webhooks y ejecuciones programadas
+reutilizan el runtime común.
+
 ## Shell de chat Quinn — parcial (2026-11-09)
 
 El mockup se aproximó sin convertir los módulos en una sola vista: el rail conserva el patrón

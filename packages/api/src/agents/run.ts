@@ -60,7 +60,10 @@ import type { ScheduleMCPExecution } from '~/schedules/authorization/execution';
 import type { ModelErrorTrackerCallback } from '~/agents/failures/tracker';
 import type { ToolInputValidationError } from '~/agents/toolValidation';
 import type { ResolvedToolApprovalHook } from '~/agents/hitl/hooks';
-import type { LangfuseTraceContext } from '~/langfuse/identity';
+import {
+  resolveLangfuseAgentIdentity,
+  type LangfuseTraceContext,
+} from '~/langfuse/identity';
 import type { ResolvedAlwaysApplySkill } from '~/agents/skills';
 import type { CodeExecutionContext } from '~/agents/execution';
 import type { SubagentCodeHostArgSpecs } from '~/code/targets';
@@ -2111,11 +2114,14 @@ function resolveRunTraceContext({
   traceContext?: LangfuseTraceContext;
 }): LangfuseTraceContext {
   const primaryAgent = agents[0];
+  const agentIdentity = resolveLangfuseAgentIdentity(primaryAgent ?? {});
   return {
     ...traceContext,
     conversationId: traceContext?.conversationId ?? conversationId ?? requestBody?.conversationId,
     provider: traceContext?.provider ?? primaryAgent?.provider,
     model: traceContext?.model ?? primaryAgent?.model_parameters?.model ?? primaryAgent?.model,
+    agentName: traceContext?.agentName ?? agentIdentity.agentName,
+    agentId: traceContext?.agentId ?? agentIdentity.agentId,
   };
 }
 

@@ -175,6 +175,8 @@ jest.mock('@librechat/agents', () => ({
 }));
 
 jest.mock('@librechat/api', () => ({
+  resolveLangfuseAgentIdentity: (...args) =>
+    jest.requireActual('@librechat/api').resolveLangfuseAgentIdentity(...args),
   createFileProvisionRecovery: () =>
     jest.requireActual('@librechat/api').createFileProvisionRecovery(),
   getAgentErrorMetadata: (...args) =>
@@ -563,6 +565,7 @@ describe('OpenAIChatCompletionController', () => {
       });
       try {
         await OpenAIChatCompletionController(req, res);
+        expect(mockProcessStream.mock.calls.at(-1)[1].runName).toBe('agent:test-agent');
         if (streaming) {
           const frames = res.write.mock.calls
             .map(([frame]) => frame)

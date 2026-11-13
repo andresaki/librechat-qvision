@@ -5,6 +5,7 @@ const { logger, MAX_AGENT_EVENT_ACTOR_ENCODING_LENGTH } = require('@librechat/da
 const { getBufferString, HumanMessage } = require('@librechat/agents/langchain/messages');
 const {
   createRun,
+  resolveLangfuseAgentIdentity,
   isEnabled,
   checkAccess,
   buildRunToolSet,
@@ -4667,7 +4668,7 @@ class AgentClient extends BaseClient {
       });
 
       config = {
-        runName: 'AgentRun',
+        runName: resolveLangfuseAgentIdentity(this.options.agent ?? {}).traceName,
         configurable: {
           thread_id: this.conversationId,
           ...buildToolApprovalExecutionConfig(this.responseMessageId, this.jobCreatedAt),

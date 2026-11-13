@@ -144,6 +144,27 @@ describe('buildLangfuseConfig', () => {
     });
   });
 
+  it('always includes safe agent identity metadata', async () => {
+    delete process.env.TENANT_ISOLATION_STRICT;
+    process.env.LANGFUSE_PUBLIC_KEY = 'pk-env';
+    process.env.LANGFUSE_SECRET_KEY = 'sk-env';
+    const { buildLangfuseConfig } = await import('./config');
+
+    expect(
+      buildLangfuseConfig({
+        runId: 'run-1',
+        traceContext: { agentName: 'quinn-emojis', agentId: 'agent-42' },
+      }),
+    ).toMatchObject({
+      deterministicTraceId: true,
+      metadata: {
+        agent_name: 'quinn-emojis',
+        agent_id: 'agent-42',
+        agent_type: 'librechat_agent',
+      },
+    });
+  });
+
   it('prefers environment credentials in single-tenant mode', async () => {
     delete process.env.TENANT_ISOLATION_STRICT;
     process.env.LANGFUSE_PUBLIC_KEY = 'pk-env';

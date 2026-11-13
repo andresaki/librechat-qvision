@@ -19,11 +19,16 @@ export type LangfuseTraceUser = Partial<Pick<IUser, LangfuseTraceUserMetadataFie
 /** Request-scoped values a run may expose as trace metadata when allowlisted. */
 export type LangfuseTraceContext = Partial<
   Record<LangfuseTraceConversationMetadataField, string | null>
->;
+> & {
+  agentName?: string | null;
+  agentId?: string | null;
+};
 
 export type LangfuseTraceIdentityConfig = DeepPartial<LangfuseTraceConfig>;
 
 const DEFAULT_USER_ID_FIELD = 'id';
+const MAX_AGENT_TRACE_NAME_LENGTH = 100;
+const AGENT_TRACE_NAME_FALLBACK = 'unknown';
 /** Fields already reported (unset or unknown), so a busy deployment logs each once. */
 const userIdFieldWarnings = new Set<string>();
 /**
@@ -80,6 +85,46 @@ const CONVERSATION_METADATA_KEYS: Record<LangfuseTraceConversationMetadataField,
   spec: 'librechat.spec',
 };
 
+export type LangfuseAgentIdentity = {
+  traceName: string;
+  agentName: string;
+  agentId?: string;
+  agentType: 'librechat_agent';
+};
+
+type AgentIdentitySource = {
+  name?: unknown;
+  id?: unknown;
+};
+
+function normalizeAgentIdentityPart(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const normalized = value
+    .normalize('NFKC')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/gu, '-')
+    .replace(/[^\p{L}\p{N}._-]+/gu, '-')
+    .replace(/-{2,}/gu, '-')
+    .replace(/^[._-]+|[._-]+$/gu, '')
+    .slice(0, MAX_AGENT_TRACE_NAME_LENGTH)
+    .replace(/[._-]+$/gu, '');
+  return normalized || undefined;
+}
+
+export function resolveLangfuseAgentIdentity(agent: AgentIdentitySource): LangfuseAgentIdentity {
+  const agentId = normalizeAgentIdentityPart(agent.id);
+  const agentName = normalizeAgentIdentityPart(agent.name) ?? agentId ?? AGENT_TRACE_NAME_FALLBACK;
+  return {
+    traceName: `agent:${agentName}`,
+    agentName,
+    ...(agentId ? { agentId } : {}),
+    agentType: 'librechat_agent',
+  };
+}
+
 /**
  * The trace `userId` a deployment selected, or `undefined` to keep the SDK's
  * default (`configurable.user_id`, the internal id). A user without a value
@@ -123,6 +168,16 @@ export function buildLangfuseTraceMetadata({
   context: LangfuseTraceContext | undefined;
 }): Record<string, string> | undefined {
   const metadata: Record<string, string> = {};
+  const agentName = normalizeString(context?.agentName);
+  const agentId = normalizeString(context?.agentId);
+  if (agentName != null || agentId != null) {
+    const identity = resolveLangfuseAgentIdentity({ name: agentName, id: agentId });
+    metadata.agent_name = identity.agentName;
+    if (identity.agentId != null) {
+      metadata.agent_id = identity.agentId;
+    }
+    metadata.agent_type = identity.agentType;
+  }
   for (const field of new Set(trace?.userMetadataFields ?? [])) {
     const value = isUserMetadataField(field) ? normalizeString(user?.[field]) : undefined;
     if (value != null) {

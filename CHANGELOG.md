@@ -2,6 +2,13 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-12 — Nombres dinámicos de agentes en Langfuse
+
+- Las traces raíz de agentes usan `agent:<nombre-normalizado>` y conservan las observaciones internas existentes.
+- La metadata raíz añade `agent_name`, `agent_id` y `agent_type: librechat_agent` sin incluir prompts, credenciales ni API keys.
+- Se cubren el runtime web/resumable, Chat Completions, Responses API, triggers/webhooks y ejecuciones programadas mediante el punto común de ejecución.
+- Validación documentada en `docs/05-Langfuse-Nombres-Dinamicos-Agentes.md`.
+
 ## 2026-11-09 — Shell de chat Quinn alineado al mockup
 
 - El rail contraído muestra el símbolo de Quinn y revela el control de menú al pasar el mouse o recibir foco; los módulos siguen abriendo sus paneles propios al expandirlo.

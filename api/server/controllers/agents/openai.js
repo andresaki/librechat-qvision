@@ -14,6 +14,7 @@ const {
 const {
   writeSSE,
   createRun,
+  resolveLangfuseAgentIdentity,
   createChunk,
   applyContextToAgent,
   buildRunToolSet,
@@ -1145,7 +1146,7 @@ const executeOpenAIChatCompletion = async (envelope, { req, res }) => {
       }
 
       const config = {
-        runName: 'AgentRun',
+        runName: resolveLangfuseAgentIdentity(agent).traceName,
         configurable: {
           thread_id: conversationId,
           user_id: userId,
