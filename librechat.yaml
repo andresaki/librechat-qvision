@@ -8,7 +8,7 @@ version: 1.3.16
 # quede en USER y al ADMIN). El sandbox (code-interpreter) no va en este compose:
 # se despliega aparte y solo entonces se vuelve a poner en true.
 interface:
-  runCode: false
+  runCode: true
   # Q-Vision: multi-conversación multiplica el consumo xN por mensaje.
   # Como runCode: cubre USER/ADMIN en cada arranque; Creador/Consumidor se
   # apagan en el panel (MULTI_CONVO.USE).
