@@ -2,6 +2,20 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-19 — OpenID: IPv4 primero (Docker Desktop)
+
+- Tras el restart del API, `/oauth/openid` devolvía "An unknown error occurred" porque `openidStrategy` no se registraba: `fetch failed` / `ENETUNREACH` al discovery de `login.microsoftonline.com` (AAAA). IPv4 al mismo host responde 200.
+- En `api`: `sysctls net.ipv6.conf.all.disable_ipv6=1` y `NODE_OPTIONS=--dns-result-order=ipv4first --no-network-family-autoselection`. Log: `OpenID Connect configured successfully`. LiteLLM no se veía afectado (solo A).
+
+## 2026-11-19 — LiteLLM real; se retira el gateway simulado
+
+- `endpoints.custom` apunta a `${LITELLM_PROXY_URL_OPENAI}` (`https://litellm.q-vision.co/v1`). La clave virtual sigue en `.env` como `GATEWAY_API_KEY` (no versionada).
+- Se elimina el servicio Compose `ai-gateway` y `ai-gateway/server.py` (`qvision-sim`).
+- `.env` fija `ENDPOINTS=custom,agents` para que el chat no ofrezca OpenAI/Anthropic nativos.
+- Agentes: `allowedProviders: ["AI-Gateway-QVision"]`. Chat: `interface.modelSelect` y `parameters` en false.
+- Default/títulos: `gpt-4o` (con `fetch: true` LibreChat carga el catálogo real del proxy). Confirmar IDs contra `GET /v1/models`.
+- Validación: restart de `api`, smoke de un chat nuevo y de un agente; migrar a mano agentes viejos que aún apunten a OpenAI/Anthropic/`qvision-sim`.
+
 ## 2026-11-12 — Nombres dinámicos de agentes en Langfuse
 
 - Las traces raíz de agentes usan `agent:<nombre-normalizado>` y conservan las observaciones internas existentes.

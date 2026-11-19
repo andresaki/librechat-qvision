@@ -15,27 +15,20 @@ services:
       - type: bind
         source: ./librechat.yaml
         target: /app/librechat.yaml
+    sysctls:
+      # Docker Desktop: AAAA de login.microsoftonline.com cae con ENETUNREACH.
+      - net.ipv6.conf.all.disable_ipv6=1
     environment:
       # Los MCP viven en la red de Compose. Si el .env trae proxy, sin esto
       # LibreChat saldría a internet para hablar con browser-mcp y m365-mcp.
       - NO_PROXY=${NO_PROXY:-localhost,127.0.0.1,::1},mongodb,chat-mongodb,meilisearch,chat-meilisearch,rag_api,vectordb,host.docker.internal,browser-mcp,m365-mcp
       - no_proxy=${no_proxy:-localhost,127.0.0.1,::1},mongodb,chat-mongodb,meilisearch,chat-meilisearch,rag_api,vectordb,host.docker.internal,browser-mcp,m365-mcp
+      # Preferir A (IPv4) si el kernel aún ve AAAA.
+      - NODE_OPTIONS=--dns-result-order=ipv4first --no-network-family-autoselection
   mongodb:
     user: "0:0"
   meilisearch:
     user: "0:0"
-  ai-gateway:
-    image: python:3.12-alpine
-    container_name: ai-gateway-qvision
-    restart: unless-stopped
-    environment:
-      - GATEWAY_API_KEY=${GATEWAY_API_KEY}
-    command: ["python", "-u", "/gateway/server.py"]
-    volumes:
-      - type: bind
-        source: ./ai-gateway/server.py
-        target: /gateway/server.py
-        read_only: true
   # Browser MCP (Playwright/Chromium): búsqueda y scraping para Quinn.
   # Streamable HTTP en :8932/mcp. Misma red Compose que `api` → host `browser-mcp`.
   browser-mcp:

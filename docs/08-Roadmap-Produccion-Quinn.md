@@ -47,10 +47,10 @@ Detalle técnico de cada punto en `docs/07-*`, `CHANGELOG.md` y `BRECHAS.md`.
 
 ## 4. Bloqueado por AI Gateway (en desarrollo)
 
-- [ ] `endpoints.custom` real + `agents.allowedProviders` + `ENDPOINTS=agents,custom`
-- [ ] `titleModel` al gateway; validar tools/MCP y adjuntos vía gateway (no solo chat)
+- [x] `endpoints.custom` real (LiteLLM `litellm.q-vision.co`) + `agents.allowedProviders` + `ENDPOINTS=custom,agents` (2026-11-19; falta smoke)
+- [x] `titleModel` al gateway (`gpt-4o`); validar tools/MCP y adjuntos vía gateway (no solo chat)
 - [ ] Decidir dónde viven las cuotas → despausar o descartar `docs/06`
-- [ ] Migrar agentes/chats viejos a modelos del gateway; retirar `qvision-sim`
+- [ ] Migrar agentes/chats viejos a modelos del gateway; `qvision-sim` ya no se sirve
 
 
 

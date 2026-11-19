@@ -9,6 +9,9 @@ version: 1.3.16
 # se despliega aparte y solo entonces se vuelve a poner en true.
 interface:
   runCode: true
+  # Q-Vision: el modelo lo fija LiteLLM; el chat no muestra selector ni parámetros.
+  modelSelect: false
+  parameters: false
   # Q-Vision: multi-conversación multiplica el consumo xN por mensaje.
   # Como runCode: cubre USER/ADMIN en cada arranque; Creador/Consumidor se
   # apagan en el panel (MULTI_CONVO.USE).
@@ -153,10 +156,13 @@ interface:
 balance:
   enabled: false
 
-# Sección 10: el chat de este endpoint sale hacia el gateway simulado,
-# no hacia OpenAI ni Anthropic. La clave vive en .env (GATEWAY_API_KEY).
+# Chat y agentes salen a LiteLLM (LITELLM_PROXY_URL_OPENAI + GATEWAY_API_KEY en .env).
+# ENDPOINTS=custom,agents oculta OpenAI/Anthropic nativos. El builder de agentes
+# solo lista modelos del gateway (allowedProviders).
 endpoints:
   agents:
+    allowedProviders:
+      - "AI-Gateway-QVision"
     capabilities:
       - deferred_tools
       - file_search
@@ -175,13 +181,13 @@ endpoints:
   custom:
     - name: "AI-Gateway-QVision"
       apiKey: "${GATEWAY_API_KEY}"
-      baseURL: "http://ai-gateway:4000/v1"
+      baseURL: "${LITELLM_PROXY_URL_OPENAI}"
       models:
-        default: ["qvision-sim"]
+        default: ["gpt-4o"]
         fetch: true
       titleConvo: true
-      titleModel: "qvision-sim"
-      modelDisplayLabel: "AI Gateway QVision"
+      titleModel: "gpt-4o"
+      modelDisplayLabel: "Quinn"
 
 # Chat Completions de OpenAI solo acepta PDF como parte `file`. Un .txt
 # adjunto con destino "provider" produce el 400 de MIME text/plain.
