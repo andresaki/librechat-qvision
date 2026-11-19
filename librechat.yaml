@@ -169,6 +169,7 @@ endpoints:
       - memory
       - ask_user_question
       - tools
+      - execute_code
       - chain
       - ocr
   custom:
