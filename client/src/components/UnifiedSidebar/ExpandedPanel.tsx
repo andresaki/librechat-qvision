@@ -45,7 +45,7 @@ const NewChatButton = memo(function NewChatButton({
           data-testid="new-chat-button"
           aria-label={localize('com_ui_new_chat')}
           aria-keyshortcuts={ariaKey}
-          className="bg-header-primary text-text-on-media hover:bg-header-hover dark:bg-surface-secondary dark:hover:bg-surface-tertiary mt-3 flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
+          className="bg-header-primary text-text-on-media hover:bg-header-hover dark:bg-surface-secondary dark:hover:bg-surface-tertiary mt-5 flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
           onClick={handleNewChatClick}
         >
           <Plus className="text-text-on-media h-5 w-5" />

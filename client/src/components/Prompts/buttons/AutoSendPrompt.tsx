@@ -33,7 +33,14 @@ export default function AutoSendPrompt({
     >
       {/* The button owns the state through `aria-pressed`; this is the mark, not a
           second control inside it. */}
-      <CheckboxGlyph checked={autoSendPrompts} />
+      <CheckboxGlyph
+        checked={autoSendPrompts}
+        className={
+          autoSendPrompts
+            ? 'border-accent-primary bg-accent-primary text-text-inverted'
+            : 'border-border-heavy bg-surface-secondary'
+        }
+      />
       {localize('com_nav_auto_send_prompts')}
     </Button>
   );

@@ -2705,6 +2705,8 @@
   "com_ui_queued_turn_failed": "Queued message failed",
   "com_ui_queued_turn_reconciliation_required": "Awaiting reconciliation",
   "com_ui_queued_turn_starting": "Starting as the next turn",
+  "com_ui_quinn": "Quinn",
+  "com_ui_quinn_chat": "Chat Quinn",
   "com_ui_quinn_welcome": "Hi {{name}}, I'm Quinn, your Q-Vision assistant. How can I help you today?",
   "com_ui_quote_selections": "{{0}} selections",
   "com_ui_quotes_queued": "Quotes added for your next message",

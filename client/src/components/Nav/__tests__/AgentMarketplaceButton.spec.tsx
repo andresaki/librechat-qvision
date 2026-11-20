@@ -37,6 +37,11 @@ describe('AgentMarketplaceButton', () => {
     expect(screen.getByTestId('nav-agents-marketplace-button')).toHaveAttribute('href', '/agents');
   });
 
+  it('matches the 16px rail icon size', () => {
+    const { container } = renderButton();
+    expect(container.querySelector('svg')).toHaveClass('h-4', 'w-4');
+  });
+
   /** The drawer is the only sidebar surface on small screens, so this row is the
    *  one route to `/agents` there. */
   it('shows its own label as a row, and leans on the tooltip as an icon', () => {

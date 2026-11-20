@@ -141,20 +141,19 @@ describe('ContentRender resume author header', () => {
 
     resolveAgent(lia);
 
-    // The row itself did re-render: its own header now names the agent.
-    expect(screen.getAllByTestId('message-icon')[0]).toHaveAttribute('data-agent', 'Lia');
+    expect(screen.getByRole('heading', { hidden: true })).toHaveClass('sr-only');
     expect(mockRenders.parts).toBe(partsRendersAtPaint);
   });
 
-  it('still restates the resolved author inside the message', () => {
+  it('does not restate the author inside the message', () => {
     const { resolveAgent } = renderRow(assistantMessage);
     const parts = screen.getByTestId('parts');
-    expect(within(parts).getByRole('heading', { level: 2 })).toHaveTextContent('agent_lia');
+    expect(within(parts).queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
 
     resolveAgent(lia);
 
-    expect(within(parts).getByRole('heading', { level: 2 })).toHaveTextContent('Lia');
-    expect(within(parts).getByTestId('message-icon')).toHaveAttribute('data-agent', 'Lia');
+    expect(within(parts).queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
+    expect(within(parts).queryByTestId('message-icon')).not.toBeInTheDocument();
   });
 
   it('hands a user message no resume header', () => {

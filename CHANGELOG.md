@@ -2,6 +2,39 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-20 — Selector directo de Chat Quinn
+
+- «Chat Quinn» selecciona directamente el chat normal y usa `gpt-5.6-luna` como único modelo; ya no abre la lista de modelos del gateway.
+- Chat Quinn usa un punto ámbar y Agentes un punto azul; los agentes conservan su avatar cuando existe y usan el punto azul como fallback.
+- Se elimina el borde del panel desplegable del selector.
+
+## 2026-11-20 — Selector Quinn: Chat Quinn y Agentes
+
+- El punto amarillo y «Quinn» vuelven a ser un selector interactivo.
+- El menú solo muestra «Chat Quinn» para el endpoint LiteLLM y «Agentes»; los proveedores nativos y Assistants quedan ocultos.
+- El nombre interno `AI-Gateway-QVision` se conserva para no romper agentes ni conversaciones existentes.
+
+## 2026-11-20 — Títulos mediante `gpt-6-luna`
+
+- El gateway Q-Vision genera los títulos con `gpt-6-luna`, que es el modelo activo elegido para esta función.
+- No se usan `gpt-4o`, `gpt-5-mini` ni `gpt-5-nano` para títulos; el gateway reporta la próxima retirada de esos modelos.
+
+## 2026-11-20 — Sidebar: checkbox de prompts, padding de Skills y chats
+
+- El checkbox de «Enviar prompts al seleccionar» usa acento Quinn y texto invertido cuando está activo, y un relleno claro con borde cuando no, para que se distinga sobre el botón.
+- El botón Skill Marketplace deja de ir a borde a borde: mismo `px-3` que el resto del panel.
+- El historial de chats reserva el gutter del scrollbar a ambos lados y quita el `pr-1`/`pe-1` extra de las cabeceras, para que el aire izquierdo y derecho coincidan.
+
+## 2026-11-20 — Rail: icono marketplace 16px y más aire bajo el toggle
+
+- El icono de marketplace de agentes en el sidebar pasa a `h-4 w-4` (16px) y hereda el color del botón `nav`, igual que el resto de iconos del rail.
+- Más espacio entre el botón de expandir el menú y el de nuevo chat (`mt-5`).
+
+## 2026-11-19 — Chip Quinn en el header; sin autor en cada respuesta
+
+- El selector de modelo (apagado) se sustituye por un chip estático: punto `accent-primary` + texto Quinn, sin borde ni píldora.
+- Las respuestas del asistente ya no muestran avatar circular ni el nombre encima del mensaje; el nombre queda solo para lectores de pantalla.
+
 ## 2026-11-19 — OpenID: IPv4 primero (Docker Desktop)
 
 - Tras el restart del API, `/oauth/openid` devolvía "An unknown error occurred" porque `openidStrategy` no se registraba: `fetch failed` / `ENETUNREACH` al discovery de `login.microsoftonline.com` (AAAA). IPv4 al mismo host responde 200.
@@ -12,8 +45,8 @@
 - `endpoints.custom` apunta a `${LITELLM_PROXY_URL_OPENAI}` (`https://litellm.q-vision.co/v1`). La clave virtual sigue en `.env` como `GATEWAY_API_KEY` (no versionada).
 - Se elimina el servicio Compose `ai-gateway` y `ai-gateway/server.py` (`qvision-sim`).
 - `.env` fija `ENDPOINTS=custom,agents` para que el chat no ofrezca OpenAI/Anthropic nativos.
-- Agentes: `allowedProviders: ["AI-Gateway-QVision"]`. Chat: `interface.modelSelect` y `parameters` en false.
-- Default/títulos: `gpt-4o` (con `fetch: true` LibreChat carga el catálogo real del proxy). Confirmar IDs contra `GET /v1/models`.
+- Agentes: `allowedProviders: ["AI-Gateway-QVision"]`. Chat: selector limitado a Chat Quinn y Agentes; `parameters` permanece en false.
+- Default de chat: `gpt-5.6-luna`; títulos: `gpt-6-luna` (el selector no expone el catálogo de modelos del proxy).
 - Validación: restart de `api`, smoke de un chat nuevo y de un agente; migrar a mano agentes viejos que aún apunten a OpenAI/Anthropic/`qvision-sim`.
 
 ## 2026-11-12 — Nombres dinámicos de agentes en Langfuse

@@ -28,7 +28,9 @@ export default function FilterSkills({
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      <SkillMarketplaceSidebarButton />
+      <div className="px-3">
+        <SkillMarketplaceSidebarButton />
+      </div>
       <PanelHeader
         title={localize('com_ui_skills')}
         action={hasCreateAccess && <CreateSkillMenu />}

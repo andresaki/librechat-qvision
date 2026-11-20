@@ -59,7 +59,7 @@ export default function AgentMarketplaceButton({
           onNavigate?.();
         }}
       >
-        <LayoutGrid className="text-text-primary h-5 w-5 shrink-0" aria-hidden="true" />
+        <LayoutGrid className="h-4 w-4 shrink-0" aria-hidden="true" />
         {isRow && (
           <span className="text-text-primary min-w-0 truncate text-sm font-medium">
             {localize('com_agents_marketplace')}

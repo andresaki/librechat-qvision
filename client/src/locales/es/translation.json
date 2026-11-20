@@ -990,6 +990,8 @@
   "com_ui_prompts_allow_share_public": "Permitir compartir prompts públicamente",
   "com_ui_prompts_allow_use": "Permitir usar prompts",
   "com_ui_provider": "Proveedor",
+  "com_ui_quinn": "Quinn",
+  "com_ui_quinn_chat": "Chat Quinn",
   "com_ui_quinn_welcome": "Hola {{name}}, soy Quinn, tu asistente de Q-Vision. ¿En qué te ayudo hoy?",
   "com_ui_read_aloud": "Leer en voz alta",
   "com_ui_redirect_uri": "URI de redirección",

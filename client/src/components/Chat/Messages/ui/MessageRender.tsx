@@ -187,6 +187,7 @@ const MessageRender = memo(function MessageRender({
       ariaLabel={getMessageAriaLabel(msg, localize)}
       headerPrefix={getHeaderPrefixForScreenReader(msg, localize)}
       isCreatedByUser={msg.isCreatedByUser === true}
+      hideAuthor={msg.isCreatedByUser !== true}
       hasParallelContent={hasParallelContent}
       fullWidth={maximizeChatSpace}
       isEditing={edit}

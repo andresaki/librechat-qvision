@@ -37,6 +37,7 @@ const renderRow = ({
   isEditing = false,
   systemLabel,
   showAuthor,
+  hideAuthor,
   outlined,
 }: {
   isCreatedByUser: boolean;
@@ -46,6 +47,7 @@ const renderRow = ({
   isEditing?: boolean;
   systemLabel?: string;
   showAuthor?: boolean;
+  hideAuthor?: boolean;
   outlined?: boolean;
 }) =>
   render(
@@ -65,6 +67,7 @@ const renderRow = ({
         isEditing={isEditing}
         systemLabel={systemLabel}
         showAuthor={showAuthor}
+        hideAuthor={hideAuthor}
         outlined={outlined}
       >
         <p>{MESSAGE_BODY}</p>
@@ -206,6 +209,14 @@ describe('MessageRow', () => {
     expect(row.querySelector('.agent-turn')).toHaveClass('flex-1');
     expect(screen.getByTestId('message-icon')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Assistant/ })).toBeVisible();
+  });
+
+  it('hides the visible avatar-and-name bar while keeping the accessible name', () => {
+    renderRow({ isCreatedByUser: false, hideAuthor: true });
+
+    expect(screen.queryByTestId('message-icon')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { hidden: true })).toHaveClass('sr-only');
+    expect(screen.getByRole('heading', { hidden: true })).toHaveTextContent('Message from Assistant');
   });
 
   it('carries the assistant avatar inside the heading without naming it', () => {

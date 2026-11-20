@@ -235,7 +235,7 @@ const ConversationsSection = memo(() => {
         <div className="relative flex min-h-0 flex-1 flex-col">
           <div
             ref={setScrollViewportNode}
-            className="min-h-0 flex-1 scrollbar-gutter-stable overflow-x-hidden overflow-y-auto"
+            className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto [scrollbar-gutter:stable_both-edges]"
           >
             {/* `min-h-full` keeps the sections filling a tall sidebar, so the chats
             list still claims the space below them when there is little to show. */}

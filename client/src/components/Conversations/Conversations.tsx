@@ -148,7 +148,7 @@ const ChatsHeader: FC<ChatsHeaderProps> = memo(({ isExpanded, onToggle, trailing
   return (
     <div
       className={cn(
-        'flex h-8 w-full items-center pr-1',
+        'flex h-8 w-full items-center',
         highlight && 'bg-surface-nav-selected rounded-lg',
       )}
     >

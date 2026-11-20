@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Selector de chat Q-Vision y agentes — resuelto el 2026-11-20
+
+El selector del encabezado vuelve a ser interactivo: muestra únicamente «Chat Quinn» para
+el endpoint interno `AI-Gateway-QVision` y «Agentes» para elegir un agente. Los proveedores
+nativos y Assistants se filtran de la interfaz sin cambiar la identidad interna del gateway.
+
 ## Nombres dinámicos de traces de agentes en Langfuse — resuelto el 2026-11-12
 
 El runtime de agentes ahora nombra la observación raíz como `agent:<nombre-normalizado>`,

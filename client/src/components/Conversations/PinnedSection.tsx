@@ -715,7 +715,7 @@ const PinnedSection = ({
     >
       <div
         className={cn(
-          'flex h-8 w-full items-center pe-1',
+          'flex h-8 w-full items-center',
           isPinOver && canPin && 'bg-surface-nav-selected rounded-lg',
         )}
       >

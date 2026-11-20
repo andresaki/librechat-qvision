@@ -135,6 +135,7 @@ function MessageParts(props: TMessageProps) {
           ariaLabel={getMessageAriaLabel(message, localize)}
           headerPrefix={getHeaderPrefixForScreenReader(message, localize)}
           isCreatedByUser={isCreatedByUser === true}
+          hideAuthor={isCreatedByUser !== true}
           hasParallelContent={hasParallelContent}
           fullWidth={maximizeChatSpace}
           isEditing={edit}

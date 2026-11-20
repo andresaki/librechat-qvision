@@ -32,6 +32,9 @@ type MessageRowProps = {
    *  position and bubble, under the same avatar-and-name header an agent turn
    *  carries. */
   showAuthor?: boolean;
+  /** Keep the author in the accessible name but omit the visible avatar-and-name
+   *  bar (Quinn branding: identity lives in the chat header, not each reply). */
+  hideAuthor?: boolean;
   /** Outline the user-side bubble instead of filling it: content the host
    *  delivered rather than words someone typed. */
   outlined?: boolean;
@@ -97,6 +100,7 @@ export default function MessageRow({
   isEditing = false,
   systemLabel,
   showAuthor = false,
+  hideAuthor = false,
   outlined = false,
 }: MessageRowProps): ReactElement {
   const { renderFiles } = useMessagesHost();
@@ -159,7 +163,7 @@ export default function MessageRow({
             </span>
           </h2>
         )}
-        {!hasParallelContent && !isSystem && isCreatedByUser && !showAuthor && (
+        {!hasParallelContent && !isSystem && (hideAuthor || (isCreatedByUser && !showAuthor)) && (
           <h2 className="sr-only">
             {headerPrefix}
             {label}
@@ -168,6 +172,7 @@ export default function MessageRow({
         )}
         {!hasParallelContent &&
           !isSystem &&
+          !hideAuthor &&
           (!isCreatedByUser || showAuthor) &&
           renderAuthorHeader({
             icon,

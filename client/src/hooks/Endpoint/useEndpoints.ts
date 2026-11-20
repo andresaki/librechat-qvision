@@ -1,5 +1,4 @@
 import React, { useMemo, useCallback } from 'react';
-import { Feather } from 'lucide-react';
 import { Sparkles, ProviderIcon } from '@librechat/client';
 import { useGetModelsQuery } from 'librechat-data-provider/react-query';
 import {
@@ -19,7 +18,7 @@ import type {
 } from 'librechat-data-provider';
 import type { ProviderIconResolution } from './useProviderIcon';
 import type { Endpoint } from '~/common';
-import { useHasAccess, useShowMarketplace } from '~/hooks';
+import { useHasAccess, useLocalize, useShowMarketplace } from '~/hooks';
 import { resolveProviderIcon } from './useProviderIcon';
 import { useGetEndpointsQuery } from '~/data-provider';
 import { mapEndpoints } from '~/utils';
@@ -37,7 +36,18 @@ export const createEndpointIcon = (
   model?: string,
 ): React.ReactNode => {
   if (endpoint === EModelEndpoint.agents) {
-    return React.createElement(Feather, { size: artSize, className: artClassName });
+    return React.createElement('span', {
+      className: 'bg-status-info size-2 shrink-0 rounded-full',
+      'aria-hidden': true,
+    });
+  }
+
+  const isCustomEndpoint = !Object.values(EModelEndpoint).includes(endpoint as EModelEndpoint);
+  if (isCustomEndpoint) {
+    return React.createElement('span', {
+      className: 'bg-accent-primary size-2 shrink-0 rounded-full',
+      'aria-hidden': true,
+    });
   }
 
   if (endpoint === EModelEndpoint.assistants || endpoint === EModelEndpoint.azureAssistants) {
@@ -74,6 +84,7 @@ export const useEndpoints = ({
   const modelsQuery = useGetModelsQuery();
   const { data: endpoints = [] } = useGetEndpointsQuery({ select: mapEndpoints });
   const interfaceConfig = startupConfig?.interface ?? defaultInterface;
+  const localize = useLocalize();
   const includedEndpoints = useMemo(
     () => new Set(startupConfig?.modelSpecs?.addedEndpoints ?? []),
     [startupConfig?.modelSpecs?.addedEndpoints],
@@ -101,13 +112,21 @@ export const useEndpoints = ({
     }
     const result: EModelEndpoint[] = [];
     for (let i = 0; i < endpoints.length; i++) {
-      if (endpoints[i] === EModelEndpoint.agents && !hasAgentAccess) {
+      const endpoint = endpoints[i];
+      const isBuiltInEndpoint = Object.values(EModelEndpoint).includes(
+        endpoint as EModelEndpoint,
+      );
+      // Q-Vision exposes only the custom gateway and the Agents endpoint in this selector.
+      if (endpoint !== EModelEndpoint.agents && isBuiltInEndpoint) {
         continue;
       }
-      if (includedEndpoints.size > 0 && !includedEndpoints.has(endpoints[i])) {
+      if (endpoint === EModelEndpoint.agents && !hasAgentAccess) {
         continue;
       }
-      result.push(endpoints[i]);
+      if (includedEndpoints.size > 0 && !includedEndpoints.has(endpoint)) {
+        continue;
+      }
+      result.push(endpoint);
     }
 
     return result;
@@ -122,10 +141,14 @@ export const useEndpoints = ({
 
   const mappedEndpoints: Endpoint[] = useMemo(() => {
     return filteredEndpoints.reduce<Endpoint[]>((acc, ep) => {
+      const isCustomEndpoint = !Object.values(EModelEndpoint).includes(ep as EModelEndpoint);
       const hasModels =
-        (ep === EModelEndpoint.agents && ((agents?.length ?? 0) > 0 || showAgentMarketplace)) ||
+        (!isCustomEndpoint &&
+          ep === EModelEndpoint.agents &&
+          ((agents?.length ?? 0) > 0 || showAgentMarketplace)) ||
         (ep === EModelEndpoint.assistants && assistants?.length > 0) ||
-        (ep !== EModelEndpoint.assistants &&
+        (!isCustomEndpoint &&
+          ep !== EModelEndpoint.assistants &&
           ep !== EModelEndpoint.agents &&
           (modelsQuery.data?.[ep]?.length ?? 0) > 0);
 
@@ -136,7 +159,7 @@ export const useEndpoints = ({
       // Base result object with formatted default icon
       const result: Endpoint = {
         value: ep,
-        label: alternateName[ep] || ep,
+        label: isCustomEndpoint ? localize('com_ui_quinn_chat') : alternateName[ep] || ep,
         hasModels,
         icon: createEndpointIcon(ep, resolveProviderIcon({ endpoint: ep, endpointsConfig })),
       };
@@ -205,6 +228,7 @@ export const useEndpoints = ({
 
       // For other endpoints with models from the modelsQuery
       else if (
+        !isCustomEndpoint &&
         ep !== EModelEndpoint.agents &&
         ep !== EModelEndpoint.assistants &&
         (modelsQuery.data?.[ep]?.length ?? 0) > 0
@@ -225,6 +249,7 @@ export const useEndpoints = ({
     endpointsConfig,
     filteredEndpoints,
     modelsQuery.data,
+    localize,
     showAgentMarketplace,
   ]);
 

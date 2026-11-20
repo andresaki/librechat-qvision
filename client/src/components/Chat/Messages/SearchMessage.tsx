@@ -3,7 +3,6 @@ import { useRecoilValue } from 'recoil';
 import {
   SubRow,
   MessageRow,
-  AuthorHeader,
   getHeaderModelName,
   getMessageRowWidthClass,
 } from '@librechat/chat/components';
@@ -103,14 +102,6 @@ function SearchMessage({ message }: Pick<TMessageProps, 'message'>) {
     localize,
   ]);
 
-  const authorHeader = useMemo(
-    () =>
-      message?.isCreatedByUser === true ? undefined : (
-        <AuthorHeader icon={<Icon iconData={iconData} />} label={messageLabel} />
-      ),
-    [message?.isCreatedByUser, iconData, messageLabel],
-  );
-
   if (!message) {
     return null;
   }
@@ -133,6 +124,7 @@ function SearchMessage({ message }: Pick<TMessageProps, 'message'>) {
           ariaLabel={getMessageAriaLabel(message, localize)}
           headerPrefix={getHeaderPrefixForScreenReader(message, localize)}
           isCreatedByUser={message.isCreatedByUser === true}
+          hideAuthor={message.isCreatedByUser !== true}
           className="final-completion"
           footer={
             <SubRow classes={message.isCreatedByUser ? 'justify-end text-xs' : 'text-xs'}>
@@ -144,7 +136,7 @@ function SearchMessage({ message }: Pick<TMessageProps, 'message'>) {
             </SubRow>
           }
         >
-          <SearchContent message={message} authorHeader={authorHeader} />
+          <SearchContent message={message} />
         </MessageRow>
       </div>
     </div>

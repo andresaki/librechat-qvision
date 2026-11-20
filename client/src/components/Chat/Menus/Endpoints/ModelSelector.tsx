@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { TooltipAnchor } from '@librechat/client';
-import { getConfigDefaults } from 'librechat-data-provider';
+import { EModelEndpoint, getConfigDefaults } from 'librechat-data-provider';
 import type { ModelSelectorProps } from '~/common';
 import {
   renderModelSpecs,
@@ -13,6 +13,7 @@ import { useShortcutAriaKey, useShortcutHint } from '~/hooks/useKeyboardShortcut
 import { ModelSelectorChatProvider } from './ModelSelectorChatContext';
 import { getSelectedIcon, getDisplayValue } from './utils';
 import { CustomMenu as Menu } from './CustomMenu';
+import QuinnBrandChip from './QuinnBrandChip';
 import DialogManager from './DialogManager';
 import { useLocalize } from '~/hooks';
 
@@ -64,6 +65,10 @@ function ModelSelectorContent() {
       }),
     [localize, agentsMap, modelSpecs, selectedValues, mappedEndpoints],
   );
+  const isQuinnChat =
+    !selectedValues.modelSpec &&
+    !!selectedValues.endpoint &&
+    selectedValues.endpoint !== EModelEndpoint.agents;
 
   const trigger = (
     <TooltipAnchor
@@ -73,15 +78,21 @@ function ModelSelectorContent() {
         <button
           data-testid="model-selector-button"
           aria-keyshortcuts={modelSelectorAriaKey}
-          className="border-border-chrome bg-presentation text-text-primary hover:bg-surface-active-alt rounded-theme-control my-1 flex h-9 max-w-full items-center gap-2 border px-3 py-2 text-sm"
+          className="bg-presentation text-text-primary hover:bg-surface-active-alt rounded-theme-control my-1 flex h-9 max-w-full items-center gap-2 px-3 py-2 text-sm"
           aria-label={localize('com_ui_select_model')}
         >
-          {selectedIcon && React.isValidElement(selectedIcon) && (
+          {isQuinnChat && (
+            <>
+              <span className="bg-accent-primary size-2 shrink-0 rounded-full" aria-hidden="true" />
+              <span className="truncate text-start">{localize('com_ui_quinn')}</span>
+            </>
+          )}
+          {!isQuinnChat && selectedIcon && React.isValidElement(selectedIcon) && (
             <div className="flex shrink-0 items-center justify-center overflow-hidden">
               {selectedIcon}
             </div>
           )}
-          <span className="truncate text-start">{selectedDisplayValue}</span>
+          {!isQuinnChat && <span className="truncate text-start">{selectedDisplayValue}</span>}
         </button>
       }
     />
@@ -135,7 +146,7 @@ export default function ModelSelector({ startupConfig }: ModelSelectorProps) {
 
   // Hide the selector when modelSelect is false and there are no model specs to show
   if (interfaceConfig.modelSelect === false && modelSpecs.length === 0) {
-    return null;
+    return <QuinnBrandChip />;
   }
 
   return (
