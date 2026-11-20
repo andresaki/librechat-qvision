@@ -11,6 +11,8 @@ interface:
   runCode: true
   # Q-Vision: el modelo lo fija LiteLLM; el selector solo ofrece Chat Quinn y Agentes.
   modelSelect: true
+  # Q-Vision: no se usan configuraciones preestablecidas en el chat.
+  presets: false
   parameters: false
   # Q-Vision: multi-conversación multiplica el consumo xN por mensaje.
   # Como runCode: cubre USER/ADMIN en cada arranque; Creador/Consumidor se

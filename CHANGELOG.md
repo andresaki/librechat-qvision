@@ -2,6 +2,13 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-20 — Iconos del historial de Quinn y agentes
+
+- Las conversaciones del gateway Quinn muestran el punto amarillo en el historial.
+- Los agentes sin avatar muestran el punto azul; los agentes con avatar conservan su imagen.
+- Se oculta «Configuraciones preestablecidas» mediante `interface.presets: false`; los presets
+  guardados no se eliminan.
+
 ## 2026-11-20 — Categorías de agentes en selector
 
 - La página `/agents` muestra las categorías en un selector compacto en lugar de acumularlas

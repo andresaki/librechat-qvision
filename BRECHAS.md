@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Iconos del historial para Quinn y agentes — resuelto el 2026-11-20
+
+Las conversaciones del gateway muestran un punto amarillo; los agentes sin avatar muestran un
+punto azul y los agentes con avatar mantienen su imagen. La opción «Configuraciones
+preestablecidas» se controla con `interface.presets` y puede ocultarse con `presets: false`.
+
 ## Categorías del marketplace de agentes — resuelto el 2026-11-20
 
 La ruta `/agents` sustituyó las etiquetas horizontales por un selector de categoría. El filtro
