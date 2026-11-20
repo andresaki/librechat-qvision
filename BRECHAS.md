@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Categorías del marketplace de agentes — resuelto el 2026-11-20
+
+La ruta `/agents` sustituyó las etiquetas horizontales por un selector de categoría. El filtro
+mantiene la categoría activa y admite nuevas categorías sin ampliar el encabezado; la opción
+nativa conserva accesibilidad y navegación por teclado.
+
 ## Textos del historial en español — resuelto el 2026-11-20
 
 La revisión posterior detectó claves usadas por Proyectos, Chats y filtros que existían en inglés

@@ -2,6 +2,13 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-20 — Categorías de agentes en selector
+
+- La página `/agents` muestra las categorías en un selector compacto en lugar de acumularlas
+  como etiquetas horizontales.
+- El filtro conserva la categoría activa, navegación por teclado nativa y las traducciones
+  existentes; las nuevas categorías se agregan automáticamente como opciones.
+
 ## 2026-11-20 — Revisión de textos del historial en español
 
 - Se añadieron las traducciones españolas que faltaban en Proyectos, Chats, filtros y acciones

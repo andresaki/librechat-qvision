@@ -2,6 +2,7 @@ jest.mock('../ResetApprovals', () => () => null);
 import React from 'react';
 import * as t from 'librechat-data-provider';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { clickDropdown } from 'test/dropdown';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CategoryTabs from '../CategoryTabs';
 import ErrorDisplay from '../ErrorDisplay';
@@ -182,14 +183,14 @@ describe('Accessibility Improvements', () => {
     });
   });
 
-  describe('CategoryTabs Accessibility', () => {
+  describe('Category selector accessibility', () => {
     const categories = [
       { value: 'promoted', label: 'Top Picks', count: 5 },
       { value: 'all', label: 'All', count: 20 },
       { value: 'productivity', label: 'Productivity', count: 8 },
     ];
 
-    it('implements proper tablist role and ARIA attributes', () => {
+    it('provides a labelled selector with all categories', () => {
       render(
         <CategoryTabs
           categories={categories}
@@ -199,24 +200,12 @@ describe('Accessibility Improvements', () => {
         />,
       );
 
-      // Check tablist role
-      const tablist = screen.getByRole('tablist');
-      expect(tablist).toBeInTheDocument();
-      expect(tablist).toHaveAttribute('aria-label', 'Agent Categories');
-      expect(tablist).toHaveAttribute('aria-orientation', 'horizontal');
-
-      // Check individual tabs
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(3);
-
-      tabs.forEach((tab) => {
-        expect(tab).toHaveAttribute('aria-selected');
-        expect(tab).toHaveAttribute('aria-controls');
-        expect(tab).toHaveAttribute('id');
-      });
+      const selector = screen.getByTestId('agent-category-dropdown');
+      expect(selector).toBeInTheDocument();
+      expect(selector).toHaveTextContent('Top Picks');
     });
 
-    it('supports keyboard navigation', () => {
+    it('changes category through the selector', async () => {
       const onChange = jest.fn();
       render(
         <CategoryTabs
@@ -227,23 +216,12 @@ describe('Accessibility Improvements', () => {
         />,
       );
 
-      const promotedTab = screen.getByRole('tab', { name: /Top Picks category/ });
-
-      // Test arrow key navigation
-      fireEvent.keyDown(promotedTab, { key: 'ArrowRight' });
-      expect(onChange).toHaveBeenCalledWith('all');
-
-      fireEvent.keyDown(promotedTab, { key: 'ArrowLeft' });
-      expect(onChange).toHaveBeenCalledWith('productivity');
-
-      fireEvent.keyDown(promotedTab, { key: 'Home' });
-      expect(onChange).toHaveBeenCalledWith('promoted');
-
-      fireEvent.keyDown(promotedTab, { key: 'End' });
+      await clickDropdown(screen.getByTestId('agent-category-dropdown'));
+      await clickDropdown(screen.getByText('Productivity'));
       expect(onChange).toHaveBeenCalledWith('productivity');
     });
 
-    it('manages focus correctly', () => {
+    it('reflects the active category', () => {
       const onChange = jest.fn();
       render(
         <CategoryTabs
@@ -254,12 +232,7 @@ describe('Accessibility Improvements', () => {
         />,
       );
 
-      const promotedTab = screen.getByRole('tab', { name: /Top Picks category/ });
-      const allTab = screen.getByRole('tab', { name: /All category/ });
-
-      // Active tab should be focusable
-      expect(promotedTab).toHaveAttribute('tabIndex', '0');
-      expect(allTab).toHaveAttribute('tabIndex', '-1');
+      expect(screen.getByTestId('agent-category-dropdown')).toHaveTextContent('Top Picks');
     });
   });
 
@@ -532,12 +505,10 @@ describe('Accessibility Improvements', () => {
         />,
       );
 
-      const tab = screen.getByRole('tab');
-      // Check that the tab has proper ARIA attributes for accessibility
-      expect(tab).toHaveAttribute('aria-selected', 'true');
-      expect(tab).toHaveAttribute('tabIndex', '0');
-      // Check that tab has proper role and can receive focus
-      expect(tab).toHaveAttribute('role', 'tab');
+      const selector = screen.getByTestId('agent-category-dropdown');
+      expect(selector).toHaveValue('test');
+      expect(selector).toHaveAttribute('data-testid', 'agent-category-dropdown');
+      expect(selector).toHaveClass('focus-visible:ring-2');
     });
   });
 

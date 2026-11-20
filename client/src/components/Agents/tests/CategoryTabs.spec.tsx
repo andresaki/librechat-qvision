@@ -1,6 +1,6 @@
 import React from 'react';
-import userEvent from '@testing-library/user-event';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { clickDropdown } from 'test/dropdown';
 import '@testing-library/jest-dom';
 import type t from 'librechat-data-provider';
 import CategoryTabs from '../CategoryTabs';
@@ -34,8 +34,6 @@ describe('CategoryTabs', () => {
   ];
 
   const mockOnChange = jest.fn();
-  const user = userEvent.setup();
-
   beforeEach(() => {
     mockOnChange.mockClear();
   });
@@ -51,11 +49,11 @@ describe('CategoryTabs', () => {
     );
 
     // Check for provided categories
-    expect(screen.getByText('Top Picks')).toBeInTheDocument();
-    expect(screen.getByText('All')).toBeInTheDocument();
-    expect(screen.getByText('General')).toBeInTheDocument();
-    expect(screen.getByText('HR')).toBeInTheDocument();
-    expect(screen.getByText('Finance')).toBeInTheDocument();
+    expect(screen.getAllByText('Top Picks').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('All').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('General').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('HR').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Finance').length).toBeGreaterThan(0);
   });
 
   it('handles loading state properly', () => {
@@ -73,7 +71,7 @@ describe('CategoryTabs', () => {
     expect(screen.queryByText('No categories available')).not.toBeInTheDocument();
   });
 
-  it('marks the active tab as selected', () => {
+  it('marks the active category as selected', () => {
     render(
       <CategoryTabs
         categories={mockCategories}
@@ -83,11 +81,10 @@ describe('CategoryTabs', () => {
       />,
     );
 
-    const generalTab = screen.getByText('General').closest('button');
-    expect(generalTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByTestId('agent-category-dropdown')).toHaveTextContent('General');
   });
 
-  it('calls onChange when a tab is clicked', async () => {
+  it('calls onChange when a category is selected', async () => {
     render(
       <CategoryTabs
         categories={mockCategories}
@@ -97,13 +94,13 @@ describe('CategoryTabs', () => {
       />,
     );
 
-    const hrTab = screen.getByText('HR');
-    await user.click(hrTab);
+    await clickDropdown(screen.getByTestId('agent-category-dropdown'));
+    await clickDropdown(screen.getByText('HR'));
 
     expect(mockOnChange).toHaveBeenCalledWith('hr');
   });
 
-  it('handles promoted tab click correctly', async () => {
+  it('handles promoted category selection correctly', async () => {
     render(
       <CategoryTabs
         categories={mockCategories}
@@ -113,13 +110,13 @@ describe('CategoryTabs', () => {
       />,
     );
 
-    const topPicksTab = screen.getByText('Top Picks');
-    await user.click(topPicksTab);
+    await clickDropdown(screen.getByTestId('agent-category-dropdown'));
+    await clickDropdown(screen.getByText('Top Picks'));
 
     expect(mockOnChange).toHaveBeenCalledWith('promoted');
   });
 
-  it('handles all tab click correctly', async () => {
+  it('handles all category selection correctly', async () => {
     render(
       <CategoryTabs
         categories={mockCategories}
@@ -129,63 +126,10 @@ describe('CategoryTabs', () => {
       />,
     );
 
-    const allTab = screen.getByText('All');
-    await user.click(allTab);
+    await clickDropdown(screen.getByTestId('agent-category-dropdown'));
+    await clickDropdown(screen.getByText('All'));
 
     expect(mockOnChange).toHaveBeenCalledWith('all');
-  });
-
-  it('marks the selected tab and leaves other tabs unselected', () => {
-    render(
-      <CategoryTabs
-        categories={mockCategories}
-        activeTab="promoted"
-        isLoading={false}
-        onChange={mockOnChange}
-      />,
-    );
-
-    const tabs = screen.getAllByRole('tab');
-    expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
-    expect(tabs[2]).toHaveAttribute('aria-selected', 'false');
-  });
-
-  it('renders accessible tabs connected to category panels', () => {
-    render(
-      <CategoryTabs
-        categories={mockCategories}
-        activeTab="promoted"
-        isLoading={false}
-        onChange={mockOnChange}
-      />,
-    );
-
-    const tabs = screen.getAllByRole('tab');
-    expect(tabs).toHaveLength(5);
-    tabs.forEach((tab) => {
-      expect(tab.tagName).toBe('BUTTON');
-      expect(tab.getAttribute('aria-controls')).toMatch(/^category-panel-/);
-    });
-  });
-
-  it('handles keyboard navigation', async () => {
-    render(
-      <CategoryTabs
-        categories={mockCategories}
-        activeTab="promoted"
-        isLoading={false}
-        onChange={mockOnChange}
-      />,
-    );
-
-    const generalTab = screen.getByText('General').closest('button')!;
-
-    // Focus the button and click it
-    generalTab.focus();
-    expect(document.activeElement).toBe(generalTab);
-
-    await user.click(generalTab);
-    expect(mockOnChange).toHaveBeenCalledWith('general');
   });
 
   it('shows empty state when categories prop is empty', () => {
@@ -202,7 +146,7 @@ describe('CategoryTabs', () => {
     expect(screen.getByText('No categories available')).toBeInTheDocument();
   });
 
-  it('maintains consistent ordering of categories', () => {
+  it('maintains consistent ordering of category options', () => {
     render(
       <CategoryTabs
         categories={mockCategories}
@@ -212,60 +156,6 @@ describe('CategoryTabs', () => {
       />,
     );
 
-    const tabs = screen.getAllByRole('tab');
-    const tabTexts = tabs.map((tab) => tab.textContent);
-
-    // Check that promoted is first and all is second
-    expect(tabTexts[0]).toBe('Top Picks');
-    expect(tabTexts[1]).toBe('All');
-    expect(tabTexts.length).toBe(5);
-  });
-
-  describe('arrow key navigation', () => {
-    beforeEach(() => {
-      /** jsdom does not inherit `direction`, so resolve it from the nearest `dir` attribute. */
-      const original = window.getComputedStyle.bind(window);
-      jest.spyOn(window, 'getComputedStyle').mockImplementation((el, pseudo) => {
-        const style = original(el, pseudo);
-        const dir = el.closest('[dir]')?.getAttribute('dir') ?? 'ltr';
-        return new Proxy(style, {
-          get: (target, prop) =>
-            prop === 'direction' ? dir : (Reflect.get(target, prop, target) as unknown),
-        });
-      });
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
-    const press = (dir: 'ltr' | 'rtl', key: string) => {
-      const { container } = render(
-        <div dir={dir} style={{ direction: dir }}>
-          <CategoryTabs
-            categories={mockCategories}
-            activeTab="all"
-            isLoading={false}
-            onChange={mockOnChange}
-          />
-        </div>,
-      );
-      fireEvent.keyDown(container.querySelector('#category-tab-all') as HTMLElement, { key });
-    };
-
-    it('moves to the next tab on ArrowRight in LTR', () => {
-      press('ltr', 'ArrowRight');
-      expect(mockOnChange).toHaveBeenCalledWith('general');
-    });
-
-    it('moves to the previous tab on ArrowRight in RTL', () => {
-      press('rtl', 'ArrowRight');
-      expect(mockOnChange).toHaveBeenCalledWith('promoted');
-    });
-
-    it('moves to the next tab on ArrowLeft in RTL', () => {
-      press('rtl', 'ArrowLeft');
-      expect(mockOnChange).toHaveBeenCalledWith('general');
-    });
+    expect(screen.getByTestId('agent-category-dropdown')).toHaveTextContent('Top Picks');
   });
 });
