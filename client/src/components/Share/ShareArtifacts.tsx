@@ -16,6 +16,7 @@ import { isCodeOnlyArtifact } from '~/utils/artifacts';
 import { lazyWithRecovery } from '~/lib/assets/lazy';
 import { useShareContext } from '~/Providers';
 import { getLatestText } from '~/utils';
+import { useLocalize } from '~/hooks';
 import store from '~/store';
 
 const Artifacts = lazyWithRecovery(() => import('~/components/Artifacts/Artifacts'));
@@ -209,11 +210,13 @@ function ShareArtifactsPanel({ contextValue }: ShareArtifactsPanelProps) {
  * Mobile overlay that displays artifacts in a fixed position
  */
 function ShareArtifactsOverlay({ contextValue }: ShareArtifactsPanelProps) {
+  const localize = useLocalize();
+
   return (
     <div
       className="fixed inset-y-0 inset-e-0 z-40 flex w-full max-w-full sm:max-w-[26.25rem]"
       role="complementary"
-      aria-label="Artifacts panel"
+      aria-label={localize('com_ui_artifacts_panel')}
     >
       <ShareArtifactsPanel contextValue={contextValue} />
     </div>

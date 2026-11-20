@@ -78,7 +78,7 @@ const UserAvatar = memo(
           <img
             className="rounded-full"
             src={resolved.src}
-            alt="avatar"
+            alt={localize('com_ui_avatar')}
             onError={() => setResolved(markAvatarFailed(userId, resolved.src))}
           />
         ) : (

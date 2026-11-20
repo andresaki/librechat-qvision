@@ -166,7 +166,14 @@ export default function ActionsPanel({
               {localize('com_assistants_actions_info')}
             </p>
             {/* <div className="text-sm text-text-secondary">
-            <a href="https://help.openai.com/en/articles/8554397-creating-a-gpt" target="_blank" rel="noreferrer" className="font-medium">Learn more.</a>
+            <a
+              href="https://help.openai.com/en/articles/8554397-creating-a-gpt"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium"
+            >
+              {localize('com_ui_learn_more')}
+            </a>
           </div> */}
           </div>
           <ActionsAuth disableOAuth={true} />

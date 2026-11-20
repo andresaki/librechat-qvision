@@ -45,7 +45,7 @@ export default function FilterPrompts({
             {
               value: SystemCategories.MY_PROMPTS,
               label: localize('com_ui_my_prompts'),
-              icon: <User className="h-4 w-4 text-text-primary" />,
+              icon: <User className="text-text-primary h-4 w-4" />,
             },
           ]
         : []),
@@ -127,7 +127,7 @@ export default function FilterPrompts({
             shape="default"
             triggerClassName="bg-transparent"
             icon={<ListFilter className="h-4 w-4" />}
-            label="Filter: "
+            label={`${localize('com_ui_filter_prompts')}: `}
             ariaLabel={localize('com_ui_filter_prompts')}
             iconOnly
           />

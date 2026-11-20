@@ -24,25 +24,17 @@ function Footer({ startupConfig }: { startupConfig: TStartupConfig | null | unde
 
   return (
     <div
-      className="text-text-secondary mt-auto px-6 pb-6 pt-2 text-center text-[11px]"
+      className="text-text-secondary mt-auto px-6 pt-2 pb-6 text-center text-[11px]"
       role="contentinfo"
     >
-      <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+      <p>{localize('com_auth_footer_disclaimer')}</p>
+      <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
         {renderLink(localize('com_auth_footer_privacy'), privacyPolicyUrl)}
         <span className="text-accent-primary" aria-hidden="true">
           ·
         </span>
         {renderLink(localize('com_auth_footer_terms'), termsOfServiceUrl)}
-        <span className="text-accent-primary" aria-hidden="true">
-          ·
-        </span>
-        {renderLink(localize('com_auth_footer_responsible_ai'))}
-        <span className="text-accent-primary" aria-hidden="true">
-          ·
-        </span>
-        {renderLink(localize('com_auth_footer_help'), startupConfig.helpAndFaqURL)}
       </div>
-      <p className="mt-1">{localize('com_auth_footer_disclaimer')}</p>
     </div>
   );
 }

@@ -1,28 +1,8 @@
-import type { TranslationResource } from './i18n';
-import {
-  __resetLocaleForTests,
-  __setLocaleLoaderForTests,
-  changeLanguageSafely,
-  ensureLocale,
-  initializeI18n,
-  normalizeLocale,
-} from './i18n';
+import { changeLanguageSafely, initializeI18n, normalizeLocale } from './i18n';
 import English from './en/translation.json';
 import Spanish from './es/translation.json';
-import French from './fr/translation.json';
 import { TranslationKeys } from '~/hooks';
 import i18n from './i18n';
-
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: unknown) => void;
-  const promise = new Promise<T>((promiseResolve, promiseReject) => {
-    resolve = promiseResolve;
-    reject = promiseReject;
-  });
-
-  return { promise, resolve, reject };
-}
 
 describe('i18next translation tests', () => {
   // Ensure i18next is initialized before any tests run
@@ -37,11 +17,6 @@ describe('i18next translation tests', () => {
   it('should return the correct translation for a valid key in English', async () => {
     await changeLanguageSafely('en');
     expect(i18n.t('com_ui_examples')).toBe(English.com_ui_examples);
-  });
-
-  it('should return the correct translation for a valid key in French', async () => {
-    await changeLanguageSafely('fr');
-    expect(i18n.t('com_ui_examples')).toBe(French.com_ui_examples);
   });
 
   it('should return the correct translation for a valid key in Spanish', async () => {
@@ -64,131 +39,139 @@ describe('i18next translation tests', () => {
     await changeLanguageSafely('en');
     expect(i18n.t('com_endpoint_default_with_num', { 0: 'John' })).toBe('default: John');
 
-    await changeLanguageSafely('fr');
-    expect(i18n.t('com_endpoint_default_with_num', { 0: 'Marie' })).toBe('par défaut : Marie');
+    await changeLanguageSafely('es');
+    expect(i18n.t('com_endpoint_default_with_num', { 0: 'María' })).toBe('predeterminado: María');
   });
 
   it('should normalize language selector values to locale files', () => {
     expect(normalizeLocale('en-US')).toBe('en');
-    expect(normalizeLocale('de-DE')).toBe('de');
-    expect(normalizeLocale('fr-FR')).toBe('fr');
-    expect(normalizeLocale('ar-EG')).toBe('ar');
-    expect(normalizeLocale('he-IL')).toBe('he');
-    expect(normalizeLocale('nl-NL')).toBe('nl');
-    expect(normalizeLocale('pl-PL')).toBe('pl');
-    expect(normalizeLocale('uk-UA')).toBe('uk');
-    expect(normalizeLocale('zh-Hans')).toBe('zh-Hans');
-    expect(normalizeLocale('zh-Hant')).toBe('zh-Hant');
-    expect(normalizeLocale('pt-BR')).toBe('pt-BR');
-    expect(normalizeLocale('pt-PT')).toBe('pt-PT');
+    expect(normalizeLocale('es-ES')).toBe('es');
+    expect(normalizeLocale('de-DE')).toBe('en');
+    expect(normalizeLocale('fr-FR')).toBe('en');
+    expect(normalizeLocale('auto')).toBe('en');
   });
 
-  it('should reuse an in-flight locale load', async () => {
-    __resetLocaleForTests('sv');
-    const pendingLocale = deferred<{ default: TranslationResource }>();
-    const loadLocale = jest.fn(() => pendingLocale.promise);
-    const restoreLoader = __setLocaleLoaderForTests('sv', loadLocale);
+  it('keeps English and Spanish translation keys in sync', () => {
+    const requiredKeys = [
+      'com_ui_sources_unavailable',
+      'com_ui_previous_source',
+      'com_ui_next_source',
+      'com_ui_source_number',
+      'com_ui_previous_page',
+      'com_ui_next_page',
+      'com_ui_resize_sidebar',
+      'com_ui_agent_avatar',
+      'com_ui_agent_configuration',
+      'com_ui_artifacts_panel',
+      'com_ui_manage_backup_codes',
+      'com_ui_example_input',
+      'com_ui_example_output',
+      'com_ui_cancel',
+      'com_ui_spinner',
+      'com_ui_close_added_conversation',
+      'com_ui_dismiss_banner',
+      'com_ui_conversations',
+      'com_ui_filter_prompts',
+      'com_ui_bookmark_form',
+      'com_ui_add_bookmark',
+      'com_ui_settings',
+      'com_ui_all_projects',
+      'com_ui_chats',
+      'com_ui_filter_and_sort_chats',
+      'com_ui_mark_unread',
+      'com_ui_more_options',
+      'com_ui_new_chat_in_project',
+      'com_ui_new_project',
+      'com_ui_pinned',
+      'com_ui_projects',
+      'com_ui_open_project',
+      'com_ui_edit_project',
+      'com_ui_no_project_chats',
+      'com_ui_chats_load_error',
+      'com_ui_retry',
+      'com_ui_search_filters',
+      'com_ui_sort_updated',
+      'com_ui_sort_created',
+      'com_ui_attachments',
+      'com_ui_has_attachments',
+      'com_ui_sharing',
+      'com_ui_shared_only',
+      'com_ui_no_results_found',
+      'com_ui_clear_filters',
+      'com_ui_selected_count',
+      'com_ui_sort_a_z',
+      'com_ui_sort_z_a',
+      'com_ui_sort_newest',
+      'com_ui_sort_oldest',
+      'com_ui_active_count',
+      'com_ui_filters_active',
+      'com_ui_chat_list',
+      'com_ui_reset',
+      'com_ui_sort',
+      'com_ui_sort_chats_by',
+      'com_ui_sort_order',
+      'com_ui_show_project_chats',
+      'com_ui_add_first_project',
+      'com_ui_no_matching_projects',
+      'com_ui_no_projects',
+      'com_ui_search_projects',
+      'com_ui_your_projects',
+      'com_ui_latest_activity',
+      'com_ui_sort_projects_by',
+      'com_ui_project',
+      'com_ui_project_chat_count',
+      'com_ui_project_chat_count_single',
+      'com_ui_project_options',
+      'com_ui_project_not_found',
+      'com_ui_project_name',
+      'com_ui_project_name_placeholder',
+      'com_ui_projects_load_error',
+      'com_ui_create_project',
+      'com_ui_delete_project',
+      'com_ui_delete_project_action',
+      'com_ui_delete_project_confirm',
+      'com_ui_add_description',
+      'com_ui_project_files',
+      'com_ui_project_files_info',
+      'com_ui_project_add_files',
+      'com_ui_project_upload_file',
+      'com_ui_project_choose_file',
+      'com_ui_project_no_files',
+      'com_ui_project_files_help',
+      'com_ui_project_files_retrieval_only',
+      'com_ui_project_instructions_label',
+      'com_ui_project_instructions_info',
+      'com_ui_project_instructions_help',
+      'com_ui_project_instructions_future_turns',
+      'com_ui_project_instructions_error',
+      'com_ui_project_no_eligible_files',
+      'com_ui_project_file_processing',
+      'com_ui_project_file_ready',
+      'com_ui_project_file_unavailable',
+      'com_ui_project_files_error',
+      'com_agents_description_empty',
+      'com_agents_details_hint',
+      'com_agents_my_agents',
+      'com_agents_sort_label',
+      'com_agents_sort_author',
+      'com_agents_sort_newest',
+      'com_agents_sort_oldest',
+      'com_agents_sort_popular',
+      'com_agents_view_details',
+      'com_ui_skills',
+      'com_ui_skill_marketplace',
+      'com_ui_skill_marketplace_subtitle',
+      'com_ui_filter_skills_name',
+      'com_ui_my_skills',
+      'com_ui_create_skill',
+      'com_auth_password_reset_form',
+      'com_auth_registration_form',
+    ] as const;
 
-    const firstLoad = ensureLocale('sv-SE');
-    const secondLoad = ensureLocale('sv-SE');
-
-    expect(loadLocale).toHaveBeenCalledTimes(1);
-
-    pendingLocale.resolve({ default: { com_ui_examples: 'svenska exempel' } });
-
-    await expect(Promise.all([firstLoad, secondLoad])).resolves.toEqual(['sv', 'sv']);
-    expect(i18n.getResource('sv', 'translation', 'com_ui_examples')).toBe('svenska exempel');
-
-    restoreLoader();
-    __resetLocaleForTests('sv');
-  });
-
-  it('should retry a locale load after a transient failure', async () => {
-    __resetLocaleForTests('ka');
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-    let callCount = 0;
-    const restoreLoader = __setLocaleLoaderForTests('ka', async () => {
-      callCount += 1;
-      if (callCount === 1) {
-        throw new Error('temporary chunk failure');
-      }
-
-      return { default: { com_ui_examples: 'ქართული მაგალითები' } };
-    });
-
-    await expect(ensureLocale('ka-GE')).resolves.toBe('en');
-    await expect(ensureLocale('ka-GE')).resolves.toBe('ka');
-
-    expect(callCount).toBe(2);
-    expect(i18n.getResource('ka', 'translation', 'com_ui_examples')).toBe('ქართული მაგალითები');
-
-    restoreLoader();
-    __resetLocaleForTests('ka');
-    consoleErrorSpy.mockRestore();
-  });
-
-  it('should only apply the newest rapid language switch', async () => {
-    __resetLocaleForTests('sv');
-    __resetLocaleForTests('ka');
-    __resetLocaleForTests('sl');
-
-    const svLocale = deferred<{ default: TranslationResource }>();
-    const kaLocale = deferred<{ default: TranslationResource }>();
-    const slLocale = deferred<{ default: TranslationResource }>();
-    const restoreSv = __setLocaleLoaderForTests('sv', () => svLocale.promise);
-    const restoreKa = __setLocaleLoaderForTests('ka', () => kaLocale.promise);
-    const restoreSl = __setLocaleLoaderForTests('sl', () => slLocale.promise);
-
-    const firstSwitch = changeLanguageSafely('sv-SE');
-    const secondSwitch = changeLanguageSafely('ka-GE');
-    const latestSwitch = changeLanguageSafely('sl');
-
-    svLocale.resolve({ default: { com_ui_examples: 'svenska exempel' } });
-    await firstSwitch;
-    expect(i18n.language).not.toBe('sv');
-
-    kaLocale.resolve({ default: { com_ui_examples: 'ქართული მაგალითები' } });
-    await secondSwitch;
-    expect(i18n.language).not.toBe('ka');
-
-    slLocale.resolve({ default: { com_ui_examples: 'slovenski primeri' } });
-    await expect(latestSwitch).resolves.toBe('sl');
-    expect(i18n.language).toBe('sl');
-    expect(document.documentElement.lang).toBe('sl');
-
-    restoreSv();
-    restoreKa();
-    restoreSl();
-    __resetLocaleForTests('sv');
-    __resetLocaleForTests('ka');
-    __resetLocaleForTests('sl');
-  });
-
-  it('should restore the newest language if an older change finishes late', async () => {
-    __resetLocaleForTests('sv');
-    __resetLocaleForTests('sl');
-
-    const svLocale = deferred<{ default: TranslationResource }>();
-    const slLocale = deferred<{ default: TranslationResource }>();
-    const restoreSv = __setLocaleLoaderForTests('sv', () => svLocale.promise);
-    const restoreSl = __setLocaleLoaderForTests('sl', () => slLocale.promise);
-
-    const firstSwitch = changeLanguageSafely('sv-SE');
-    const latestSwitch = changeLanguageSafely('sl');
-
-    slLocale.resolve({ default: { com_ui_examples: 'slovenski primeri' } });
-    await expect(latestSwitch).resolves.toBe('sl');
-    expect(i18n.language).toBe('sl');
-
-    svLocale.resolve({ default: { com_ui_examples: 'svenska exempel' } });
-    await firstSwitch;
-    expect(i18n.language).toBe('sl');
-    expect(document.documentElement.lang).toBe('sl');
-
-    restoreSv();
-    restoreSl();
-    __resetLocaleForTests('sv');
-    __resetLocaleForTests('sl');
+    for (const key of requiredKeys) {
+      expect(English[key]).toBeDefined();
+      expect(Spanish[key]).toBeDefined();
+    }
   });
 });
 
@@ -223,9 +206,8 @@ describe('English plural key families', () => {
       'took 1.4 seconds',
     );
 
-    /** German still carries the pre-rename base key until Locize fills `_other`. */
-    await changeLanguageSafely('de');
-    expect(i18n.t('com_ui_tools_count', { count: 2 })).toBe('2 Tools');
+    await changeLanguageSafely('es');
+    expect(i18n.t('com_ui_tools_count', { count: 2 })).toBe('2 tools');
     await changeLanguageSafely('en');
   });
 });

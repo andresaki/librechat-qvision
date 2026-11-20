@@ -120,7 +120,7 @@ const ConversationStarters = () => {
         </div>
         <Link
           to="/agents"
-          className="text-accent-primary hover:text-accent-primary-hover focus-visible:ring-ring-primary rounded px-2 py-1 text-center text-sm font-medium focus-visible:ring-2 focus-visible:outline-hidden"
+          className="text-link hover:text-link focus-visible:ring-ring-primary rounded px-2 py-1 text-center text-sm font-medium focus-visible:ring-2 focus-visible:outline-hidden"
         >
           {localize('com_qvision_explore_agents')}
         </Link>

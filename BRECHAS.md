@@ -2,6 +2,23 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Textos del historial en español — resuelto el 2026-11-20
+
+La revisión posterior detectó claves usadas por Proyectos, Chats y filtros que existían en inglés
+pero faltaban en `es/translation.json`, por lo que i18next mostraba el fallback inglés. Se añadieron
+sus traducciones y cobertura de contrato.
+
+## Localización de Quinn EN/ES — resuelto parcialmente el 2026-11-20
+
+El selector de idioma y la detección automática solo aceptan inglés y español. Se cubrieron las
+etiquetas visibles y accesibles identificadas en los módulos de Quinn y se añadieron pruebas para
+evitar claves ausentes en esas superficies.
+
+Quedan fuera de este diff los textos introducidos dinámicamente por el usuario, respuestas del
+modelo, nombres de modelos/agentes, URLs, contenido de código y mensajes de protocolos. También
+pueden existir literales heredados en módulos no alcanzados por el inventario; deben migrarse en
+cambios posteriores con su contexto funcional.
+
 ## Selector de chat Q-Vision y agentes — resuelto el 2026-11-20
 
 El selector del encabezado vuelve a ser interactivo: muestra únicamente «Chat Quinn» para

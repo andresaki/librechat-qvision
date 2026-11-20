@@ -2,6 +2,20 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-20 — Revisión de textos del historial en español
+
+- Se añadieron las traducciones españolas que faltaban en Proyectos, Chats, filtros y acciones
+  del menú de conversaciones.
+
+## 2026-11-20 — Localización EN/ES de Quinn
+
+- Quinn limita el selector y el runtime de idioma a detección automática, inglés y español.
+- Se localizaron etiquetas visibles y accesibles de sidebar, conversaciones, agentes, prompts,
+  paginación, autenticación, marcadores, fuentes y artefactos.
+- Se añadieron claves equivalentes en inglés y español y una prueba de contrato para las nuevas
+  superficies; nombres de modelos, URLs, código y contenido generado por usuarios permanecen sin
+  traducir intencionadamente.
+
 ## 2026-11-20 — Selector directo de Chat Quinn
 
 - «Chat Quinn» selecciona directamente el chat normal y usa `gpt-5.6-luna` como único modelo; ya no abre la lista de modelos del gateway.

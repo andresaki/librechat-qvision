@@ -112,7 +112,11 @@ function SocialLoginRender({
         oauthPath="saml"
         Icon={() =>
           startupConfig.samlImageUrl ? (
-            <img src={startupConfig.samlImageUrl} alt="SAML Logo" className="h-5 w-5" />
+            <img
+              src={startupConfig.samlImageUrl}
+              alt={localize('com_ui_saml_logo')}
+              className="h-5 w-5"
+            />
           ) : (
             <SamlIcon />
           )
