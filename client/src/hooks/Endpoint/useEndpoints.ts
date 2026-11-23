@@ -113,9 +113,7 @@ export const useEndpoints = ({
     const result: EModelEndpoint[] = [];
     for (let i = 0; i < endpoints.length; i++) {
       const endpoint = endpoints[i];
-      const isBuiltInEndpoint = Object.values(EModelEndpoint).includes(
-        endpoint as EModelEndpoint,
-      );
+      const isBuiltInEndpoint = Object.values(EModelEndpoint).includes(endpoint as EModelEndpoint);
       // Q-Vision exposes only the custom gateway and the Agents endpoint in this selector.
       if (endpoint !== EModelEndpoint.agents && isBuiltInEndpoint) {
         continue;
@@ -157,9 +155,18 @@ export const useEndpoints = ({
       }
 
       // Base result object with formatted default icon
+      let label: string;
+      if (ep === EModelEndpoint.agents) {
+        label = localize('com_endpoint_agents');
+      } else if (isCustomEndpoint) {
+        label = localize('com_ui_quinn_chat');
+      } else {
+        label = alternateName[ep] || ep;
+      }
+
       const result: Endpoint = {
         value: ep,
-        label: isCustomEndpoint ? localize('com_ui_quinn_chat') : alternateName[ep] || ep,
+        label,
         hasModels,
         icon: createEndpointIcon(ep, resolveProviderIcon({ endpoint: ep, endpointsConfig })),
       };

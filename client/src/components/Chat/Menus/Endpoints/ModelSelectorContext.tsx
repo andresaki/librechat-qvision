@@ -8,13 +8,7 @@ import {
 } from 'librechat-data-provider';
 import type * as t from 'librechat-data-provider';
 import type { Endpoint, SelectedValues } from '~/common';
-import {
-  useAgentDefaultPermissionLevel,
-  useSelectorEffects,
-  useKeyDialog,
-  useEndpoints,
-  useLocalize,
-} from '~/hooks';
+import { useSelectorEffects, useKeyDialog, useEndpoints, useLocalize } from '~/hooks';
 import { useAgentsMapContext, useAssistantsMapContext, useLiveAnnouncer } from '~/Providers';
 import { useGetEndpointsQuery, useListAgentsQuery } from '~/data-provider';
 import { useModelSelectorChatContext } from './ModelSelectorChatContext';
@@ -87,27 +81,27 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
     });
   }, [startupConfig, agentsMap]);
 
-  const permissionLevel = useAgentDefaultPermissionLevel();
   /**
-   * Always query the VIEW scope so this shares one cache entry (and one paginated walk)
-   * with `useAgentsMap` and `useMentions`. Asking for EDIT here spawned a second full
-   * fetch under its own key, holding a duplicate copy of the whole agent list. The
-   * marketplace's "my agents" framing is preserved by filtering on `isEditable`, which
-   * the list endpoint resolves from the same ACL read it already performs.
+   * The selector is a discovery surface for regular users, not an authored-agent list.
+   * Start with the newest public agents and keep the active agent visible when it falls
+   * outside the first five, so an existing conversation never loses its selected option.
    */
-  const wantsEditableOnly = permissionLevel === PermissionBits.EDIT;
+  const PUBLIC_AGENT_LIMIT = 5;
   const selectAgents = useCallback(
     (data: t.AgentListResponse) => {
-      const list = data?.data;
-      if (!wantsEditableOnly) {
-        return list;
+      const publicAgents = (data?.data ?? []).filter((agent) => agent.isPublic === true);
+      const selectedAgent = agent_id ? agentsMap?.[agent_id] : undefined;
+      const visibleAgents = publicAgents.slice(0, PUBLIC_AGENT_LIMIT);
+
+      if (selectedAgent && !visibleAgents.some((agent) => agent.id === selectedAgent.id)) {
+        visibleAgents.push(selectedAgent);
       }
-      return list?.filter((agent) => agent.isEditable !== false);
+      return visibleAgents;
     },
-    [wantsEditableOnly],
+    [agent_id, agentsMap],
   );
   const { data: agents = null } = useListAgentsQuery(
-    { requiredPermission: PermissionBits.VIEW },
+    { requiredPermission: PermissionBits.VIEW, sort: 'newest' },
     { select: selectAgents },
   );
 

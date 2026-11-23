@@ -290,10 +290,14 @@ export function EndpointItem({ endpoint, endpointIndex }: EndpointItemProps) {
   }
 
   if (endpoint.hasModels) {
-    const placeholder =
-      isAgentsEndpoint(endpoint.value) || isAssistantsEndpoint(endpoint.value)
-        ? localize('com_endpoint_search_var', { 0: endpoint.label })
-        : localize('com_endpoint_search_endpoint_models', { 0: endpoint.label });
+    let placeholder: string;
+    if (isAgentsEndpoint(endpoint.value)) {
+      placeholder = localize('com_agents_search_placeholder');
+    } else if (isAssistantsEndpoint(endpoint.value)) {
+      placeholder = localize('com_endpoint_search_var', { 0: endpoint.label });
+    } else {
+      placeholder = localize('com_endpoint_search_endpoint_models', { 0: endpoint.label });
+    }
     return (
       <Menu
         id={`endpoint-${endpoint.value}-menu`}

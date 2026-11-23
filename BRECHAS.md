@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Selector de agentes publicados — resuelto el 2026-11-23
+
+El selector del chat consulta los agentes visibles con permiso de lectura, muestra primero hasta
+cinco agentes públicos y conserva el agente activo cuando queda fuera de ese grupo. El cambio es
+solo de frontend: reutiliza el endpoint existente y no modifica permisos ni la API.
+
 ## Iconos del historial para Quinn y agentes — resuelto el 2026-11-20
 
 Las conversaciones del gateway muestran un punto amarillo; los agentes sin avatar muestran un

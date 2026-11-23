@@ -2,6 +2,13 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-23 — Selector de agentes publicados
+
+- El selector del chat muestra «Agentes» en lugar de «Mis agentes».
+- La lista inicial usa hasta cinco agentes públicos ordenados por novedades; un agente ya
+  seleccionado se conserva visible aunque no esté entre esos cinco.
+- El buscador del submenú usa «Buscar agentes…» según el idioma activo.
+
 ## 2026-11-20 — Iconos del historial de Quinn y agentes
 
 - Las conversaciones del gateway Quinn muestran el punto amarillo en el historial.
