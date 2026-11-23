@@ -367,10 +367,10 @@ const AgentDetailContent: React.FC<AgentDetailContentProps> = ({
               </p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {conversationStarters.map((starter) => (
-                  <Button
+                  <button
                     key={starter.key}
-                    variant="outline"
-                    className="h-auto min-h-14 items-start justify-between gap-3 py-3 text-start whitespace-normal"
+                    type="button"
+                    className="border-border-light bg-surface-card hover:bg-surface-card-hover focus-visible:ring-ring-primary group rounded-theme-surface-lg relative h-auto min-h-24 flex-col items-start justify-start gap-2 p-3 text-start whitespace-normal transition-colors"
                     aria-disabled={actionsDisabled || undefined}
                     onClick={() => {
                       if (!actionsDisabled) {
@@ -378,9 +378,13 @@ const AgentDetailContent: React.FC<AgentDetailContentProps> = ({
                       }
                     }}
                   >
+                    <MessageSquarePlus className="text-link size-4 shrink-0" aria-hidden="true" />
                     <span className="min-w-0 break-words">{starter.text}</span>
-                    <ArrowUpRight className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                  </Button>
+                    <ArrowUpRight
+                      className="text-text-secondary absolute end-3 top-3 size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
+                  </button>
                 ))}
               </div>
             </motion.section>

@@ -2,6 +2,12 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-23 — Tarjetas de inicio para agentes
+
+- Las preguntas iniciales de los agentes usan el mismo lenguaje visual que las acciones rápidas
+  de Quinn: tarjetas con icono, superficie, borde, altura consistente y estados hover/focus.
+- El texto de las sugerencias y su comportamiento no cambian.
+
 ## 2026-11-23 — Selector de agentes publicados
 
 - El selector del chat muestra «Agentes» en lugar de «Mis agentes».

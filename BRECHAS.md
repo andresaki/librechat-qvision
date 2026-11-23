@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Tarjetas de inicio de agentes — resuelto el 2026-11-23
+
+Las sugerencias de conversación de los agentes ahora usan tarjetas alineadas con las acciones
+rápidas de Quinn, tanto en el detalle del agente como al iniciar la conversación. El cambio es
+visual y mantiene el texto, el límite y la acción de cada sugerencia.
+
 ## Selector de agentes publicados — resuelto el 2026-11-23
 
 El selector del chat consulta los agentes visibles con permiso de lectura, muestra primero hasta
