@@ -2,6 +2,14 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-24 — Copy español T3
+
+- Plural y tildes en anuncio del grid de agentes; bifurcación «Recordar mi elección»;
+  categoría «Escritura»; estado sin doble «:»; export «No disponible»; RTL homogéneo.
+- Tooltip Enter alineado con Guiar / Interrumpir / Poner en cola; tokens de contexto en
+  formato `361.000`; buscador de skills; lector de pantalla en prompts; diálogo eliminar chat;
+  selector de idioma «Español» y orden de agentes sin truncar.
+
 ## 2026-11-24 — Marca Quinn en UI (T2)
 
 - Pestaña del marketplace de agentes usa `appTitle` (fallback Quinn), como Skills.

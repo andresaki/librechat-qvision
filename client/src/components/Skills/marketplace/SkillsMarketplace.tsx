@@ -72,6 +72,9 @@ export default function SkillsMarketplace() {
                     value={searchQuery}
                     onSearch={handleSearch}
                     className="flex-1"
+                    inputId="skill-search"
+                    searchAriaKey="com_ui_skill_search_aria"
+                    searchInstructionsKey="com_ui_skill_search_instructions"
                   />
                   {!isSmallScreen && hasCreateAccess ? <CreateSkillMenu /> : null}
                 </div>

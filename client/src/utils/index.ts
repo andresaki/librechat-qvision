@@ -33,6 +33,7 @@ export * from './voices';
 export * from './textarea';
 export * from './messages';
 export * from './quinnBrand';
+export * from './promptCategoryLabel';
 export * from './focus';
 export * from './tokens';
 export * from './balance';

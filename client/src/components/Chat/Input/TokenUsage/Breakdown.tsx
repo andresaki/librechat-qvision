@@ -18,6 +18,7 @@ import type { TokenUsageView } from '~/hooks/Chat/useTokenUsage';
 import type { CurrencyConfig } from '~/utils';
 import { groupToolTokens, formatTokens, normalizeTokenCount, cn } from '~/utils';
 import { contextBreakdownExpandedAtom } from './store';
+import { useTranslation } from 'react-i18next';
 import { useLocalize } from '~/hooks';
 import Usage from './Usage';
 
@@ -49,6 +50,7 @@ function Row({
   expanded,
   controls,
 }: RowProps) {
+  const { i18n } = useTranslation();
   const safeValue = normalizeTokenCount(value);
   const safeMax = max != null ? normalizeTokenCount(max) : 0;
   const percent = safeMax > 0 ? Math.min((safeValue / safeMax) * 100, 100) : null;
@@ -65,7 +67,7 @@ function Row({
         <span className="text-text-secondary min-w-0 break-words">{label}</span>
       </span>
       <span className="text-text-primary shrink-0 font-medium whitespace-nowrap">
-        {formatTokens(safeValue)}
+        {formatTokens(safeValue, i18n.language)}
         {percent != null && (
           <span className="text-text-secondary ms-1 text-xs" aria-hidden="true">
             ({Math.round(percent)}%)
@@ -117,6 +119,8 @@ export default function Breakdown({
   langfuseSessionUrl,
 }: BreakdownProps) {
   const localize = useLocalize();
+  const { i18n } = useTranslation();
+  const formatCount = (count: number) => formatTokens(count, i18n.language);
   const [expanded, setExpanded] = useAtom(contextBreakdownExpandedAtom);
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
   const [toolsExpanded, setToolsExpanded] = useState(false);
@@ -237,7 +241,7 @@ export default function Breakdown({
     insights.push(
       localize('com_ui_context_largest_tool', {
         0: largestTool.name,
-        1: formatTokens(largestTool.tokens),
+        1: formatCount(largestTool.tokens),
       }),
     );
   }
@@ -250,7 +254,7 @@ export default function Breakdown({
   }
   const compactionReclaim = normalizeTokenCount(view.compactionReclaim);
   if (compactionAvailable && compactionReclaim > 0) {
-    insights.push(localize('com_ui_context_compaction', { 0: formatTokens(compactionReclaim) }));
+    insights.push(localize('com_ui_context_compaction', { 0: formatCount(compactionReclaim) }));
   }
 
   const groups =
@@ -364,8 +368,12 @@ export default function Breakdown({
           </span>
           <span className="text-text-secondary flex min-w-0 items-center gap-1 text-xs font-medium">
             {maxTokens != null
-              ? `${formatTokens(usedTokens)} / ${formatTokens(maxTokens)} (${Math.round(percent)}%)`
-              : formatTokens(usedTokens)}
+              ? localize('com_ui_context_usage_label', {
+                  0: formatCount(usedTokens),
+                  1: formatCount(maxTokens),
+                  2: String(Math.round(percent)),
+                })
+              : localize('com_ui_context_usage_label_unknown', { 0: formatCount(usedTokens) })}
             <ChevronDown
               aria-hidden="true"
               className="text-text-tertiary size-3.5 shrink-0 transition-transform duration-300 ease-out group-data-[state=open]:rotate-180 motion-reduce:transition-none"

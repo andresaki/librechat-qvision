@@ -73,6 +73,19 @@ export const LangSelector = ({
     { value: 'es-ES', label: localize('com_nav_lang_spanish') },
   ];
 
+  const dropdownValue = (() => {
+    if (langcode === 'auto') {
+      return 'auto';
+    }
+    if (langcode === 'es' || langcode.startsWith('es-')) {
+      return 'es-ES';
+    }
+    if (langcode === 'en' || langcode.startsWith('en-')) {
+      return 'en-US';
+    }
+    return langcode;
+  })();
+
   const labelId = 'language-selector-label';
 
   return (
@@ -90,7 +103,7 @@ export const LangSelector = ({
           </span>
         )}
         <Dropdown
-          value={langcode}
+          value={dropdownValue}
           onChange={onChange}
           sizeClasses={cn('z-50 w-[min(13.75rem,90vw)]', popoverClassName)}
           options={languageOptions}

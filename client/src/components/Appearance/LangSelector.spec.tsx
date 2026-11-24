@@ -59,6 +59,22 @@ describe('LangSelector', () => {
     });
   });
 
+  it('shows Español when the stored code is es without region', async () => {
+    global.ResizeObserver = class MockedResizeObserver {
+      observe = jest.fn();
+      unobserve = jest.fn();
+      disconnect = jest.fn();
+    };
+    const { getByRole } = render(
+      <RecoilRoot>
+        <LangSelector langcode="es" onChange={mockOnChange} />
+      </RecoilRoot>,
+    );
+
+    await flushDropdownEffects();
+    expect(getByRole('combobox')).toHaveTextContent('Español');
+  });
+
   it('shows a loading indicator while language resources load', () => {
     global.ResizeObserver = class MockedResizeObserver {
       observe = jest.fn();

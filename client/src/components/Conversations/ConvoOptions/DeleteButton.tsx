@@ -99,11 +99,14 @@ export function DeleteConversationDialog({
       <OGDialogHeader>
         <OGDialogTitle>{localize('com_ui_delete_conversation')}</OGDialogTitle>
       </OGDialogHeader>
-      <div id="delete-conversation-description" className="w-full truncate">
+      <div
+        id="delete-conversation-description"
+        className="text-text-secondary w-full text-sm break-words"
+      >
         <Trans
           i18nKey="com_ui_delete_confirm_strong"
           values={{ title }}
-          components={{ strong: <strong /> }}
+          components={{ strong: <strong className="break-words" /> }}
         />
       </div>
       <div className="flex justify-end gap-4 pt-4">

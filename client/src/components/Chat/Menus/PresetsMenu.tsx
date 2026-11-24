@@ -129,11 +129,11 @@ const PresetsMenu: FC = () => {
             <OGDialogHeader>
               <OGDialogTitle>{localize('com_ui_delete_preset')}</OGDialogTitle>
             </OGDialogHeader>
-            <div className="w-full truncate">
+            <div className="text-text-secondary w-full text-sm break-words">
               <Trans
                 i18nKey="com_ui_delete_confirm_strong"
                 values={{ title: presetToDelete.title }}
-                components={{ strong: <strong /> }}
+                components={{ strong: <strong className="break-words" /> }}
               />
             </div>
             <div className="flex justify-end gap-4 pt-4">

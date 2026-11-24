@@ -6,6 +6,11 @@ describe('formatTokens', () => {
     expect(formatTokens(Number.POSITIVE_INFINITY)).toBe('0');
     expect(formatTokens(-10)).toBe('0');
   });
+
+  it('uses full grouping for Spanish instead of compact “mil”', () => {
+    expect(formatTokens(361_000, 'es-ES')).toBe('361.000');
+    expect(formatTokens(367, 'es-ES')).toBe('367');
+  });
 });
 
 describe('formatCost', () => {

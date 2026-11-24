@@ -45,11 +45,11 @@ const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
         value={value}
         onChange={(v) => onChange(v as t.AgentSortOption)}
         options={options}
-        sizeClasses="w-40"
+        sizeClasses="min-w-[14.5rem] w-auto max-w-full"
         icon={<ArrowDownWideNarrow className="size-3.5 shrink-0" aria-hidden="true" />}
         shape="default"
         variant="compact"
-        triggerClassName="w-40"
+        triggerClassName="min-w-[14.5rem] w-auto max-w-full"
         testId="agent-sort-dropdown"
         aria-labelledby={labelId}
       />

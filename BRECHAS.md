@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Copy español T3 (ortografía y UX) — resuelto el 2026-11-24
+
+Doce textos de UI (plurales de agentes, bifurcación, prompts, error, exportar, dirección
+de texto, tooltips Enter, contexto, skills, eliminar chat, idioma y orden agents) alineados con
+criterio Q-Vision. Requiere rebuild de imagen cliente.
+
 ## Marca visible Quinn (T2) — resuelto el 2026-11-24
 
 Pestaña `/agents`, tooltips de notificaciones/sonido, ajuste de mascota de bienvenida, placeholder

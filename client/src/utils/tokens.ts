@@ -50,8 +50,20 @@ const tokenFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 1,
 });
 
-export function formatTokens(count: number): string {
-  const formatted = tokenFormatter.format(normalizeTokenCount(count));
+function resolveTokenNumberLocale(locale?: string): string | undefined {
+  if (locale == null) {
+    return typeof navigator !== 'undefined' ? navigator.language : undefined;
+  }
+  return locale;
+}
+
+export function formatTokens(count: number, locale?: string): string {
+  const normalized = normalizeTokenCount(count);
+  const language = resolveTokenNumberLocale(locale);
+  if (language?.toLowerCase().startsWith('es')) {
+    return new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0 }).format(normalized);
+  }
+  const formatted = tokenFormatter.format(normalized);
   return formatted.replace(/\.0(?=[A-Za-z]|$)/, '');
 }
 

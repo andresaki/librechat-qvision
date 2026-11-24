@@ -13,6 +13,7 @@ import useTokenUsage from '~/hooks/Chat/useTokenUsage';
 import { contextBreakdownExpandedAtom } from './store';
 import CompactAction from './CompactAction';
 import { cn, formatTokens } from '~/utils';
+import { useTranslation } from 'react-i18next';
 import { useLocalize } from '~/hooks';
 import UsagePopover from './Popover';
 import Breakdown from './Breakdown';
@@ -98,6 +99,8 @@ function TokenUsageIndicator({
   balanceEnabled: boolean;
 }) {
   const localize = useLocalize();
+  const { i18n } = useTranslation();
+  const formatCount = (count: number) => formatTokens(count, i18n.language);
   const expanded = useAtomValue(contextBreakdownExpandedAtom);
   const view = useTokenUsage({ index, conversation, isSubmitting });
   /** Owned here, not in the popover: `unmountOnHide` would otherwise lose the
@@ -119,11 +122,11 @@ function TokenUsageIndicator({
   if (hasContext) {
     usageAriaLabel = hasMax
       ? localize('com_ui_context_usage_label', {
-          0: formatTokens(view.usedTokens),
-          1: formatTokens(view.maxTokens ?? 0),
+          0: formatCount(view.usedTokens),
+          1: formatCount(view.maxTokens ?? 0),
           2: String(Math.round(view.percent)),
         })
-      : localize('com_ui_context_usage_label_unknown', { 0: formatTokens(view.usedTokens) });
+      : localize('com_ui_context_usage_label_unknown', { 0: formatCount(view.usedTokens) });
   }
   const ariaLabel = compaction.isCompacting
     ? localize('com_ui_context_compacting')

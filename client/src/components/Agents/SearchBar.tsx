@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Button, FilterInput } from '@librechat/client';
-import { useDebounce, useLocalize } from '~/hooks';
+import { useDebounce, useLocalize, type TranslationKeys } from '~/hooks';
 
 /**
  * Props for the SearchBar component
@@ -16,6 +16,10 @@ interface SearchBarProps {
    * its own, so the caller owns sizing (e.g. `max-w-[420px]` in a toolbar row).
    */
   className?: string;
+  /** Visible/filter label and screen-reader copy (defaults: agent marketplace). */
+  searchAriaKey?: TranslationKeys;
+  searchInstructionsKey?: TranslationKeys;
+  inputId?: string;
 }
 
 /**
@@ -25,7 +29,14 @@ interface SearchBarProps {
  * Includes proper ARIA attributes for accessibility and visual indicators.
  * Uses 300ms debounce delay to prevent excessive API calls during typing.
  */
-const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+  value,
+  onSearch,
+  className = '',
+  searchAriaKey = 'com_agents_search_aria',
+  searchInstructionsKey = 'com_agents_search_instructions',
+  inputId = 'agent-search',
+}) => {
   const localize = useLocalize();
   const [searchTerm, setSearchTerm] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -70,8 +81,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }
   return (
     <div className={`relative w-full ${className}`} role="search">
       <FilterInput
-        inputId="agent-search"
-        label={localize('com_agents_search_aria')}
+        inputId={inputId}
+        label={localize(searchAriaKey)}
         type="text"
         ref={inputRef}
         value={searchTerm}
@@ -84,7 +95,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onSearch, className = '' }
 
       {/* Hidden instructions for screen readers */}
       <div id="search-instructions" className="sr-only">
-        {localize('com_agents_search_instructions')}
+        {localize(searchInstructionsKey)}
       </div>
       {/* Show clear button only when search has value - Google style */}
       {searchTerm && (

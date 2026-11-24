@@ -17,13 +17,20 @@ import {
   cn,
   detectVariables,
   formatQuinnAuthorName,
+  getPromptCategoryLabelKey,
   getPromptMutationErrorKey,
   getPromptGroupPermissions,
   getPromptResolveErrorMessage,
   rowActionClasses,
   rowActionSlotClasses,
 } from '~/utils';
-import { useLocalize, useAuthContext, useSubmitMessage, usePromptContentResolver } from '~/hooks';
+import {
+  useLocalize,
+  useAuthContext,
+  useSubmitMessage,
+  usePromptContentResolver,
+  useCategories,
+} from '~/hooks';
 import { useRecordPromptUsage, useDeletePromptGroup } from '~/data-provider';
 import useChatScopedRequest from '~/hooks/Prompts/useChatScopedRequest';
 import { useLiveAnnouncer, useChatContext } from '~/Providers';
@@ -54,6 +61,7 @@ function ChatGroupItem({
   const { index } = useChatContext();
 
   const { showToast } = useToastContext();
+  const { categories } = useCategories({ hasAccess: true });
   const menuId = useId();
   const isSharedPrompt = group.author !== user?.id && Boolean(group.authorName);
   const authorDisplay = formatQuinnAuthorName(group.authorName, localize);
@@ -176,8 +184,20 @@ function ChatGroupItem({
     snippet = productionText;
   }
 
+  const categoryLabel = useMemo(() => {
+    if (!group.category) {
+      return '';
+    }
+    const fromList = categories.find((item) => item.value === group.category)?.label;
+    if (fromList) {
+      return fromList;
+    }
+    const labelKey = getPromptCategoryLabelKey(group.category);
+    return labelKey ? localize(labelKey) : group.category;
+  }, [categories, group.category, localize]);
+
   const ariaLabel = group.category
-    ? localize('com_ui_prompt_group_button', { name: group.name, category: group.category })
+    ? localize('com_ui_prompt_group_button', { name: group.name, category: categoryLabel })
     : localize('com_ui_prompt_group_button_no_category', { name: group.name });
 
   const dropdownItems = useMemo(() => {
@@ -294,7 +314,7 @@ function ChatGroupItem({
                   trigger={
                     <Ariakit.MenuButton
                       ref={menuButtonRef}
-                      aria-label={localize('com_nav_convo_menu_options')}
+                      aria-label={localize('com_ui_prompt_menu_options')}
                       className={rowActionClasses({ open: menuOpen })}
                       onClick={(e) => e.stopPropagation()}
                     >

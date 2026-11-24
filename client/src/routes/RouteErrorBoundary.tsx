@@ -163,7 +163,7 @@ export default function RouteErrorBoundary() {
         {(typeof errorDetails.status === 'number' ||
           typeof errorDetails.statusText === 'string') && (
           <div className="border-status-warning-border bg-status-warning-subtle text-text-primary mb-4 rounded-xl border p-4 text-sm">
-            <h3 className="mb-2 font-medium">{localize('com_ui_status_prefix')}:</h3>
+            <h3 className="mb-2 font-medium">{localize('com_ui_status_prefix')}</h3>
             <p className="text-text-primary">
               {typeof errorDetails.status === 'number' && `${errorDetails.status} `}
               {typeof errorDetails.statusText === 'string' && errorDetails.statusText}
