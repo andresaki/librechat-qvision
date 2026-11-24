@@ -2,6 +2,13 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-24 — Guía de estilo español T4
+
+- Trato de **tú** en `es/translation.json` (imperativos, posesivos y confirmaciones).
+- Mayúsculas estilo oración, glosario (chat, prompt, modelo, etiquetas) y menos jerga técnica.
+- Scripts: `client/scripts/apply-t4-es-style.mjs`, `client/scripts/check-es-t4-style.mjs`;
+  guía en `docs/05-Guia-Estilo-Espanol-QVision.md`.
+
 ## 2026-11-24 — Copy español T3
 
 - Plural y tildes en anuncio del grid de agentes; bifurcación «Recordar mi elección»;

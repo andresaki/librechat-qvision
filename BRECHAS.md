@@ -2,6 +2,13 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Guía de estilo español T4 — resuelto el 2026-11-24
+
+Lote T4 en `es/translation.json`: tú, mayúsculas, glosario (prompt/skill, modelo, chat en
+menús) y checker `check-es-t4-style.mjs`. En textos largos de ayuda puede quedar *conversación*
+donde es gramatical; nuevas cadenas deben seguir `docs/05-Guia-Estilo-Espanol-QVision.md`.
+Rebuild cliente.
+
 ## Copy español T3 (ortografía y UX) — resuelto el 2026-11-24
 
 Doce textos de UI (plurales de agentes, bifurcación, prompts, error, exportar, dirección
