@@ -94,7 +94,7 @@ export default function RouteErrorBoundary() {
   }, [routeError]);
 
   const errorDetails = {
-    message: typedError.message ?? 'An unexpected error occurred',
+    message: typedError.message ?? localize('com_ui_error_default_message'),
     stack: typedError.stack,
     status: typedError.status,
     statusText: typedError.statusText,

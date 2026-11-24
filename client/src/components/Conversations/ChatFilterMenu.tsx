@@ -58,6 +58,9 @@ import MinimalIcon from '~/components/Endpoints/MinimalIcon';
 import { useHasAccess, useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 
+/** Q-Vision: single gateway — hide endpoint facet in conversation filters (see BRECHAS.md). */
+const SHOW_ENDPOINT_CONVERSATION_FILTER = false;
+
 const itemClassName =
   'flex w-full cursor-pointer select-none items-center gap-2 rounded-lg px-2 py-2 text-sm text-text-primary outline-hidden data-[active-item]:bg-surface-hover md:py-1.5';
 
@@ -555,29 +558,31 @@ const FilterFacets = ({
       })),
     );
 
-    collect(
-      localize('com_ui_endpoint'),
-      selectableEndpoints(endpointsConfig, selectedEndpoints, endpointNameLimit).map(
-        (endpoint) => ({
-          id: `endpoint:${endpoint}`,
-          label: (alternateName[endpoint] as string | undefined) ?? endpoint,
-          checked: selectedEndpoints.includes(endpoint),
-          disabled: endpointsAtLimit && !selectedEndpoints.includes(endpoint),
-          multiple: true,
-          icon: (
-            <MinimalIcon
-              size={16}
-              model={null}
-              isCreatedByUser={false}
-              endpoint={endpoint}
-              endpointsConfig={endpointsConfig}
-              className="size-4"
-            />
-          ),
-          onSelect: () => toggleEndpoint(endpoint),
-        }),
-      ),
-    );
+    if (SHOW_ENDPOINT_CONVERSATION_FILTER) {
+      collect(
+        localize('com_ui_endpoint'),
+        selectableEndpoints(endpointsConfig, selectedEndpoints, endpointNameLimit).map(
+          (endpoint) => ({
+            id: `endpoint:${endpoint}`,
+            label: (alternateName[endpoint] as string | undefined) ?? endpoint,
+            checked: selectedEndpoints.includes(endpoint),
+            disabled: endpointsAtLimit && !selectedEndpoints.includes(endpoint),
+            multiple: true,
+            icon: (
+              <MinimalIcon
+                size={16}
+                model={null}
+                isCreatedByUser={false}
+                endpoint={endpoint}
+                endpointsConfig={endpointsConfig}
+                className="size-4"
+              />
+            ),
+            onSelect: () => toggleEndpoint(endpoint),
+          }),
+        ),
+      );
+    }
 
     /** A flag is its own category and its own single option. */
     collect(localize('com_ui_attachments'), [
@@ -644,7 +649,7 @@ const FilterFacets = ({
       value={createdRange}
       onSelect={setCreatedRange}
     />,
-    <EndpointFacet key="endpoint" />,
+    SHOW_ENDPOINT_CONVERSATION_FILTER ? <EndpointFacet key="endpoint" /> : null,
   ].filter(Boolean);
 
   const flags = [

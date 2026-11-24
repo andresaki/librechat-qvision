@@ -32,6 +32,17 @@ La revisión posterior detectó claves usadas por Proyectos, Chats y filtros que
 pero faltaban en `es/translation.json`, por lo que i18next mostraba el fallback inglés. Se añadieron
 sus traducciones y cobertura de contrato.
 
+## Filtros de conversaciones — parcial el 2026-11-24
+
+Traducciones `com_ui_any_time` y `com_ui_date_previous_year` en `es`. Filtro por punto de conexión
+oculto en Q-Vision (`SHOW_ENDPOINT_CONVERSATION_FILTER` en `ChatFilterMenu.tsx`).
+
+## T1 textos UI en español — parcial el 2026-11-24
+
+Lote de prioridad alta: claves i18n y cadenas hardcodeadas del modal de atajos, composer,
+exportación, errores, configuración, tooltips de ajustes y voz STT (`client/scripts/merge-t1-es-translations.mjs`).
+Persisten literales en módulos fuera del inventario T1 y ~2k claves `en` sin equivalente `es` upstream.
+
 ## Localización de Quinn EN/ES — resuelto parcialmente el 2026-11-20
 
 El selector de idioma y la detección automática solo aceptan inglés y español. Se cubrieron las

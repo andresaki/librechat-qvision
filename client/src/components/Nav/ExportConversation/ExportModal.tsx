@@ -13,13 +13,13 @@ import type { TConversation } from 'librechat-data-provider';
 import { useLocalize, useExportConversation } from '~/hooks';
 import { normalizeExportFilename } from '~/utils';
 
-const TYPE_OPTIONS = [
-  { value: 'markdown', label: 'markdown (.md)' },
-  { value: 'text', label: 'text (.txt)' },
-  { value: 'json', label: 'json (.json)' },
-  { value: 'csv', label: 'csv (.csv)' },
-  { value: 'screenshot', label: 'screenshot (.png)' },
-];
+const EXPORT_TYPE_LABEL_KEYS = {
+  markdown: 'com_nav_export_type_markdown',
+  text: 'com_nav_export_type_text',
+  json: 'com_nav_export_type_json',
+  csv: 'com_nav_export_type_csv',
+  screenshot: 'com_nav_export_type_screenshot',
+} as const;
 
 const DEFAULT_TYPE = 'markdown';
 
@@ -37,6 +37,17 @@ export default function ExportModal({
   children?: React.ReactNode;
 }) {
   const localize = useLocalize();
+
+  const typeOptions = useMemo(
+    () =>
+      (Object.keys(EXPORT_TYPE_LABEL_KEYS) as Array<keyof typeof EXPORT_TYPE_LABEL_KEYS>).map(
+        (value) => ({
+          value,
+          label: localize(EXPORT_TYPE_LABEL_KEYS[value]),
+        }),
+      ),
+    [localize],
+  );
 
   const [filename, setFileName] = useState('');
   const [type, setType] = useState<string>(DEFAULT_TYPE);
@@ -106,7 +117,7 @@ export default function ExportModal({
                 <Dropdown
                   value={type}
                   onChange={handleTypeChange}
-                  options={TYPE_OPTIONS}
+                  options={typeOptions}
                   sizeClasses="z-50"
                   className="z-50"
                   portal={false}
