@@ -15,7 +15,7 @@ const startupConfig = {
 
 const endpointsConfig = {
   'Together AI': { modelDisplayLabel: 'Together' },
-  openAI: {},
+  openAI: { modelDisplayLabel: 'Quinn' },
 } as unknown as TEndpointsConfig;
 
 const renderGetSender = () => {
@@ -90,6 +90,18 @@ describe('useGetSender', () => {
       model: 'some-unknown-model',
     };
     expect(getSender(asOption(unknownCustom))).toBe(getResponseSender(asOption(unknownCustom)));
+  });
+
+  it('surfaces Quinn instead of the underlying model for Quinn-branded chat', () => {
+    const getSender = renderGetSender();
+    expect(
+      getSender(
+        asOption({
+          endpoint: EModelEndpoint.openAI,
+          model: 'gpt-5',
+        }),
+      ),
+    ).toBe('Quinn');
   });
 
   it('never reveals model or spec labels for agent conversations', () => {

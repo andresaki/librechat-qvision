@@ -7,6 +7,7 @@ import { useLocalize, useAuthContext, useSkillPermissions, useSkillActiveState }
 import SkillMarkdownRenderer from './SkillMarkdownRenderer';
 import { ShareSkill, SkillToggle } from '../buttons';
 import DeleteSkill from '../dialogs/DeleteSkill';
+import { formatQuinnAuthorName } from '~/utils';
 import { parseFrontmatter } from '../utils';
 import ViewToggle from './ViewToggle';
 
@@ -28,7 +29,7 @@ export default function SkillDetail({ skill, onEdit, onDelete }: SkillDetailProp
 
   const isPublic = skill.isPublic === true;
   const isShared = skill.author !== user?.id && Boolean(skill.authorName);
-  const addedBy = isShared ? skill.authorName : localize('com_ui_you');
+  const addedBy = isShared ? formatQuinnAuthorName(skill.authorName, localize) : localize('com_ui_you');
   const updatedDate = skill.updatedAt
     ? format(new Date(skill.updatedAt), 'MMM d, yyyy')
     : undefined;

@@ -25,6 +25,7 @@ import {
   getEntityName,
   getEntity,
   checkIfScrollable,
+  isQuinnBrandedEndpoint,
 } from '~/utils';
 import { useAssistantsMapContext } from '~/Providers/AssistantsMapContext';
 import { useLatestMessageMeta } from '~/hooks/Messages/useLatestMessage';
@@ -35,7 +36,7 @@ import { useAgentsMapContext } from '~/Providers/AgentsMapContext';
 import { useChatSettings } from '~/Providers/ChatSettingsContext';
 import useGetSender from '~/hooks/Conversations/useGetSender';
 import useUploadOptions from '~/hooks/Files/useUploadOptions';
-import { useInteractionHealthCheck } from '~/data-provider';
+import { useGetEndpointsQuery, useInteractionHealthCheck } from '~/data-provider';
 import { useChatContext } from '~/Providers/ChatContext';
 import { globalAudioId } from '~/common';
 import { useLocalize } from '~/hooks';
@@ -71,6 +72,7 @@ export default function useTextarea({
 }) {
   const localize = useLocalize();
   const getSender = useGetSender();
+  const { data: endpointsConfig } = useGetEndpointsQuery();
   const { setValue } = useChatFormContext();
   const isComposing = useRef(false);
   const agentsMap = useAgentsMapContext();
@@ -202,6 +204,15 @@ export default function useTextarea({
         return placeholder;
       }
 
+      const chatEndpoint = conversation?.endpoint ?? '';
+      if (
+        !isAssistant &&
+        !isAgent &&
+        isQuinnBrandedEndpoint(endpointsConfig, chatEndpoint)
+      ) {
+        return localize('com_endpoint_message_to_quinn');
+      }
+
       const sender =
         isAssistant || isAgent
           ? getEntityName({ name: entityName, isAgent, localize })
@@ -245,6 +256,7 @@ export default function useTextarea({
     latestMessage,
     isNotAppendable,
     placeholder,
+    endpointsConfig,
   ]);
 
   const handleKeyDown = useCallback(

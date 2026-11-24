@@ -1,7 +1,7 @@
 import { UserRound } from 'lucide-react';
 import type t from 'librechat-data-provider';
 import { useLocalize } from '~/hooks';
-import { cn } from '~/utils';
+import { cn, formatQuinnAuthorName } from '~/utils';
 
 type AgentContactProps = {
   agent?: Pick<t.Agent, 'support_contact' | 'owner_contact'> | null;
@@ -40,7 +40,8 @@ export default function AgentContact({
     return null;
   }
 
-  const label = contact?.name || contact?.email || localize('com_agents_no_contact_available');
+  const displayName = contact?.name ? formatQuinnAuthorName(contact.name, localize) : '';
+  const label = displayName || contact?.email || localize('com_agents_no_contact_available');
 
   return (
     <div

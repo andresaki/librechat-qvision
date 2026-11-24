@@ -16,6 +16,7 @@ import type { TPromptGroup } from 'librechat-data-provider';
 import {
   cn,
   detectVariables,
+  formatQuinnAuthorName,
   getPromptMutationErrorKey,
   getPromptGroupPermissions,
   getPromptResolveErrorMessage,
@@ -55,6 +56,7 @@ function ChatGroupItem({
   const { showToast } = useToastContext();
   const menuId = useId();
   const isSharedPrompt = group.author !== user?.id && Boolean(group.authorName);
+  const authorDisplay = formatQuinnAuthorName(group.authorName, localize);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isPreviewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [isVariableDialogOpen, setVariableDialogOpen] = useState(false);
@@ -245,13 +247,13 @@ function ChatGroupItem({
               />
               {isSharedPrompt && (
                 <TooltipAnchor
-                  description={localize('com_ui_by_author', { 0: group.authorName })}
+                  description={localize('com_ui_by_author', { 0: authorDisplay })}
                   side="top"
                   render={
                     <span
                       tabIndex={0}
                       role="img"
-                      aria-label={localize('com_ui_by_author', { 0: group.authorName })}
+                      aria-label={localize('com_ui_by_author', { 0: authorDisplay })}
                       className="flex shrink-0 items-center"
                     >
                       <User className="text-text-secondary size-3.5" aria-hidden="true" />

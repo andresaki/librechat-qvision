@@ -2,6 +2,16 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-24 — Marca Quinn en UI (T2)
+
+- Pestaña del marketplace de agentes usa `appTitle` (fallback Quinn), como Skills.
+- Notificaciones de respuesta y opción de animación en bienvenida: copy en español/inglés con
+  «Quinn» (sin Lia/LibreChat).
+- Chat con `modelDisplayLabel: Quinn`: placeholder «Escríbele a Quinn», cabecera «Quinn» (sin
+  GPT-5) y sin modelo en hover.
+- Autor de servicio `Admin quinn` → «Administrador de Quinn» en skills, prompts y contacto de
+  agentes.
+
 ## 2026-11-23 — Tarjetas de inicio para agentes
 
 - Las preguntas iniciales de los agentes usan el mismo lenguaje visual que las acciones rápidas

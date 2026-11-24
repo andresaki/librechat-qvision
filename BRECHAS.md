@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Marca visible Quinn (T2) — resuelto el 2026-11-24
+
+Pestaña `/agents`, tooltips de notificaciones/sonido, ajuste de mascota de bienvenida, placeholder
+y firma de mensajes del chat Quinn, y autor de marketplace (`Administrador de Quinn`) dejan de
+mostrar LibreChat, Lia, GPT-5 o `Admin quinn` en UI. Requiere rebuild de imagen cliente.
+
 ## Tarjetas de inicio de agentes — resuelto el 2026-11-23
 
 Las sugerencias de conversación de los agentes ahora usan tarjetas alineadas con las acciones

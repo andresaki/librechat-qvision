@@ -11,8 +11,11 @@ import {
   isAssistantsEndpoint,
   TUpdateFeedbackRequest,
 } from 'librechat-data-provider';
+import type { TEndpointsConfig } from 'librechat-data-provider';
 import type { TMessageChatContext } from '~/common/types';
 import type { TMessageProps } from '~/common';
+import { useGetEndpointsQuery } from '~/data-provider';
+import { isQuinnBrandedEndpoint } from '~/utils';
 import {
   useCopyMessageToClipboard,
   getMessageClipboardSource,
@@ -41,6 +44,7 @@ export type TMessageActions = Pick<
 export default function useMessageActions(props: TMessageActions) {
   const localize = useLocalize();
   const { user } = useAuthContext();
+  const { data: endpointsConfig = {} as TEndpointsConfig } = useGetEndpointsQuery();
   const UsernameDisplay = useRecoilValue<boolean>(store.UsernameDisplay);
   const { message, currentEditId, setCurrentEditId, searchResults, chatContext } = props;
 
@@ -136,17 +140,30 @@ export default function useMessageActions(props: TMessageActions) {
     [clipboardSource, searchResults],
   );
 
+  const quinnBranded = useMemo(
+    () =>
+      isQuinnBrandedEndpoint(
+        endpointsConfig,
+        message?.endpoint ?? conversation?.endpoint ?? undefined,
+      ),
+    [endpointsConfig, message?.endpoint, conversation?.endpoint],
+  );
+
   const messageLabel = useMemo(() => {
     if (message?.isCreatedByUser === true) {
       return UsernameDisplay ? (user?.name ?? '') || user?.username : localize('com_user_message');
-    } else if (agent) {
-      return agent.name ?? 'Assistant';
-    } else if (assistant) {
-      return assistant.name ?? 'Assistant';
-    } else {
-      return message?.sender;
     }
-  }, [message, agent, assistant, UsernameDisplay, user, localize]);
+    if (agent) {
+      return agent.name ?? 'Assistant';
+    }
+    if (assistant) {
+      return assistant.name ?? 'Assistant';
+    }
+    if (quinnBranded) {
+      return localize('com_ui_quinn');
+    }
+    return message?.sender;
+  }, [message, agent, assistant, quinnBranded, UsernameDisplay, user, localize]);
 
   const feedbackMutation = useUpdateFeedbackMutation(
     conversation?.conversationId || '',
@@ -193,13 +210,15 @@ export default function useMessageActions(props: TMessageActions) {
     messageLabel,
     /** Whether `messageLabel` is a configured sender, so the header can withhold the
      *  model it stands in for. */
-    hasConfiguredSender: isConfiguredSender({
-      sender: message?.sender,
-      endpoint: message?.endpoint ?? conversation?.endpoint,
-      endpointType: conversation?.endpointType,
-      model: message?.model ?? conversation?.model,
-      isCreatedByUser: message?.isCreatedByUser,
-    }),
+    hasConfiguredSender:
+      quinnBranded ||
+      isConfiguredSender({
+        sender: message?.sender,
+        endpoint: message?.endpoint ?? conversation?.endpoint,
+        endpointType: conversation?.endpointType,
+        model: message?.model ?? conversation?.model,
+        isCreatedByUser: message?.isCreatedByUser,
+      }),
     /** Withholding the handler removes the controls: `HoverButtons` renders feedback
      *  only when it has somewhere to send it. */
     handleFeedback: feedbackEnabled ? handleFeedback : undefined,

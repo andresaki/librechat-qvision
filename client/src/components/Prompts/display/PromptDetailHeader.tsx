@@ -4,7 +4,7 @@ import { User, Calendar, EarthIcon, BarChart3, Cloud } from 'lucide-react';
 import type { TPromptGroup } from 'librechat-data-provider';
 import { useLocalize, useAuthContext } from '~/hooks';
 import CategoryIcon from '../utils/CategoryIcon';
-import { isExternalPromptGroup } from '~/utils';
+import { formatQuinnAuthorName, isExternalPromptGroup } from '~/utils';
 
 interface PromptDetailHeaderProps {
   group: TPromptGroup;
@@ -15,6 +15,7 @@ const PromptDetailHeader = ({ group }: PromptDetailHeaderProps) => {
   const { user } = useAuthContext();
   const formattedDate = group.createdAt ? format(new Date(group.createdAt), 'MMM d, yyyy') : null;
   const isSharedPrompt = group.author !== user?.id && Boolean(group.authorName);
+  const authorDisplay = formatQuinnAuthorName(group.authorName, localize);
 
   const isGlobalGroup = group.isPublic === true;
   const isExternal = isExternalPromptGroup(group);
@@ -64,7 +65,7 @@ const PromptDetailHeader = ({ group }: PromptDetailHeaderProps) => {
           {isSharedPrompt && (
             <span className="flex items-center gap-1">
               <User className="text-text-secondary h-3 w-3" aria-hidden="true" />
-              {localize('com_ui_by_author', { 0: group.authorName })}
+              {localize('com_ui_by_author', { 0: authorDisplay })}
             </span>
           )}
           {formattedDate && (

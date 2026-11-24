@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ScrollText, User } from 'lucide-react';
 import type { TSkillSummary } from 'librechat-data-provider';
 import { useLocalize } from '~/hooks';
-import { cn } from '~/utils';
+import { cn, formatQuinnAuthorName } from '~/utils';
 
 interface SkillMarketplaceCardProps {
   skill: TSkillSummary;
@@ -14,6 +14,7 @@ export default function SkillMarketplaceCard({ skill, className = '' }: SkillMar
   const navigate = useNavigate();
   const title = skill.displayTitle?.trim() || skill.name;
   const description = skill.description?.trim() ?? '';
+  const authorDisplay = formatQuinnAuthorName(skill.authorName, localize);
 
   const openDetail = () => {
     navigate(`/skills/${skill._id}`);
@@ -57,10 +58,10 @@ export default function SkillMarketplaceCard({ skill, className = '' }: SkillMar
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-base font-semibold text-text-primary">{title}</h3>
-          {skill.authorName ? (
+          {authorDisplay ? (
             <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-text-tertiary">
               <User className="size-3 shrink-0" aria-hidden="true" />
-              <span>{skill.authorName}</span>
+              <span>{authorDisplay}</span>
             </p>
           ) : null}
           {description ? (

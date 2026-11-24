@@ -6,10 +6,11 @@ import {
   getHeaderModelName,
   getMessageRowWidthClass,
 } from '@librechat/chat/components';
-import type { TMessage } from 'librechat-data-provider';
+import type { TEndpointsConfig, TMessage } from 'librechat-data-provider';
 import type { TMessageProps, TMessageIcon } from '~/common';
 import MinimalHoverButtons from '~/components/Chat/Messages/MinimalHoverButtons';
-import { getHeaderPrefixForScreenReader, getMessageAriaLabel } from '~/utils';
+import { useGetEndpointsQuery } from '~/data-provider';
+import { getHeaderPrefixForScreenReader, getMessageAriaLabel, isQuinnBrandedEndpoint } from '~/utils';
 import SearchContent, { rendersMarkdownLite } from './Content/SearchContent';
 import Icon from '~/components/Chat/Messages/MessageIcon';
 import { useAuthContext, useLocalize } from '~/hooks';
@@ -75,6 +76,7 @@ function SearchMessage({ message }: Pick<TMessageProps, 'message'>) {
   const UsernameDisplay = useRecoilValue<boolean>(store.UsernameDisplay);
   const { user } = useAuthContext();
   const localize = useLocalize();
+  const { data: endpointsConfig = {} as TEndpointsConfig } = useGetEndpointsQuery();
 
   const iconData: TMessageIcon = useMemo(
     () => ({
@@ -92,13 +94,18 @@ function SearchMessage({ message }: Pick<TMessageProps, 'message'>) {
         ? (user?.name ?? '') || (user?.username ?? '')
         : localize('com_user_message');
     }
+    if (isQuinnBrandedEndpoint(endpointsConfig, message?.endpoint)) {
+      return localize('com_ui_quinn');
+    }
     return message?.sender ?? '';
   }, [
     message?.isCreatedByUser,
+    message?.endpoint,
     message?.sender,
     UsernameDisplay,
     user?.name,
     user?.username,
+    endpointsConfig,
     localize,
   ]);
 
@@ -119,7 +126,11 @@ function SearchMessage({ message }: Pick<TMessageProps, 'message'>) {
           id={message.messageId}
           icon={<Icon iconData={iconData} />}
           label={messageLabel}
-          hoverLabel={getHeaderModelName(message.model)}
+          hoverLabel={
+            isQuinnBrandedEndpoint(endpointsConfig, message?.endpoint)
+              ? undefined
+              : getHeaderModelName(message.model)
+          }
           timestamp={message.createdAt ?? message.clientTimestamp}
           ariaLabel={getMessageAriaLabel(message, localize)}
           headerPrefix={getHeaderPrefixForScreenReader(message, localize)}

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { getResponseSender, getEphemeralSender, isAgentsEndpoint } from 'librechat-data-provider';
 import type { TEndpointOption, TEndpointsConfig } from 'librechat-data-provider';
 import { useGetEndpointsQuery, useGetStartupConfig } from '~/data-provider';
-import { getModelSpec } from '~/utils';
+import { getModelSpec, isQuinnBrandedEndpoint } from '~/utils';
 
 /**
  * Mirrors the server's sender resolution (`modelLabel` → spec label → endpoint
@@ -18,10 +18,18 @@ export default function useGetSender() {
   const { data: endpointsConfig = {} as TEndpointsConfig } = useGetEndpointsQuery();
   return useCallback(
     (endpointOption: TEndpointOption) => {
-      const { modelDisplayLabel } = endpointsConfig?.[endpointOption.endpoint ?? ''] ?? {};
+      const endpoint = endpointOption.endpoint ?? '';
+      const { modelDisplayLabel } = endpointsConfig?.[endpoint] ?? {};
+      const quinnBranded = isQuinnBrandedEndpoint(endpointsConfig, endpoint);
+
       if (isAgentsEndpoint(endpointOption.endpoint)) {
         return getResponseSender({ ...endpointOption, modelDisplayLabel });
       }
+
+      if (quinnBranded) {
+        return 'Quinn';
+      }
+
       const modelSpec = getModelSpec({ specName: endpointOption.spec, startupConfig });
       const sender = getEphemeralSender({
         modelLabel: endpointOption.modelLabel,

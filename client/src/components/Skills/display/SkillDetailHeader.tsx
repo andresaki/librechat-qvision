@@ -6,6 +6,7 @@ import { Pencil, Pin, User, Calendar, EarthIcon, Sparkles } from 'lucide-react';
 import type { TSkill } from 'librechat-data-provider';
 import type { TranslationKeys } from '~/hooks';
 import { useLocalize, useAuthContext } from '~/hooks';
+import { formatQuinnAuthorName } from '~/utils';
 import DeleteSkill from '../dialogs/DeleteSkill';
 import { ShareSkill } from '../buttons';
 
@@ -27,6 +28,7 @@ const SkillDetailHeader = ({ skill, showActions = true }: SkillDetailHeaderProps
   const formattedDate = skill.createdAt ? format(new Date(skill.createdAt), 'MMM d, yyyy') : null;
   const isOwner = skill.author === user?.id;
   const isShared = !isOwner && Boolean(skill.authorName);
+  const authorDisplay = formatQuinnAuthorName(skill.authorName, localize);
   const isPublic = skill.isPublic === true;
 
   return (
@@ -68,7 +70,7 @@ const SkillDetailHeader = ({ skill, showActions = true }: SkillDetailHeaderProps
           {isShared && (
             <span className="flex items-center gap-1">
               <User className="h-3 w-3 text-text-secondary" aria-hidden="true" />
-              {localize('com_ui_by_author', { 0: skill.authorName })}
+              {localize('com_ui_by_author', { 0: authorDisplay })}
             </span>
           )}
           <span className="flex items-center gap-1">
