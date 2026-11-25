@@ -6,8 +6,8 @@ import rehypeKatex from 'rehype-katex';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import { replaceSpecialVars } from 'librechat-data-provider';
-import { TextareaAutosize, InputCombobox, Button } from '@librechat/client';
 import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
+import { TextareaAutosize, InputCombobox, Button, FieldMessage } from '@librechat/client';
 import type { TPromptGroup } from 'librechat-data-provider';
 import { codeNoExecution } from '~/components/Chat/Messages/Content/MarkdownComponents';
 import { cn, wrapVariable, defaultTextProps, extractVariableInfo } from '~/utils';
@@ -87,7 +87,11 @@ export default function VariableForm({
 
   const { submitPrompt } = useSubmitMessage();
   const recordUsage = useRecordPromptUsage();
-  const { control, handleSubmit } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
     defaultValues: {
       fields: uniqueVariables.map((variable) => ({
         variable: wrapVariable(variable),
@@ -129,10 +133,6 @@ export default function VariableForm({
   const onSubmit = (data: FormValues) => {
     let text = mainText;
     data.fields.forEach(({ variable, value }) => {
-      if (!value) {
-        return;
-      }
-
       const escapedVariable = variable.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
       const regex = new RegExp(escapedVariable, 'g');
       text = text.replace(regex, value);
@@ -171,26 +171,44 @@ export default function VariableForm({
               <Controller
                 name={`fields.${index}.value`}
                 control={control}
+                rules={{
+                  required: localize('com_ui_field_required'),
+                  validate: (value) => value.trim().length > 0 || localize('com_ui_field_required'),
+                }}
                 render={({ field: { onChange, onBlur, value, ref } }) => {
+                  const errorId = `fields.${index}.value-error`;
+                  const hasError = errors.fields?.[index]?.value != null;
+
                   if (field.config.type === 'select') {
                     return (
-                      <InputCombobox
-                        options={field.config.options || []}
-                        placeholder={field.config.variable}
-                        className={cn(
-                          defaultTextProps,
-                          'focus:bg-surface-tertiary mb-1 rounded px-3 py-2',
+                      <>
+                        <InputCombobox
+                          options={field.config.options || []}
+                          placeholder={field.config.variable}
+                          className={cn(
+                            defaultTextProps,
+                            'focus:bg-surface-tertiary mb-1 rounded px-3 py-2',
+                          )}
+                          value={value}
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          aria-label={field.config.variable}
+                          aria-required="true"
+                          aria-invalid={hasError}
+                          aria-describedby={errorId}
+                        />
+                        {hasError && (
+                          <FieldMessage
+                            id={errorId}
+                            message={errors.fields?.[index]?.value?.message}
+                          />
                         )}
-                        value={value}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                        aria-label={field.config.variable}
-                      />
+                      </>
                     );
                   }
 
                   return (
-                    <>
+                    <div className="w-full">
                       <TextareaAutosize
                         ref={ref}
                         value={value}
@@ -199,11 +217,14 @@ export default function VariableForm({
                         id={`fields.${index}.value`}
                         className={cn(
                           defaultTextProps,
-                          'peer focus:bg-surface-tertiary rounded px-3 py-2',
+                          'peer focus:bg-surface-tertiary w-full rounded px-3 py-2',
                         )}
                         placeholder=""
                         maxRows={8}
                         aria-label={field.config.variable}
+                        aria-required="true"
+                        aria-invalid={hasError}
+                        aria-describedby={errorId}
                       />
                       <label
                         htmlFor={`fields.${index}.value`}
@@ -211,7 +232,13 @@ export default function VariableForm({
                       >
                         {field.config.variable}
                       </label>
-                    </>
+                      {hasError && (
+                        <FieldMessage
+                          id={errorId}
+                          message={errors.fields?.[index]?.value?.message}
+                        />
+                      )}
+                    </div>
                   );
                 }}
               />

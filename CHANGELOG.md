@@ -2,6 +2,15 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-25 — Validación de variables de prompts
+
+- El formulario de uso de prompts bloquea el envío cuando una variable está vacía o contiene solo
+  espacios y muestra el error localizado en cada campo.
+- Ya no se conservan marcadores `{{variable}}` por omitir silenciosamente valores vacíos.
+
+**Validación:** prueba automatizada de `VariableForm`; completar Precio y Vigencia en «Acta de
+entrega» y confirmar que el prompt se envía solo después de llenar ambos campos.
+
 ## 2026-11-25 — Acciones rápidas anexan al input
 
 - Las tarjetas de inicio de Chat Quinn y los `conversation_starters` del mismo componente

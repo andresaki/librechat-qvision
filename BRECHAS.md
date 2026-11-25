@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Variables vacías en prompts — resuelto el 2026-11-25
+
+El formulario de variables valida campos vacíos y valores compuestos solo por espacios antes de
+enviar el prompt. El usuario debe completar todos los campos; los marcadores `{{variable}}` ya no
+llegan literalmente al modelo por omisión de un valor.
+
 ## Claves internas visibles (T5) — resuelto el 2026-11-24
 
 Tabla Mis archivos y panel/tienda de skills muestran etiquetas i18n o `getSkillDisplayTitle`
