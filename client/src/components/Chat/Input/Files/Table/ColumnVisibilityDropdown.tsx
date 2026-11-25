@@ -26,12 +26,15 @@ export function ColumnVisibilityDropdown<TData>({
       table
         .getAllColumns()
         .filter((column) => column.getCanHide())
-        .map((column) => ({
-          label: localize(contextMap[column.id]),
+        .map((column) => {
+          const labelKey = contextMap[column.id];
+          return {
+          label: labelKey ? localize(labelKey) : column.id,
           onClick: () => column.toggleVisibility(!column.getIsVisible()),
           icon: column.getIsVisible() ? '✓' : '',
           id: column.id,
-        })),
+        };
+        }),
     [table, contextMap, localize],
   );
 

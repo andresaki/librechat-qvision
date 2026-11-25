@@ -8,7 +8,7 @@ import type { TSkillSummary, TSkillFile } from 'librechat-data-provider';
 import { useListSkillFilesQuery } from '~/data-provider';
 import { Collapse } from '~/components/ui';
 import { useLocalize } from '~/hooks';
-import { cn } from '~/utils';
+import { cn, getSkillDisplayTitle } from '~/utils';
 
 interface SkillListItemProps {
   skill: TSkillSummary;
@@ -324,7 +324,7 @@ function SkillListItem({
           </span>
 
           <span className="flex min-w-0 flex-1 items-center gap-1.5">
-            <span className="truncate">{skill.name}</span>
+            <span className="truncate">{getSkillDisplayTitle(skill)}</span>
             {skill.alwaysApply === true && (
               <Pin
                 className="text-status-info size-3 shrink-0"
@@ -339,7 +339,9 @@ function SkillListItem({
             type="button"
             onClick={handleChevronClick}
             className="text-text-secondary hover:text-text-primary focus-visible:ring-text-primary inline-flex size-6 shrink-0 items-center justify-center rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-inset"
-            aria-label={localize('com_ui_skills_toggle_files', { 0: skill.name })}
+            aria-label={localize('com_ui_skills_toggle_files', {
+              0: getSkillDisplayTitle(skill),
+            })}
             aria-expanded={expanded}
           >
             <ChevronDown

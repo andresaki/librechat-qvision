@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ScrollText, User } from 'lucide-react';
 import type { TSkillSummary } from 'librechat-data-provider';
 import { useLocalize } from '~/hooks';
-import { cn, formatQuinnAuthorName } from '~/utils';
+import { cn, formatQuinnAuthorName, getSkillDisplayTitle } from '~/utils';
 
 interface SkillMarketplaceCardProps {
   skill: TSkillSummary;
@@ -12,7 +12,7 @@ interface SkillMarketplaceCardProps {
 export default function SkillMarketplaceCard({ skill, className = '' }: SkillMarketplaceCardProps) {
   const localize = useLocalize();
   const navigate = useNavigate();
-  const title = skill.displayTitle?.trim() || skill.name;
+  const title = getSkillDisplayTitle(skill);
   const description = skill.description?.trim() ?? '';
   const authorDisplay = formatQuinnAuthorName(skill.authorName, localize);
 

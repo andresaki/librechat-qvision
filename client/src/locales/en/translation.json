@@ -1825,6 +1825,8 @@
   "com_ui_feedback_tag_unjustified_refusal": "Refused without reason",
   "com_ui_field_max_length": "{{field}} must be less than {{length}} characters",
   "com_ui_field_required": "This field is required",
+  "com_ui_file_context_execute_code": "Code execution",
+  "com_ui_file_context_skill_file": "Skill file",
   "com_ui_file": "File",
   "com_ui_file_attached_as_text": "Attached as text",
   "com_ui_file_input_avatar_label": "File input for avatar",

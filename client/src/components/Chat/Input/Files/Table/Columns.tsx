@@ -12,19 +12,16 @@ import {
 } from '@librechat/client';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TFile } from 'librechat-data-provider';
-import { TranslationKeys, useLocalize } from '~/hooks';
+import { useLocalize } from '~/hooks';
 import { SortFilterHeader } from './SortFilterHeader';
+import {
+  FILE_CONTEXT_FILTER_VALUES,
+  fileContextLabelKeys,
+} from './fileTableLabels';
 import { formatDate } from '~/utils';
 
-const contextMap: Record<any, TranslationKeys> = {
-  [FileContext.avatar]: 'com_ui_avatar',
-  [FileContext.unknown]: 'com_ui_unknown',
-  [FileContext.assistants]: 'com_ui_assistants',
-  [FileContext.image_generation]: 'com_ui_image_gen',
-  [FileContext.assistants_output]: 'com_ui_assistants_output',
-  [FileContext.message_attachment]: 'com_ui_attachment',
-  [FileContext.run_artifact]: 'com_ui_published_file',
-};
+/** Q-Vision: uploads use `local` only (no Assistants file storage). Skip cloud filter chips. */
+const FILE_STORAGE_FILTER_SOURCES: FileSources[] = [FileSources.local];
 
 export const columns: ColumnDef<TFile>[] = [
   {
@@ -176,14 +173,13 @@ export const columns: ColumnDef<TFile>[] = [
           column={column}
           title={localize('com_ui_storage')}
           ariaLabel={localize('com_ui_storage_filter_sort')}
-          filters={{
-            Storage: Object.values(FileSources).filter(
-              (value) =>
-                value === FileSources.local ||
-                value === FileSources.openai ||
-                value === FileSources.azure,
-            ),
-          }}
+          filters={
+            FILE_STORAGE_FILTER_SOURCES.length > 1
+              ? {
+                  Storage: FILE_STORAGE_FILTER_SOURCES,
+                }
+              : undefined
+          }
           valueMap={{
             [FileSources.azure]: 'com_ui_azure',
             [FileSources.openai]: 'com_ui_openai',
@@ -228,21 +224,20 @@ export const columns: ColumnDef<TFile>[] = [
           title={localize('com_ui_context')}
           ariaLabel={localize('com_ui_context_filter_sort')}
           filters={{
-            Context: Object.values(FileContext).filter(
-              (value) => value === FileContext[value ?? ''],
-            ),
+            Context: FILE_CONTEXT_FILTER_VALUES,
           }}
-          valueMap={contextMap}
+          valueMap={fileContextLabelKeys}
         />
       );
     },
     cell: ({ row }) => {
       const { context } = row.original;
       const localize = useLocalize();
+      const labelKey =
+        fileContextLabelKeys[context ?? FileContext.unknown] ??
+        fileContextLabelKeys[FileContext.unknown];
       return (
-        <div className="flex flex-wrap items-center gap-2">
-          {localize(contextMap[context ?? FileContext.unknown])}
-        </div>
+        <div className="flex flex-wrap items-center gap-2">{localize(labelKey)}</div>
       );
     },
   },

@@ -7,7 +7,7 @@ import { useLocalize, useAuthContext, useSkillPermissions, useSkillActiveState }
 import SkillMarkdownRenderer from './SkillMarkdownRenderer';
 import { ShareSkill, SkillToggle } from '../buttons';
 import DeleteSkill from '../dialogs/DeleteSkill';
-import { formatQuinnAuthorName } from '~/utils';
+import { formatQuinnAuthorName, getSkillDisplayTitle } from '~/utils';
 import { parseFrontmatter } from '../utils';
 import ViewToggle from './ViewToggle';
 
@@ -38,18 +38,19 @@ export default function SkillDetail({ skill, onEdit, onDelete }: SkillDetailProp
     () => parseFrontmatter(skill.body ?? '', SKIP_KEYS),
     [skill.body],
   );
+  const displayTitle = getSkillDisplayTitle(skill);
 
   return (
     <article
       className="flex h-full min-w-0 flex-col gap-2 overflow-y-auto px-5 pb-5"
-      aria-label={skill.name}
+      aria-label={displayTitle}
     >
       {/* Header row */}
       <div className="flex flex-col gap-3 pb-1 sm:flex-row sm:items-start sm:gap-4">
         <div className="min-w-0 flex-1 overflow-hidden sm:pt-3">
           <div className="flex min-w-0 items-center gap-2">
-            <h2 className="truncate text-xl font-bold text-text-primary" title={skill.name}>
-              {skill.name}
+            <h2 className="truncate text-xl font-bold text-text-primary" title={displayTitle}>
+              {displayTitle}
             </h2>
             {isPublic && (
               <TooltipAnchor

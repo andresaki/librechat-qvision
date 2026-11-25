@@ -42,6 +42,7 @@ import { useSkillsInfiniteQuery } from '~/data-provider';
 import { ephemeralAgentByConvoId } from '~/store';
 import { favoriteKey } from './useToolFavorites';
 import useLocalize from '~/hooks/useLocalize';
+import { getSkillDisplayTitle } from '~/utils';
 
 export type PaletteSection = 'tool' | 'skill' | 'mcp';
 
@@ -448,7 +449,7 @@ export default function usePaletteEntries({
           key: `skill:${skill._id}`,
           itemType: 'skill',
           itemId: skill._id,
-          label: skill.displayTitle ?? skill.name,
+          label: getSkillDisplayTitle(skill),
           description: skill.description,
           icon: <WandSparkles className="icon-md" aria-hidden="true" />,
           section: 'skill',

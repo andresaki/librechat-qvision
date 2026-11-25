@@ -18,6 +18,7 @@ import { useSkillsInfiniteQuery } from '~/data-provider';
 import { useAgentsMapContext } from '~/Providers';
 import { ephemeralAgentByConvoId } from '~/store';
 import { isEphemeralAgent } from '~/common';
+import { getSkillDisplayTitle } from '~/utils';
 
 const commandChar = '$';
 const ROW_HEIGHT = 44;
@@ -162,7 +163,7 @@ function SkillsCommandContent({
     const options: MentionOption[] = [];
     for (const skill of filtered) {
       options.push({
-        label: skill.displayTitle ?? skill.name,
+        label: getSkillDisplayTitle(skill),
         value: skill.name,
         description: skill.description,
         type: 'skill',

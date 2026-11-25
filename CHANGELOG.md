@@ -2,6 +2,12 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-24 — Etiquetas legibles (T5)
+
+- Mis archivos: filtros de contexto, columnas y almacenamiento sin claves crudas (`agents`,
+  `filename`, `Host`, etc.); sin filtro OpenAI/Azure (solo almacenamiento local en Q-Vision).
+- Skills: título visible vía `displayTitle` o mapa de slugs Q-Vision con tildes.
+
 ## 2026-11-24 — Guía de estilo español T4
 
 - Trato de **tú** en `es/translation.json` (imperativos, posesivos y confirmaciones).

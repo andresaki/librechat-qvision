@@ -34,6 +34,7 @@ export * from './textarea';
 export * from './messages';
 export * from './quinnBrand';
 export * from './promptCategoryLabel';
+export * from './skillDisplayTitle';
 export * from './focus';
 export * from './tokens';
 export * from './balance';

@@ -6,7 +6,7 @@ import { Pencil, Pin, User, Calendar, EarthIcon, Sparkles } from 'lucide-react';
 import type { TSkill } from 'librechat-data-provider';
 import type { TranslationKeys } from '~/hooks';
 import { useLocalize, useAuthContext } from '~/hooks';
-import { formatQuinnAuthorName } from '~/utils';
+import { formatQuinnAuthorName, getSkillDisplayTitle } from '~/utils';
 import DeleteSkill from '../dialogs/DeleteSkill';
 import { ShareSkill } from '../buttons';
 
@@ -30,13 +30,14 @@ const SkillDetailHeader = ({ skill, showActions = true }: SkillDetailHeaderProps
   const isShared = !isOwner && Boolean(skill.authorName);
   const authorDisplay = formatQuinnAuthorName(skill.authorName, localize);
   const isPublic = skill.isPublic === true;
+  const displayTitle = getSkillDisplayTitle(skill);
 
   return (
     <div className="flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:gap-4">
       <div className="min-w-0 flex-1 overflow-hidden">
         <div className="flex min-w-0 items-center gap-2">
-          <h2 className="truncate text-xl font-bold text-text-primary" title={skill.name}>
-            {skill.name}
+          <h2 className="truncate text-xl font-bold text-text-primary" title={displayTitle}>
+            {displayTitle}
           </h2>
           {isPublic && (
             <TooltipAnchor
@@ -108,7 +109,7 @@ const SkillDetailHeader = ({ skill, showActions = true }: SkillDetailHeaderProps
               />
               <DeleteSkill
                 skillId={skill._id}
-                skillName={skill.name}
+                skillName={displayTitle}
                 onDelete={() => navigate('/skills')}
               />
             </>

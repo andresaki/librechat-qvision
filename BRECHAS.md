@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Claves internas visibles (T5) — resuelto el 2026-11-24
+
+Tabla Mis archivos y panel/tienda de skills muestran etiquetas i18n o `getSkillDisplayTitle`
+en lugar de slugs/columnas técnicas. Filtro de almacenamiento sin OpenAI/Azure (solo local en Q-Vision).
+Rebuild cliente.
+
 ## Guía de estilo español T4 — resuelto el 2026-11-24
 
 Lote T4 en `es/translation.json`: tú, mayúsculas, glosario (prompt/skill, modelo, chat en

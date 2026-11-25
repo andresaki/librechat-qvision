@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useSetAtom } from 'jotai';
 import { filesFamily } from '@librechat/chat/react';
-import { FileContext } from 'librechat-data-provider';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   flexRender,
@@ -31,8 +30,9 @@ import type {
 } from '@tanstack/react-table';
 import type { TFile } from 'librechat-data-provider';
 import { ColumnVisibilityDropdown } from './ColumnVisibilityDropdown';
+import { fileTableColumnLabelKeys } from './fileTableLabels';
 import { useDeleteFilesFromTable } from '~/hooks/Files';
-import { useLocalize, TranslationKeys } from '~/hooks';
+import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 
 interface DataTableProps<TData, TValue> {
@@ -41,14 +41,6 @@ interface DataTableProps<TData, TValue> {
 }
 
 const ESTIMATED_ROW_HEIGHT = 52;
-
-const contextMap: Record<string, TranslationKeys> = {
-  [FileContext.filename]: 'com_ui_name',
-  [FileContext.updatedAt]: 'com_ui_date',
-  [FileContext.filterSource]: 'com_ui_storage',
-  [FileContext.context]: 'com_ui_context',
-  [FileContext.bytes]: 'com_ui_size',
-};
 
 type Style = {
   width?: number | string;
@@ -152,7 +144,7 @@ export default function DataTable<TData, TValue>({ columns, data }: DataTablePro
         <div className="relative focus-within:z-[100]">
           <ColumnVisibilityDropdown
             table={table}
-            contextMap={contextMap}
+            contextMap={fileTableColumnLabelKeys}
             isSmallScreen={isSmallScreen}
           />
         </div>
