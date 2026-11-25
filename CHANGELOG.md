@@ -2,6 +2,14 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-25 — Validación y cancelación al renombrar chats
+
+- El botón Guardar queda deshabilitado cuando el nombre está vacío o contiene solo espacios.
+- Pulsar fuera del contenedor de edición cancela el renombrado y oculta el input y sus botones.
+- Enter tampoco guarda un nombre vacío.
+
+**Validación:** suite `RenameForm.spec.tsx` (3 pruebas en verde).
+
 ## 2026-11-25 — Nuevo chat inicia en Chat Quinn
 
 - El cliente prioriza el endpoint configurado con `modelDisplayLabel: Quinn` al crear una

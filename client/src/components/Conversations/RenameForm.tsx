@@ -20,6 +20,7 @@ const RenameForm: React.FC<RenameFormProps> = ({
   localize,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -28,13 +29,27 @@ const RenameForm: React.FC<RenameFormProps> = ({
     }
   }, []);
 
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && formRef.current?.contains(event.target)) {
+        return;
+      }
+      onCancel();
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [onCancel]);
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     switch (e.key) {
       case 'Escape':
         onCancel();
         break;
       case 'Enter':
-        onSubmit(titleInput);
+        if (titleInput.trim()) {
+          onSubmit(titleInput);
+        }
         break;
       case 'Tab':
         break;
@@ -43,6 +58,7 @@ const RenameForm: React.FC<RenameFormProps> = ({
 
   return (
     <div
+      ref={formRef}
       className="bg-surface-nav-selected absolute inset-0 z-20 flex w-full items-center rounded-lg p-1.5"
       role="form"
       aria-label={localize('com_ui_rename_conversation')}
@@ -72,6 +88,7 @@ const RenameForm: React.FC<RenameFormProps> = ({
           variant="row-action"
           size="icon"
           onClick={() => onSubmit(titleInput)}
+          disabled={!titleInput.trim()}
           className={cn('focus:ring-text-primary size-auto p-1 focus:ring-2')}
           aria-label={localize('com_ui_save')}
           type="button"

@@ -1,4 +1,4 @@
-import type { TEndpointsConfig } from 'librechat-data-provider';
+import type { EModelEndpoint, TEndpointsConfig } from 'librechat-data-provider';
 import type { TranslationKeys } from '~/hooks';
 
 const QUINN_ENDPOINT_LABEL = 'Quinn';
@@ -17,10 +17,10 @@ export function isQuinnBrandedEndpoint(
 /** Returns the configured gateway endpoint presented as Chat Quinn, if available. */
 export function getQuinnBrandedEndpoint(
   endpointsConfig: TEndpointsConfig | undefined,
-): string | undefined {
+): EModelEndpoint | undefined {
   return Object.entries(endpointsConfig ?? {}).find(
     ([, config]) => config?.modelDisplayLabel === QUINN_ENDPOINT_LABEL,
-  )?.[0];
+  )?.[0] as EModelEndpoint | undefined;
 }
 
 /** Maps internal owner labels (e.g. "Admin quinn") to localized marketplace copy. */

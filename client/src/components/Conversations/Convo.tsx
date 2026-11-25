@@ -169,10 +169,14 @@ function Conversation({
   };
 
   const handleRenameSubmit = async (newTitle: string) => {
+    const normalizedTitle = newTitle.trim();
+    if (!normalizedTitle) {
+      return;
+    }
     if (
       !canRename ||
       !conversationId ||
-      (newTitle === title && conversation.titleSetByUser === true)
+      (normalizedTitle === title && conversation.titleSetByUser === true)
     ) {
       setRenaming(false);
       return;
@@ -181,7 +185,7 @@ function Conversation({
     try {
       await updateConvoMutation.mutateAsync({
         conversationId,
-        title: newTitle.trim() || localize('com_ui_untitled'),
+        title: normalizedTitle,
       });
       setRenaming(false);
     } catch (error) {

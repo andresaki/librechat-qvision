@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Renombrado de conversación con nombre vacío — resuelto el 2026-11-25
+
+El formulario de renombrado deshabilita «Guardar» para nombres vacíos o compuestos solo por
+espacios, y bloquea también el envío con Enter. Cualquier clic fuera del contenedor de input y
+botones cancela la edición. Validado con `RenameForm.spec.tsx`.
+
 ## Nuevo chat heredaba el último agente — resuelto el 2026-11-25
 
 El cliente prioriza el endpoint cuyo `modelDisplayLabel` es `Quinn` —en esta instancia,
