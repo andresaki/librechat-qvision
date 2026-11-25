@@ -1,4 +1,8 @@
-import { formatQuinnAuthorName, isQuinnBrandedEndpoint } from '../quinnBrand';
+import {
+  formatQuinnAuthorName,
+  getQuinnBrandedEndpoint,
+  isQuinnBrandedEndpoint,
+} from '../quinnBrand';
 
 const localize = (key: string) =>
   key === 'com_ui_quinn_admin_author' ? 'Quinn Administrator' : key;
@@ -16,6 +20,23 @@ describe('quinnBrand', () => {
         isQuinnBrandedEndpoint({ openAI: { modelDisplayLabel: 'Other' } } as never, 'openAI'),
       ).toBe(false);
       expect(isQuinnBrandedEndpoint(undefined, 'openAI')).toBe(false);
+    });
+  });
+
+  describe('getQuinnBrandedEndpoint', () => {
+    it('finds the configured endpoint presented as Chat Quinn', () => {
+      expect(
+        getQuinnBrandedEndpoint({
+          'AI-Gateway-QVision': { modelDisplayLabel: 'Quinn' },
+          agents: { modelDisplayLabel: 'Agents' },
+        } as never),
+      ).toBe('AI-Gateway-QVision');
+    });
+
+    it('returns undefined when no Quinn endpoint is configured', () => {
+      expect(getQuinnBrandedEndpoint({ openAI: { modelDisplayLabel: 'Other' } } as never)).toBe(
+        undefined,
+      );
     });
   });
 

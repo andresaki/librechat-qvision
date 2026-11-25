@@ -152,6 +152,7 @@ const useNewConvo = (index = 0) => {
           let defaultEndpoint = getDefaultEndpoint({
             convoSetup: activePreset ?? conversation,
             endpointsConfig,
+            preferQuinn: true,
           });
 
           // If the selected endpoint is agents but user doesn't have access, find an alternative

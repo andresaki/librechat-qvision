@@ -11,7 +11,7 @@ Sustituye la tool nativa `webSearch` (apagada: no hay Serper/Tavily/SearXNG). El
 | Contenedor | `docker-compose.override.yml` → servicio `browser-mcp` (`http://browser-mcp:8932/mcp`) |
 | Allowlist SSRF | `librechat.yaml` → `mcpSettings.allowedAddresses: ['browser-mcp:8932']` |
 | Registro | `librechat.yaml` → `mcpServers.browser` (`startup: true`, `chatMenu: true`) |
-| Chat nuevo | sin spec por defecto; el MCP Browser se marca en el desplegable |
+| Chat nuevo | inicia en Chat Quinn; el MCP Browser se marca en el desplegable |
 | Pin UI | `interface.defaultPinnedTools: [mcp, browser]` |
 
 `webSearch: false` se mantiene. Esto no es un proveedor de búsqueda: es un navegador.

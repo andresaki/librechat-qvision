@@ -2,6 +2,16 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-25 — Nuevo chat inicia en Chat Quinn
+
+- El cliente prioriza el endpoint configurado con `modelDisplayLabel: Quinn` al crear una
+  conversación nueva, para que cada chat abra directamente en el gateway Q-Vision.
+- La selección explícita de un agente se conserva dentro de la conversación donde se eligió.
+
+**Validación manual:** reconstruir el frontend, seleccionar un agente, pulsar «Nuevo chat» y
+confirmar que el selector vuelve a «Chat Quinn»; repetir desde un chat Quinn y desde un chat de
+agente.
+
 ## 2026-11-25 — Skills compartidos activos por defecto
 
 - `librechat.yaml` configura `interface.skills.defaultActiveOnShare: true` para que las skills

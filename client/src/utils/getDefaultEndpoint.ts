@@ -6,10 +6,15 @@ import type {
 } from 'librechat-data-provider';
 import { getLocalStorageItems } from './localStorage';
 import { mapEndpoints } from './endpoints';
+import { getQuinnBrandedEndpoint } from './quinnBrand';
 
 type TConvoSetup = Partial<TPreset> | Partial<TConversation>;
 
-type TDefaultEndpoint = { convoSetup: TConvoSetup; endpointsConfig: TEndpointsConfig };
+type TDefaultEndpoint = {
+  convoSetup: TConvoSetup;
+  endpointsConfig: TEndpointsConfig;
+  preferQuinn?: boolean;
+};
 
 const getEndpointFromSetup = (
   convoSetup: TConvoSetup | null,
@@ -54,9 +59,11 @@ const getDefinedEndpoint = (endpointsConfig: TEndpointsConfig) => {
 const getDefaultEndpoint = ({
   convoSetup,
   endpointsConfig,
+  preferQuinn = false,
 }: TDefaultEndpoint): EModelEndpoint | undefined => {
   return (
     getEndpointFromSetup(convoSetup, endpointsConfig) ||
+    (preferQuinn ? getQuinnBrandedEndpoint(endpointsConfig) : undefined) ||
     getEndpointFromLocalStorage(endpointsConfig) ||
     getDefinedEndpoint(endpointsConfig)
   );

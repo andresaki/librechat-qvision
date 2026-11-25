@@ -14,6 +14,15 @@ export function isQuinnBrandedEndpoint(
   return endpointsConfig?.[endpoint]?.modelDisplayLabel === QUINN_ENDPOINT_LABEL;
 }
 
+/** Returns the configured gateway endpoint presented as Chat Quinn, if available. */
+export function getQuinnBrandedEndpoint(
+  endpointsConfig: TEndpointsConfig | undefined,
+): string | undefined {
+  return Object.entries(endpointsConfig ?? {}).find(
+    ([, config]) => config?.modelDisplayLabel === QUINN_ENDPOINT_LABEL,
+  )?.[0];
+}
+
 /** Maps internal owner labels (e.g. "Admin quinn") to localized marketplace copy. */
 export function formatQuinnAuthorName(
   authorName: string | undefined | null,

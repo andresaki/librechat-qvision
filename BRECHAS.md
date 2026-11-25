@@ -2,6 +2,14 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Nuevo chat heredaba el último agente — resuelto el 2026-11-25
+
+El cliente prioriza el endpoint cuyo `modelDisplayLabel` es `Quinn` —en esta instancia,
+`AI-Gateway-QVision`— al crear «Nuevo chat». Así no se crea un `modelSpec` adicional ni se duplica
+la opción «Chat Quinn» en el selector. Una selección explícita de agente sigue aplicando en la
+conversación actual. Requiere rebuild del frontend y validar el selector desde un chat Quinn y
+desde un chat de agente.
+
 ## Skills compartidos desactivados por defecto — resuelto el 2026-11-25
 
 `interface.skills.defaultActiveOnShare: true` activa por defecto las skills públicas o compartidas
