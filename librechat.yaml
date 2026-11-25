@@ -26,9 +26,10 @@ interface:
   privacyPolicy:
     externalUrl: 'https://qvisiontechnologies.com/politica/'
     openNewTab: true
-  termsOfService:
-    externalUrl: 'https://bucket-izytesting.s3.us-east-2.amazonaws.com/TyC+IzyTesting+V2.pdf'
-    openNewTab: true
+  # Q-Vision: sin página de términos publicada aún — no mostrar enlaces en login, Ayuda ni chat.
+  # termsOfService:
+  #   externalUrl: ''
+  #   openNewTab: true
   # Q-Vision: clave i18n (no texto): Landing.tsx la resuelve en el idioma actual
   # (com_ui_quinn_welcome en en/es). Texto plano con {{user.name}} sigue válido.
   customWelcome: com_ui_quinn_welcome

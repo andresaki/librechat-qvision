@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Constants, hasConfiguredFooter } from 'librechat-data-provider';
 import type { TStartupConfig } from 'librechat-data-provider';
+import type { TranslationKeys } from '~/hooks/useLocalize';
 import { useGetStartupConfig } from '~/data-provider';
 import { policyUrls } from '~/utils/policies';
 import { useLocalize } from '~/hooks';
@@ -90,7 +91,14 @@ function Footer({ className, startupConfig, configuredOnly = false }: FooterProp
     </a>
   );
 
-  const configuredFooter = typeof config?.customFooter === 'string' ? config.customFooter : null;
+  const rawCustomFooter = typeof config?.customFooter === 'string' ? config.customFooter : null;
+  /** Q-Vision: `CUSTOM_FOOTER` admite clave i18n (`com_*`), igual que `customWelcome`. */
+  let configuredFooter: string | null = null;
+  if (rawCustomFooter != null) {
+    configuredFooter = rawCustomFooter.startsWith('com_')
+      ? localize(rawCustomFooter as TranslationKeys)
+      : rawCustomFooter;
+  }
   /** The generic disclaimer is the part a conversation drops; the operator's own footer is not. */
   const genericFooter = configuredOnly
     ? ''

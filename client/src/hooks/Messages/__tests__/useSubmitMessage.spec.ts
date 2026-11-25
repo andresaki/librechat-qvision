@@ -50,6 +50,7 @@ const mockUseGetLatestMessage = useGetLatestMessage as jest.Mock;
 describe('useSubmitMessage', () => {
   const ask = jest.fn();
   const reset = jest.fn();
+  const setValue = jest.fn();
   const setMessages = jest.fn();
   const getMessages = jest.fn();
 
@@ -59,7 +60,11 @@ describe('useSubmitMessage', () => {
     mockUseSetRecoilState.mockReturnValue(mockSetActivePrompt);
     mockUseAuthContext.mockReturnValue({ user: { id: 'user-1' } });
     mockUseAddedChatContext.mockReturnValue({ conversation: null });
-    mockUseChatFormContext.mockReturnValue({ reset, getValues: jest.fn(() => '') });
+    mockUseChatFormContext.mockReturnValue({
+      reset,
+      setValue,
+      getValues: jest.fn(() => ''),
+    });
     mockUseGetLatestMessage.mockReturnValue(() => ({ messageId: 'assistant-message' }));
     getMessages.mockReturnValue([{ messageId: 'assistant-message' }]);
     mockUseChatContext.mockReturnValue({
@@ -81,6 +86,27 @@ describe('useSubmitMessage', () => {
     });
 
     expect(submitted).toBe(false);
+    expect(reset).not.toHaveBeenCalled();
+  });
+
+  it('replaces the composer text when replace is set', () => {
+    const { result } = renderHook(() => useSubmitMessage());
+    act(() => result.current.submitPrompt('next starter', { insertOnly: true, replace: true }));
+    expect(setValue).toHaveBeenCalledWith('text', 'next starter', {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    expect(mockSetActivePrompt).not.toHaveBeenCalled();
+    expect(ask).not.toHaveBeenCalled();
+  });
+
+  it('stages text in the composer when insertOnly is set even if auto-send is on', () => {
+    mockUseRecoilValue.mockReturnValue(true);
+    ask.mockReturnValue(true);
+    const { result } = renderHook(() => useSubmitMessage());
+    act(() => result.current.submitPrompt('quick action', { insertOnly: true }));
+    expect(ask).not.toHaveBeenCalled();
+    expect(mockSetActivePrompt).toHaveBeenCalledWith('quick action');
     expect(reset).not.toHaveBeenCalled();
   });
 

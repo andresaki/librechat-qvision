@@ -2,6 +2,29 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-25 — Acciones rápidas anexan al input
+
+- Las tarjetas de inicio de Chat Quinn y los `conversation_starters` del mismo componente
+  cargan el prompt en el compositor en lugar de enviar al hacer clic (`submitPrompt` con
+  `insertOnly`); un nuevo clic **reemplaza** el texto anterior (no acumula).
+- Rebuild del frontend o imagen Docker para validar.
+
+**Validación manual:** nueva conversación Chat Quinn → clic en Resume / Correo / Reunión / Ideas
+→ texto visible en el input con foco, sin mensaje en el hilo hasta Enter; opcional: agente con
+starters → mismo comportamiento.
+
+## 2026-11-25 — Términos ocultos y disclaimer del chat
+
+- `librechat.yaml`: comentado `interface.termsOfService` hasta tener URL propia (desaparece en
+  login, menú Ayuda y pie del chat).
+- Pie del chat: `CUSTOM_FOOTER=com_ui_quinn_footer_disclaimer` (i18n en `Footer.tsx`); copy
+  «Quinn utiliza IA y puede cometer errores.» / inglés equivalente.
+- Login: el pie solo muestra enlaces legales cuando hay URL publicada (sin etiqueta «Términos»
+  fantasma).
+
+**Validación manual:** reiniciar API tras yaml; rebuild frontend si aplica; login → solo
+Privacidad; avatar → Ayuda sin Términos; chat vacío/conversación → disclaimer traducido.
+
 ## 2026-11-24 — Etiquetas legibles (T5)
 
 - Mis archivos: filtros de contexto, columnas y almacenamiento sin claves crudas (`agents`,

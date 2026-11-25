@@ -64,10 +64,10 @@ const ConversationStarters = () => {
     return documentsMap.get(entity?.id ?? '')?.conversation_starters ?? [];
   }, [documentsMap, isAgent, entity, modelSpec]);
 
-  const { submitMessage } = useSubmitMessage();
-  const sendConversationStarter = useCallback(
-    (text: string) => submitMessage({ text }),
-    [submitMessage],
+  const { submitPrompt } = useSubmitMessage();
+  const stageStarterText = useCallback(
+    (text: string) => submitPrompt(text, { insertOnly: true, replace: true }),
+    [submitPrompt],
   );
 
   if (!conversation_starters.length) {
@@ -109,7 +109,7 @@ const ConversationStarters = () => {
             <button
               key={title}
               type="button"
-              onClick={() => sendConversationStarter(prompt)}
+              onClick={() => stageStarterText(prompt)}
               className="border-border-light bg-surface-card text-text-primary hover:bg-surface-card-hover focus-visible:ring-ring-primary rounded-theme-surface-lg flex min-h-24 flex-col items-start gap-1 border p-3 text-left transition-colors focus-visible:ring-2 focus-visible:outline-hidden"
             >
               <Icon className="text-link h-4 w-4" aria-hidden="true" />
@@ -135,7 +135,7 @@ const ConversationStarters = () => {
         .map((text: string, index: number) => (
           <button
             key={index}
-            onClick={() => sendConversationStarter(text)}
+            onClick={() => stageStarterText(text)}
             style={{ animationDelay: `${index * 75}ms`, animationFillMode: 'backwards' }}
             className="border-border-light bg-surface-card text-text-primary fade-in hover:bg-surface-card-hover focus-visible:ring-ring-primary rounded-theme-surface-lg flex min-h-24 cursor-pointer flex-col items-start gap-2 border p-3 text-start text-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-hidden"
           >

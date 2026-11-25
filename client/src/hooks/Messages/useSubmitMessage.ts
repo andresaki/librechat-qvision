@@ -6,6 +6,7 @@ import { useChatContext, useChatFormContext, useAddedChatContext } from '~/Provi
 import { useGetLatestMessage } from '~/hooks/Messages/useLatestMessage';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { mainTextareaId } from '~/common';
+import { forceResize } from '~/utils/textarea';
 import store from '~/store';
 
 export default function useSubmitMessage() {
@@ -72,9 +73,13 @@ export default function useSubmitMessage() {
   );
 
   const submitPrompt = useCallback(
-    (text: string) => {
+    (text: string, options?: { insertOnly?: boolean; replace?: boolean }) => {
       const parsedText = replaceSpecialVars({ text, user });
-      if (autoSendPrompts && submitMessage({ text: parsedText }) !== false) {
+      if (
+        !options?.insertOnly &&
+        autoSendPrompts &&
+        submitMessage({ text: parsedText }) !== false
+      ) {
         return;
       }
       /** A refused auto-send still belongs to the user. Stage it exactly like
@@ -82,6 +87,18 @@ export default function useSubmitMessage() {
        * preserves the text for the composer's guarded submit route. */
 
       const textarea = document.getElementById(mainTextareaId) as HTMLTextAreaElement | null;
+
+      if (options?.replace) {
+        methods.setValue('text', parsedText, { shouldDirty: true, shouldValidate: true });
+        if (textarea) {
+          textarea.dispatchEvent(new Event('input', { bubbles: true }));
+          forceResize(textarea);
+          textarea.focus();
+          textarea.setSelectionRange(parsedText.length, parsedText.length);
+        }
+        return;
+      }
+
       const currentText = textarea?.value ?? methods.getValues('text');
       const newText = currentText.trim().length > 1 ? `\n${parsedText}` : parsedText;
       setActivePrompt(newText);
