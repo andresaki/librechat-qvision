@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Skills compartidos desactivados por defecto — resuelto el 2026-11-25
+
+`interface.skills.defaultActiveOnShare: true` activa por defecto las skills públicas o compartidas
+para cada usuario con acceso. El valor solo se usa cuando no existe un override individual;
+una preferencia explícita guardada en `skillStates` sigue teniendo prioridad.
+
 ## Variables vacías en prompts — resuelto el 2026-11-25
 
 El formulario de variables valida campos vacíos y valores compuestos solo por espacios antes de

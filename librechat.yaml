@@ -18,6 +18,10 @@ interface:
   # Como runCode: cubre USER/ADMIN en cada arranque; Creador/Consumidor se
   # apagan en el panel (MULTI_CONVO.USE).
   multiConvo: false
+  # Q-Vision: las skills públicas o compartidas quedan activas por defecto
+  # para usuarios con acceso. Un override explícito del usuario tiene prioridad.
+  skills:
+    defaultActiveOnShare: true
   # Q-Vision: sin proveedor de búsqueda contratado (Serper/Tavily/SearXNG...).
   # Apaga la tool de búsqueda lado-LibreChat; lo nativo de cada proveedor se
   # gobierna con la lista de modelos del gateway (ver docs/08).

@@ -2,6 +2,16 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-25 — Skills compartidos activos por defecto
+
+- `librechat.yaml` configura `interface.skills.defaultActiveOnShare: true` para que las skills
+  públicas o compartidas aparezcan activas para todos los usuarios con permiso de uso.
+- La preferencia explícita de cada usuario conserva prioridad: una skill que ya fue desactivada
+  manualmente no se reactiva por este cambio.
+
+**Validación manual:** reiniciar la API, publicar o compartir una skill, entrar con un usuario
+Consumidor y confirmar que «Available to agent» aparece activado sin tocar el toggle.
+
 ## 2026-11-25 — Validación de variables de prompts
 
 - El formulario de uso de prompts bloquea el envío cuando una variable está vacía o contiene solo
