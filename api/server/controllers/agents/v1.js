@@ -47,6 +47,7 @@ const {
   validateStatefulCodeEnvironment,
   validateAgentCodeEnvironmentAllowlist,
   marketplaceMineFilter,
+  buildAccentInsensitiveRegexPattern,
   resolveMarketplaceListQuery,
   mapMarketplaceListError,
   checkInstructionsPromptWrite,
@@ -107,7 +108,6 @@ const systemTools = {
 };
 
 const MAX_SEARCH_LEN = 100;
-const escapeRegex = (str = '') => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const getSafeModelParameters = (modelParameters) => {
   const { useResponsesApi } = modelParameters ?? {};
   return typeof useResponsesApi === 'boolean' ? { useResponsesApi } : {};
@@ -1786,9 +1786,11 @@ const getListAgentsHandler = async (req, res) => {
     // what the filter says; this merges it on top of the ACL-resolved `accessibleIds`.
     Object.assign(filter, marketplaceMineFilter(listQuery, userId));
 
-    // Handle search filter (escape regex and cap length)
+    // Handle accent-insensitive search filter (escaped and capped)
     if (search && search.trim() !== '') {
-      const safeSearch = escapeRegex(search.trim().slice(0, MAX_SEARCH_LEN));
+      const safeSearch = buildAccentInsensitiveRegexPattern(
+        search.trim().slice(0, MAX_SEARCH_LEN),
+      );
       const regex = new RegExp(safeSearch, 'i');
       filter.$or = [{ name: regex }, { description: regex }];
     }

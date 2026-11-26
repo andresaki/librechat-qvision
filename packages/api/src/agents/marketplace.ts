@@ -16,6 +16,47 @@ const SORT_OPTIONS = new Set<string>(AGENT_SORT_OPTIONS);
 
 const isAgentSortOption = (value: string): value is AgentSortOption => SORT_OPTIONS.has(value);
 
+const ACCENT_VARIANTS: Readonly<Record<string, string>> = {
+  a: 'aàáâãäåāăą',
+  c: 'cçćĉċč',
+  d: 'dďđ',
+  e: 'eèéêëēĕėęě',
+  g: 'gĝğġģ',
+  h: 'hĥħ',
+  i: 'iìíîïĩīĭįı',
+  j: 'jĵ',
+  k: 'kķ',
+  l: 'lĺļľŀł',
+  n: 'nñńņňŉŋ',
+  o: 'oòóôõöøōŏőơ',
+  r: 'rŕŗř',
+  s: 'sśŝşšș',
+  t: 'tţťŧț',
+  u: 'uùúûüũūŭůűųư',
+  w: 'wŵ',
+  y: 'yýÿŷ',
+  z: 'zźżž',
+};
+
+const escapeRegexCharacter = (character: string): string =>
+  character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * Builds a regex pattern that treats Latin diacritics as equivalent to their base letter.
+ * MongoDB regex queries do not apply collation-based accent folding, so the variants must
+ * be represented in the pattern sent to the database.
+ */
+export function buildAccentInsensitiveRegexPattern(value: string): string {
+  return Array.from(value.normalize('NFD'))
+    .filter((character) => !/\p{Mark}/u.test(character))
+    .map((character) => {
+      const baseCharacter = character.toLowerCase();
+      const variants = ACCENT_VARIANTS[baseCharacter];
+      return variants ? `[${variants}]` : escapeRegexCharacter(character);
+    })
+    .join('');
+}
+
 /** Raw `?sort=` / `?mine=` values as Express hands them over. */
 export interface MarketplaceListQuery {
   sort?: string | string[];

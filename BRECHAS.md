@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Búsqueda de agentes sensible a tildes — resuelto el 2026-11-26
+
+La búsqueda del marketplace generaba una expresión regular literal, así que una consulta sin
+tilde no encontraba nombres o descripciones acentuados. El backend ahora construye el patrón con
+variantes de los caracteres latinos; `anomalias` y `anomalías` devuelven los mismos agentes.
+
 ## Renombrado de conversación con nombre vacío — resuelto el 2026-11-25
 
 El formulario de renombrado deshabilita «Guardar» para nombres vacíos o compuestos solo por

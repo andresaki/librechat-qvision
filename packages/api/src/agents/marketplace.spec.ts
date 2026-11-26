@@ -1,10 +1,33 @@
 import {
   AGENT_SORT_CURSOR_ERROR_CODE,
   AGENT_SORT_OPTIONS,
+  buildAccentInsensitiveRegexPattern,
   mapMarketplaceListError,
   marketplaceMineFilter,
   resolveMarketplaceListQuery,
 } from './marketplace';
+
+describe('buildAccentInsensitiveRegexPattern', () => {
+  test('matches accented and unaccented agent names', () => {
+    const pattern = new RegExp(buildAccentInsensitiveRegexPattern('anomalias'), 'i');
+
+    expect(pattern.test('Agente de anomalías')).toBe(true);
+    expect(pattern.test('Agente de anomalias')).toBe(true);
+  });
+
+  test('matches an unaccented search inside an accented word', () => {
+    const pattern = new RegExp(buildAccentInsensitiveRegexPattern('calculator'), 'i');
+
+    expect(pattern.test('modelo de calculatór')).toBe(true);
+  });
+
+  test('keeps regex metacharacters literal', () => {
+    const pattern = new RegExp(buildAccentInsensitiveRegexPattern('a+b'), 'i');
+
+    expect(pattern.test('a+b')).toBe(true);
+    expect(pattern.test('aaab')).toBe(false);
+  });
+});
 
 describe('resolveMarketplaceListQuery', () => {
   test('keeps every offered sort mode', () => {

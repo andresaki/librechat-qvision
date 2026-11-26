@@ -2,6 +2,13 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-26 — Búsqueda de agentes sin distinguir tildes
+
+- La búsqueda del marketplace de agentes normaliza las variantes acentuadas en `name` y
+  `description`, por lo que `anomalias` encuentra también `anomalías`.
+
+**Validación:** prueba unitaria del patrón de búsqueda en `packages/api/src/agents/marketplace.spec.ts`.
+
 ## 2026-11-25 — Validación y cancelación al renombrar chats
 
 - El botón Guardar queda deshabilitado cuando el nombre está vacío o contiene solo espacios.

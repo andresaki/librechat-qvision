@@ -3610,6 +3610,36 @@ describe('Agent Controllers - Mass Assignment Protection', () => {
       );
     });
 
+    test('searches agent names without requiring accents', async () => {
+      const accentedAgent = await Agent.create({
+        id: `agent_${nanoid(12)}`,
+        name: 'Anomalías de inventario',
+        description: 'Revisa anomalías operativas',
+        provider: 'openai',
+        model: 'gpt-4',
+        author: userA,
+      });
+      await db.grantCapability({
+        principalType: PrincipalType.ROLE,
+        principalId: 'ACCENT_SEARCH_MANAGER',
+        capability: SystemCapabilities.MANAGE_AGENTS,
+      });
+      mockReq.user = {
+        id: userB.toString(),
+        role: 'ACCENT_SEARCH_MANAGER',
+        idOnTheSource: null,
+      };
+      mockReq.query.search = 'anomalias';
+      findAccessibleResources.mockResolvedValue([]);
+      findPubliclyAccessibleResources.mockResolvedValue([]);
+
+      await getListAgentsHandler(mockReq, mockRes);
+
+      expect(mockRes.json.mock.calls[0][0].data.map((agent) => agent.id)).toContain(
+        accentedAgent.id,
+      );
+    });
+
     test('restricts a manager to the authenticated tenant even without ambient tenant context', async () => {
       const tenantA = `tenant-a-${uuidv4()}`;
       const tenantB = `tenant-b-${uuidv4()}`;
