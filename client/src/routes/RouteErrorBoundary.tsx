@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@librechat/client';
-import { useRouteError } from 'react-router-dom';
+import { Home, Wrench } from 'lucide-react';
+import { Link, useRouteError } from 'react-router-dom';
 import { onClientLogsStarted, reportBoundaryError } from '~/lib/rum/logs';
 import useStaleAssetRecovery from '~/lib/assets/useRecovery';
 import { isChunkLoadError } from '~/lib/assets/recovery';
@@ -78,6 +79,7 @@ const getBrowserInfo = async () => {
 export default function RouteErrorBoundary() {
   const localize = useLocalize();
   const routeError = useRouteError();
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const updating = useStaleAssetRecovery(routeError);
   const typedError = (routeError ?? {}) as {
     message?: string;
@@ -100,6 +102,33 @@ export default function RouteErrorBoundary() {
     statusText: typedError.statusText,
     data: typedError.data,
   };
+  const isNotFound = errorDetails.status === 404;
+
+  useEffect(() => {
+    setShowTechnicalDetails(false);
+
+    if (!isNotFound) {
+      return;
+    }
+
+    const handleTechnicalDetailsShortcut = (event: KeyboardEvent) => {
+      const isTechnicalDetailsShortcut =
+        (event.ctrlKey || event.metaKey) &&
+        event.shiftKey &&
+        event.altKey &&
+        event.key.toLowerCase() === 'd';
+
+      if (!isTechnicalDetailsShortcut) {
+        return;
+      }
+
+      event.preventDefault();
+      setShowTechnicalDetails((visible) => !visible);
+    };
+
+    window.addEventListener('keydown', handleTechnicalDetailsShortcut);
+    return () => window.removeEventListener('keydown', handleTechnicalDetailsShortcut);
+  }, [isNotFound]);
 
   const handleDownloadLogs = async () => {
     try {
@@ -141,6 +170,52 @@ export default function RouteErrorBoundary() {
     return <Updating />;
   }
 
+  if (isNotFound && !showTechnicalDetails) {
+    return (
+      <main
+        role="alert"
+        className="bg-surface-secondary flex min-h-screen items-center justify-center px-4 py-8"
+      >
+        <div className="bg-surface-primary border-border-light relative w-full max-w-2xl overflow-hidden rounded-3xl border p-8 text-center shadow-2xl sm:p-12">
+          <div
+            aria-hidden="true"
+            className="bg-accent-primary/10 text-accent-primary absolute -end-16 -top-20 size-56 rounded-full blur-3xl"
+          />
+          <div className="relative">
+            <img
+              src="assets/logo-quinn.svg"
+              alt={localize('com_ui_logo', { 0: 'Quinn' })}
+              className="mx-auto mb-10 h-9 w-auto dark:hidden"
+            />
+            <img
+              src="assets/quinn-simbolo-negativo.svg"
+              alt={localize('com_ui_logo', { 0: 'Quinn' })}
+              className="mx-auto mb-10 hidden size-10 dark:block"
+            />
+            <div
+              aria-hidden="true"
+              className="text-accent-primary mb-5 text-8xl leading-none font-semibold tracking-tight sm:text-9xl"
+            >
+              404
+            </div>
+            <h1 className="text-text-primary mb-3 text-2xl font-semibold tracking-tight sm:text-3xl">
+              {localize('com_ui_not_found_title')}
+            </h1>
+            <p className="text-text-secondary mx-auto mb-8 max-w-md text-sm leading-relaxed sm:text-base">
+              {localize('com_ui_not_found_description')}
+            </p>
+            <Button asChild variant="submit" size="lg">
+              <Link to="/c/new">
+                <Home className="size-4" aria-hidden="true" />
+                {localize('com_ui_not_found_home')}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <div
       role="alert"
@@ -148,8 +223,17 @@ export default function RouteErrorBoundary() {
     >
       <div className="border-border-light bg-surface-primary/60 mx-4 w-11/12 max-w-4xl rounded-2xl border p-8 shadow-2xl backdrop-blur-xl">
         <h2 className="text-text-primary mb-6 text-center text-3xl font-medium tracking-tight">
-          {localize('com_ui_error_unexpected')}
+          {isNotFound
+            ? localize('com_ui_not_found_technical_mode')
+            : localize('com_ui_error_unexpected')}
         </h2>
+
+        {isNotFound && (
+          <div className="border-border-light bg-surface-secondary text-text-secondary mb-4 flex items-start gap-3 rounded-xl border p-4 text-sm">
+            <Wrench className="text-accent-primary mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <p>{localize('com_ui_not_found_technical_hint')}</p>
+          </div>
+        )}
 
         {/* Error Message */}
         <div className="border-status-error-border bg-status-error-subtle text-text-secondary mb-4 rounded-xl border p-4 text-sm">
@@ -168,6 +252,17 @@ export default function RouteErrorBoundary() {
               {typeof errorDetails.status === 'number' && `${errorDetails.status} `}
               {typeof errorDetails.statusText === 'string' && errorDetails.statusText}
             </p>
+          </div>
+        )}
+
+        {isNotFound && (
+          <div className="border-border-light bg-surface-secondary mb-4 rounded-xl border p-4 text-sm">
+            <h3 className="text-text-primary mb-2 font-medium">
+              {localize('com_ui_not_found_requested_url')}
+            </h3>
+            <code className="text-text-secondary block overflow-x-auto whitespace-pre-wrap break-all">
+              {window.location.href}
+            </code>
           </div>
         )}
 

@@ -2,6 +2,21 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-26 — 404 amigable con detalle técnico opcional
+
+- Las URL inexistentes muestran una pantalla 404 limpia con branding Quinn y un botón para volver
+  al chat nuevo (`/c/new`), sin exponer detalles técnicos a usuarios normales.
+- Soporte puede revelar el estado, la URL y los datos del error con `Ctrl+Shift+Alt+D` o
+  `Cmd+Shift+Alt+D` en macOS.
+- En modo oscuro, la pantalla usa el símbolo Quinn claro para conservar el contraste.
+- Los errores de runtime y de carga de chunks conservan el boundary técnico y la recuperación
+  existentes.
+
+**Validación:** prueba enfocada de `RouteErrorBoundary`, typecheck del cliente y validación manual
+de `/ddd`, el atajo técnico y el botón de inicio.
+
+Las cadenas de esta pantalla ya están disponibles en inglés y español.
+
 ## 2026-11-26 — Logs de depuración del frontend en producción
 
 - Los mensajes `[ResumeOnLoad]` y otros diagnósticos del cliente usan el logger compartido.

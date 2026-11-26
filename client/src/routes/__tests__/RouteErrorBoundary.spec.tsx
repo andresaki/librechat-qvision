@@ -54,6 +54,33 @@ function renderRouteThatThrows(createError: ErrorFactory) {
   return render(<RouterProvider router={router} />);
 }
 
+function renderNotFoundRoute() {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/',
+        element: <ThrowNotFound />,
+        errorElement: <RouteErrorBoundary />,
+      },
+      { path: '/c/new', element: <div>New chat</div> },
+    ],
+    { initialEntries: ['/'] },
+  );
+  render(<RouterProvider router={router} />);
+  return router;
+}
+
+function ThrowNotFound(): never {
+  throw makeNotFoundError();
+}
+
+function makeNotFoundError() {
+  return Object.assign(new Error('No route matches the requested URL'), {
+    status: 404,
+    statusText: 'Not Found',
+  });
+}
+
 describe('RouteErrorBoundary stale-asset recovery', () => {
   let consoleError: jest.SpyInstance;
 
@@ -123,6 +150,55 @@ describe('RouteErrorBoundary stale-asset recovery', () => {
 
     expect(await screen.findByRole('status')).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('shows a friendly 404 page without technical details by default', async () => {
+    renderRouteThatThrows(makeNotFoundError);
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: en.com_ui_not_found_title }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: en.com_ui_not_found_home })).toHaveAttribute(
+      'href',
+      '/c/new',
+    );
+    expect(screen.queryByText(en.com_ui_not_found_technical_mode)).not.toBeInTheDocument();
+    expect(screen.queryByText(en.com_ui_not_found_requested_url)).not.toBeInTheDocument();
+  });
+
+  it('navigates from the friendly 404 page to a new chat', async () => {
+    const router = renderNotFoundRoute();
+
+    await screen.findByText(en.com_ui_not_found_title);
+    fireEvent.click(screen.getByRole('link', { name: en.com_ui_not_found_home }));
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/c/new'));
+    expect(screen.getByText('New chat')).toBeInTheDocument();
+  });
+
+  it('reveals and hides 404 technical details with the dedicated shortcut', async () => {
+    renderRouteThatThrows(makeNotFoundError);
+
+    await screen.findByText(en.com_ui_not_found_title);
+    fireEvent.keyDown(window, { key: 'd', ctrlKey: true, shiftKey: true, altKey: true });
+
+    expect(screen.getByText(en.com_ui_not_found_technical_mode)).toBeInTheDocument();
+    expect(screen.getByText(en.com_ui_not_found_requested_url)).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: 'd', ctrlKey: true, shiftKey: true, altKey: true });
+    expect(screen.getByText(en.com_ui_not_found_title)).toBeInTheDocument();
+    expect(screen.queryByText(en.com_ui_not_found_requested_url)).not.toBeInTheDocument();
+  });
+
+  it('does not reveal 404 technical details for an incomplete shortcut', async () => {
+    renderRouteThatThrows(makeNotFoundError);
+
+    await screen.findByText(en.com_ui_not_found_title);
+    fireEvent.keyDown(window, { key: 'd', ctrlKey: true, shiftKey: true });
+
+    expect(screen.getByText(en.com_ui_not_found_title)).toBeInTheDocument();
+    expect(screen.queryByText(en.com_ui_not_found_requested_url)).not.toBeInTheDocument();
   });
 });
 

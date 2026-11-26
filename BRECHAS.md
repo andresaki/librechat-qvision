@@ -2,6 +2,14 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Pantalla 404 sin detalles técnicos para usuarios — resuelto el 2026-11-26
+
+La URL inexistente (`/ddd`, por ejemplo) muestra una pantalla 404 amigable con marca Quinn y un
+botón para volver a `/c/new`. El estado, la URL y el resto del diagnóstico técnico se conservan
+pero permanecen ocultos; soporte puede revelarlos con `Ctrl+Shift+Alt+D` (`Cmd+Shift+Alt+D` en
+macOS). Los errores de runtime y de carga de chunks mantienen el comportamiento técnico anterior.
+Detalle: `docs/17-404-Usuario-y-Detalle-Tecnico.md`.
+
 ## Logs de depuración del frontend en producción — resuelto el 2026-11-26
 
 Los diagnósticos de `ResumeOnLoad` y otros logs de depuración del cliente pasan por el logger
