@@ -51,6 +51,7 @@ const cache: ChatMessageCache = {
 
 /** A host with no app behind it: one fixed pane conversation and the abort under test. */
 const createHost = (conversation: TConversation | null): ChatHost => ({
+  logger: { log: jest.fn(), warn: jest.fn(), error: jest.fn() },
   usePaneConversation: () => ({ conversation, setConversation: noop }),
   useNewConversation: () => noop,
   useTurnServices: () => turnServices,
@@ -247,7 +248,6 @@ describe('useChatHelpers stopGenerating (abort steer targeting)', () => {
     observed.drainAfterAbort = false;
     mockAbortStream.mockReset();
     mockConvertSteersToQueued.mockReset();
-    jest.spyOn(console, 'log').mockImplementation(() => undefined);
   });
 
   afterEach(() => {

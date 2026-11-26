@@ -6,15 +6,15 @@
   "scripts": {
     "typecheck": "node ../scripts/typecheck.mts",
     "data-provider": "cd .. && npm run build:data-provider",
-    "build:file": "cross-env NODE_ENV=production vite build --debug > vite-output.log 2>&1",
-    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "build:file": "cross-env NODE_ENV=production VITE_ENABLE_LOGGER=false vite build --debug > vite-output.log 2>&1",
+    "build": "cross-env NODE_ENV=production VITE_ENABLE_LOGGER=false NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "build:ci": "cross-env NODE_ENV=development vite build --mode ci",
     "dev": "cross-env NODE_ENV=development vite",
     "preview-prod": "cross-env NODE_ENV=development vite preview",
     "test": "cross-env NODE_ENV=development jest --watch",
     "test:ci": "cross-env NODE_ENV=development COVERAGE=true jest --ci --logHeapUsage",
     "b:test": "NODE_ENV=test bunx jest --watch",
-    "b:build": "NODE_ENV=production bun --bun vite build",
+    "b:build": "NODE_ENV=production VITE_ENABLE_LOGGER=false bun --bun vite build",
     "b:dev": "NODE_ENV=development bunx vite"
   },
   "repository": {

@@ -36,6 +36,7 @@ import {
   openFileDeletionRetention,
   isRequiredTwoFactorSetupRoute,
 } from '~/utils';
+import logger from '~/utils/logger';
 import {
   useGetRole,
   useGetUserQuery,
@@ -362,7 +363,7 @@ const AuthContextProvider = ({
           setUserContext({ user, token, isAuthenticated: true, redirect });
           return;
         }
-        console.log('Token is not present. User is not authenticated.');
+        logger.log('Token is not present. User is not authenticated.');
         endSessionClientState();
         setIsAuthReady(true);
         if (authConfig?.test === true) {
@@ -379,7 +380,7 @@ const AuthContextProvider = ({
         if (isExternalRedirectRef.current) {
           return;
         }
-        console.log('refreshToken mutation error:', error);
+        logger.error('refreshToken mutation error:', error);
         endSessionClientState();
         setIsAuthReady(true);
         if (authConfig?.test === true) {
@@ -435,7 +436,7 @@ const AuthContextProvider = ({
 
   useEffect(() => {
     const handleTokenUpdate = (event: CustomEvent<string>) => {
-      console.log('tokenUpdated event received event');
+      logger.log('tokenUpdated event received event');
       setUserContext({
         token: event.detail,
         isAuthenticated: true,

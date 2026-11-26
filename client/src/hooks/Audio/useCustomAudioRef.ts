@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import logger from '~/utils/logger';
 
 type TCustomAudioResult = { audioRef: React.MutableRefObject<HTMLAudioElement | null> };
 
@@ -14,7 +15,7 @@ export default function useCustomAudioRef({
 
     const handleEnded = () => {
       setIsPlaying(false);
-      console.log('global audio ended');
+      logger.log('global audio ended');
       if (audioRef.current) {
         URL.revokeObjectURL(audioRef.current.src);
       }
@@ -22,11 +23,11 @@ export default function useCustomAudioRef({
 
     const handleStart = () => {
       setIsPlaying(true);
-      console.log('global audio started');
+      logger.log('global audio started');
     };
 
     const handlePause = () => {
-      console.log('global audio paused');
+      logger.log('global audio paused');
     };
 
     const handleTimeUpdate = () => {
@@ -42,7 +43,7 @@ export default function useCustomAudioRef({
         lastTimeUpdate = currentTime;
 
         if (sameTimeUpdateCount >= 1) {
-          console.log('Detected end of audio based on time update');
+          logger.log('Detected end of audio based on time update');
           audioRef.current.pause();
           handleEnded();
         }

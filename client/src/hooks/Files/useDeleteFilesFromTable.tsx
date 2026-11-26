@@ -4,6 +4,7 @@ import type { BatchFile, TFile } from 'librechat-data-provider';
 import { useDeleteFilesMutation } from '~/data-provider';
 import useFileDeletion from './useFileDeletion';
 import { failedFileIdsFrom } from '~/utils';
+import logger from '~/utils/logger';
 
 export default function useDeleteFilesFromTable(callback?: () => void) {
   const queryClient = useQueryClient();
@@ -22,7 +23,7 @@ export default function useDeleteFilesFromTable(callback?: () => void) {
       return { filesToDeleteMap };
     },
     onSuccess: (data, variables, context) => {
-      console.log('Files deleted');
+      logger.log('Files deleted');
       const { filesToDeleteMap } = context as { filesToDeleteMap: Map<string, BatchFile> };
       const failed = new Set(failedFileIdsFrom(data));
 
@@ -39,7 +40,7 @@ export default function useDeleteFilesFromTable(callback?: () => void) {
       callback?.();
     },
     onError: (error) => {
-      console.log('Error deleting files:', error);
+      logger.error('Error deleting files:', error);
       callback?.();
     },
   });

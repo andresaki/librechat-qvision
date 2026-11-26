@@ -2,6 +2,18 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-26 — Logs de depuración del frontend en producción
+
+- Los mensajes `[ResumeOnLoad]` y otros diagnósticos del cliente usan el logger compartido.
+- El build de producción elimina llamadas directas a `console.log`, `console.info` y
+  `console.debug` del código propio mediante Oxc, sin retirar globalmente `console.warn` ni
+  `console.error`; las dependencias pueden conservar sus propios llamados.
+- Producción debe compilarse con `VITE_ENABLE_LOGGER=false`; cambiar la variable después del build
+  no modifica el bundle.
+
+**Validación:** typecheck de `client` y `packages/chat`, pruebas del logger y flujo resumable,
+build de producción y comprobación del bundle sin llamadas directas de depuración.
+
 ## 2026-11-26 — Modal «Acerca de» reducido a la versión
 
 - La sección «Acerca de» conserva únicamente la fila de versión, oculta commit, rama y fecha de

@@ -18,6 +18,7 @@ import type { UseMutationResult } from '@tanstack/react-query';
 import { useUploadAssistantAvatarMutation, useGetFileConfig } from '~/data-provider';
 import { AvatarMenu } from '~/components/SidePanel/Agents/Images';
 import { useAssistantsMapContext } from '~/Providers';
+import logger from '~/utils/logger';
 import { AssistantAvatar, NoImage } from './Images';
 // import { Spinner } from '@librechat/client';
 import { useLocalize } from '~/hooks';
@@ -145,7 +146,7 @@ function Avatar({
     }
 
     if (sharedUploadCondition && createMutation.data.id) {
-      console.log('[AssistantAvatar] Uploading Avatar after Assistant Creation');
+      logger.log('[AssistantAvatar] Uploading Avatar after Assistant Creation');
 
       const formData = new FormData();
       formData.append('file', input, input.name);
@@ -184,7 +185,7 @@ function Avatar({
 
       if (!assistant_id) {
         // wait for successful form submission before uploading avatar
-        console.log('[AssistantAvatar] No assistant_id, will wait until form submission + upload');
+      logger.log('[AssistantAvatar] No assistant_id, will wait until form submission + upload');
         return;
       }
 

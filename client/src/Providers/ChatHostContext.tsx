@@ -13,6 +13,7 @@ import { useChatSettings } from '~/Providers/ChatSettingsContext';
 import { getMappingOptions } from '~/hooks/Chat/outcomes';
 import useTurnServices from '~/hooks/Chat/services';
 import useNewConvo from '~/hooks/useNewConvo';
+import { logger } from '~/utils';
 
 /** Cache events that add, drop or rewrite a query's data. */
 const dataEvents = new Set<QueryCacheNotifyEvent['type']>(['added', 'removed', 'updated']);
@@ -110,6 +111,7 @@ function useMessages(
 /** The app's services behind `useChatHelpers`: its pane store, message query cache, turn
  *  services, thread selection, transport and settings. */
 export const appChatHost: ChatHost = {
+  logger,
   usePaneConversation: (index) => useChatSettings().usePaneConversationState(index),
   useNewConversation: (index) => useNewConvo(index).newConversation,
   useTurnServices,

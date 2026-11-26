@@ -23,7 +23,12 @@ import type {
 } from 'librechat-data-provider';
 import type { EventHandlerParams } from './useEventHandlers';
 import type { TResData, TFinalResData } from '~/common';
-import { clearComposerDrafts, applyPendingAction, findPendingActionMessageIndex } from '~/utils';
+import {
+  clearComposerDrafts,
+  applyPendingAction,
+  findPendingActionMessageIndex,
+  logger,
+} from '~/utils';
 import { useChatTransport } from '~/Providers/ChatTransportContext';
 import { useChatSettings } from '~/Providers/ChatSettingsContext';
 import { reopenTermsOnRefusal } from '~/utils/terms';
@@ -147,7 +152,7 @@ export default function useSSE(
         setShowStopButton(false);
       }
       balanceEnabled && balanceQuery.refetch();
-      console.log('final', data);
+      logger.log('final', data);
     };
 
     const handlePendingAction = (pendingAction: Agents.PendingAction) => {
@@ -212,7 +217,7 @@ export default function useSSE(
     };
 
     const handleError = (data: ChatErrorData | null | undefined) => {
-      console.log('error in server stream.');
+      logger.error('error in server stream.');
       const termsRefused = reopenTermsOnRefusal(queryClient, data);
       balanceEnabled && balanceQuery.refetch();
       resetLive(currentSubmission);
@@ -235,7 +240,7 @@ export default function useSSE(
       switch (event.type) {
         case 'open':
           setAbortScroll(false);
-          console.log('connection is opened');
+          logger.log('connection is opened');
           return;
         case 'final':
           handleFinal(event.data);

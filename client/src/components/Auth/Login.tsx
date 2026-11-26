@@ -6,6 +6,7 @@ import { useOutletContext, useSearchParams, useLocation } from 'react-router-dom
 import type { TLoginLayoutContext } from '~/common';
 import type { TranslationKeys } from '~/hooks';
 import { getLoginError, persistRedirectToSession } from '~/utils';
+import logger from '~/utils/logger';
 import { ErrorMessage } from '~/components/Auth/ErrorMessage';
 import SocialButton from '~/components/Auth/SocialButton';
 import { useAuthContext } from '~/hooks/AuthContext';
@@ -82,7 +83,7 @@ function Login() {
 
   useEffect(() => {
     if (shouldAutoRedirect) {
-      console.log('Auto-redirecting to OpenID provider...');
+      logger.log('Auto-redirecting to OpenID provider...');
       window.location.href = `${startupConfig.serverDomain}/oauth/openid`;
     }
   }, [shouldAutoRedirect, startupConfig]);

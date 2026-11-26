@@ -28,6 +28,7 @@ import {
   isQuinnBrandedEndpoint,
 } from '~/utils';
 import { useAssistantsMapContext } from '~/Providers/AssistantsMapContext';
+import logger from '~/utils/logger';
 import { useLatestMessageMeta } from '~/hooks/Messages/useLatestMessage';
 import { useChatFormContext, useUploadModalContext } from '~/Providers';
 import useComposerBindings from '~/hooks/Input/useComposerBindings';
@@ -303,7 +304,7 @@ export default function useTextarea({
       }
       const globalAudio = document.getElementById(globalAudioId) as HTMLAudioElement | undefined;
       if (globalAudio) {
-        console.log('Unmuting global audio');
+        logger.log('Unmuting global audio');
         globalAudio.muted = false;
       }
       submitButtonRef.current?.click();

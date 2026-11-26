@@ -25,6 +25,7 @@ export function useStopGenerating(
 ): ChatContract['stopGenerating'] {
   const { conversationId, endpoint, endpointType } = conversation ?? {};
   const host = useChatHost();
+  const { logger } = host;
   const abortStream = host.useAbortStream();
   const cache = host.useMessageCache();
   const clearAllSubmissions = useClearSubmissions();
@@ -88,7 +89,7 @@ export function useStopGenerating(
   return useCallback(async () => {
     const actualEndpoint = endpointType ?? endpoint;
     const isAssistants = isAssistantsEndpoint(actualEndpoint);
-    console.log('[useChatHelpers] stopGenerating called', {
+    logger.log('[useChatHelpers] stopGenerating called', {
       conversationId,
       endpoint,
       endpointType,
@@ -112,14 +113,14 @@ export function useStopGenerating(
       const stopFamily = stopRequestedByConvoId(conversationId);
       queueStore.set(stopFamily, stoppedRun);
       try {
-        console.log('[useChatHelpers] Calling abort mutation for:', conversationId);
+        logger.log('[useChatHelpers] Calling abort mutation for:', conversationId);
         const response = await abortStream({
           conversationId,
           ...(activeGenerationCreatedAt != null && {
             generationCreatedAt: activeGenerationCreatedAt,
           }),
         });
-        console.log('[useChatHelpers] Abort mutation succeeded');
+        logger.log('[useChatHelpers] Abort mutation succeeded');
         const canUseV2AbortResponse =
           activeGenerationProtocolVersion === 2 && supportsGenerationProtocolV2(response);
         /** Conversation-scoped active-job ids cannot be removed optimistically:
@@ -172,7 +173,7 @@ export function useStopGenerating(
           });
         }
       } catch (error) {
-        console.error('[useChatHelpers] Abort failed:', error);
+        logger.error('[useChatHelpers] Abort failed:', error);
         const errorData = (
           error as {
             response?: { data?: { code?: string; generationProtocolVersion?: unknown } };
@@ -208,7 +209,7 @@ export function useStopGenerating(
       }
     } else {
       // For assistants endpoints, just clear submissions (existing behavior)
-      console.log('[useChatHelpers] Assistants endpoint, just clearing submissions');
+      logger.log('[useChatHelpers] Assistants endpoint, just clearing submissions');
       clearAllSubmissions();
     }
   }, [
@@ -226,5 +227,6 @@ export function useStopGenerating(
     clearAllSubmissions,
     cache,
     clearInterruptDrain,
+    logger,
   ]);
 }

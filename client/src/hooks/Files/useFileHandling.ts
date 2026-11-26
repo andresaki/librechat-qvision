@@ -426,7 +426,7 @@ const useFileHandlingCore = (params: UseFileHandling | undefined, fileState: Fil
         if (!uploadLifecycle) {
           return;
         }
-        console.log('upload error', error);
+        logger.error('upload error', error);
         uploadLifecycle.dispose?.();
         cancelFileSearchUpload(file_id);
         const tool_resource = body.get('tool_resource');
@@ -932,7 +932,7 @@ const useFileHandlingCore = (params: UseFileHandling | undefined, fileState: Fil
       } catch (error) {
         if (recovery.status === 'canceled') continue;
         takeUploadRecovery(file_id)?.dispose?.();
-        console.log('file handling error', error);
+        logger.error('file handling error', error);
         if (error instanceof Error && error.message.includes('HEIC')) {
           setError('com_error_heic_conversion');
         } else {

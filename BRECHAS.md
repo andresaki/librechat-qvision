@@ -2,6 +2,15 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Logs de depuración del frontend en producción — resuelto el 2026-11-26
+
+Los diagnósticos de `ResumeOnLoad` y otros logs de depuración del cliente pasan por el logger
+compartido. El build de Vite/Rolldown elimina llamadas directas a `console.log`, `console.info` y
+`console.debug` del código propio, mientras que `console.warn`/`console.error` no se eliminan
+globalmente y las dependencias pueden conservar sus propios llamados. Producción
+debe compilarse con `VITE_ENABLE_LOGGER=false`; la variable es de build-time y requiere rebuild de
+la imagen frontend. Detalle y validación: `docs/16-Logs-Frontend-Produccion.md`.
+
 ## Información técnica del modal «Acerca de» — resuelto el 2026-11-26
 
 La sección mostraba commit, rama y fecha de compilación como filas independientes. Q-Vision solo

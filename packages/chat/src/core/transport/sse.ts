@@ -52,7 +52,6 @@ async function refreshToken(): Promise<string | null | false> {
     return refreshedToken;
   } catch (error) {
     /* token refresh failed, continue handling the original 401 */
-    console.log(error);
     return null;
   }
 }
@@ -140,7 +139,6 @@ export function createSSETransport({ token }: { token?: string }): ChatTransport
           data = JSON.parse(e.data);
         } catch (error) {
           console.error(error);
-          console.log(e);
         }
         onEvent({ type: 'error', data });
       });

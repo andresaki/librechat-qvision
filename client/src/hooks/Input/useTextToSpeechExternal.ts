@@ -7,6 +7,7 @@ import {
   getCachedTTSAudio,
   getTTSCacheGeneration,
 } from '~/utils';
+import logger from '~/utils/logger';
 import { useTextToSpeechMutation, useVoicesQuery } from '~/data-provider';
 import { useLocalize, useAuthContext } from '~/hooks';
 import store from '~/store';
@@ -71,11 +72,11 @@ function useTextToSpeechExternal({
         error.message &&
         error.message.includes('The play() request was interrupted by a call to pause()')
       ) {
-        console.log('Play request was interrupted by a call to pause()');
+        logger.log('Play request was interrupted by a call to pause()');
         initializeAudio();
-        return playPromise().catch(console.error);
+        return playPromise().catch((retryError) => logger.error(retryError));
       }
-      console.error(error);
+      logger.error(error);
       showToast({
         message: localize('com_nav_audio_play_error', { 0: error.message }),
         status: 'error',
@@ -83,7 +84,7 @@ function useTextToSpeechExternal({
     });
 
     newAudio.onended = () => {
-      console.log('Cached message audio ended');
+      logger.log('Cached message audio ended');
       URL.revokeObjectURL(blobUrl);
       setIsSpeaking(false);
     };

@@ -46,7 +46,9 @@ export function useResumeOnLoad(
   messagesLoaded = true,
 ): void {
   const jotaiStore = useStore();
-  const cache = useChatHost().useMessageCache();
+  const host = useChatHost();
+  const cache = host.useMessageCache();
+  const { logger } = host;
   const setSubmission = useSetAtom(submissionByIndex(runIndex));
   const setSubmissionStart = useSetAtom(submissionStartFamily(runIndex));
   const currentSubmission = useSubmission(runIndex);
@@ -164,7 +166,7 @@ export function useResumeOnLoad(
   } = streamHost.useStreamStatus(conversationId, shouldCheck);
 
   useEffect(() => {
-    console.log('[ResumeOnLoad] Effect check', {
+    logger.log('[ResumeOnLoad] Effect check', {
       resumableEnabled,
       conversationId,
       messagesLoaded,
@@ -178,13 +180,13 @@ export function useResumeOnLoad(
     });
 
     if (!resumableEnabled || !conversationId || conversationId === Constants.NEW_CONVO) {
-      console.log('[ResumeOnLoad] Skipping - not enabled or new convo');
+      logger.log('[ResumeOnLoad] Skipping - not enabled or new convo');
       return;
     }
 
     // Wait for messages to load to avoid race condition where sync overwrites then DB overwrites
     if (!messagesLoaded) {
-      console.log('[ResumeOnLoad] Waiting for messages to load');
+      logger.log('[ResumeOnLoad] Waiting for messages to load');
       return;
     }
 
@@ -195,7 +197,7 @@ export function useResumeOnLoad(
     // Don't resume if we already have an active submission FOR THIS CONVERSATION
     // A stale submission with undefined/different conversationId should not block us
     if (hasActiveSubmissionForThisConvo) {
-      console.log('[ResumeOnLoad] Skipping - already have active submission for this conversation');
+      logger.log('[ResumeOnLoad] Skipping - already have active submission for this conversation');
       // Mark as processed so we don't try again
       processedConvoRef.current = conversationId;
       return;
@@ -203,7 +205,7 @@ export function useResumeOnLoad(
 
     // If there's a stale submission for a different conversation, log it but continue
     if (hasStaleSubmissionForDifferentConvo) {
-      console.log(
+      logger.log(
         '[ResumeOnLoad] Found stale submission for different conversation, will check for resume',
         {
           staleConvoId: submissionConvoId,
@@ -215,7 +217,7 @@ export function useResumeOnLoad(
     // Wait for stream status query to complete (including background refetches
     // that may replace a stale cached result with fresh data)
     if (!isSuccess || !streamStatus || isFetching) {
-      console.log('[ResumeOnLoad] Waiting for stream status query');
+      logger.log('[ResumeOnLoad] Waiting for stream status query');
       return;
     }
 
@@ -255,7 +257,7 @@ export function useResumeOnLoad(
       submissionConvoId == null &&
       resumeStateMatchesSubmission(streamStatus, currentSubmission)
     ) {
-      console.log('[ResumeOnLoad] Skipping - active submission matches stream status', {
+      logger.log('[ResumeOnLoad] Skipping - active submission matches stream status', {
         streamId: streamStatus.streamId,
         currentConvoId: conversationId,
         userMessageId: currentSubmission?.userMessage?.messageId,
@@ -266,12 +268,12 @@ export function useResumeOnLoad(
 
     // Don't process the same conversation twice
     if (processedConvoRef.current === conversationId) {
-      console.log('[ResumeOnLoad] Skipping - already processed this conversation');
+      logger.log('[ResumeOnLoad] Skipping - already processed this conversation');
       return;
     }
 
     if (!streamStatus.active || !streamStatus.streamId) {
-      console.log('[ResumeOnLoad] No active job to resume for:', conversationId);
+      logger.log('[ResumeOnLoad] No active job to resume for:', conversationId);
       settleFinishedRun({
         jotaiStore,
         cache,
@@ -303,7 +305,7 @@ export function useResumeOnLoad(
       );
     }
 
-    console.log('[ResumeOnLoad] Found active job, creating submission...', {
+    logger.log('[ResumeOnLoad] Found active job, creating submission...', {
       streamId: streamStatus.streamId,
       status: streamStatus.status,
       resumeState: streamStatus.resumeState,
@@ -395,13 +397,14 @@ export function useResumeOnLoad(
     externalRunArm,
     isRetentionForced,
     startupConfigSettled,
+    logger,
   ]);
 
   // Reset processedConvoRef when conversation changes to allow re-checking
   useEffect(() => {
     // Always reset when conversation changes - this allows resuming when navigating back
     if (conversationId !== processedConvoRef.current) {
-      console.log('[ResumeOnLoad] Resetting processedConvoRef for new conversation:', {
+      logger.log('[ResumeOnLoad] Resetting processedConvoRef for new conversation:', {
         old: processedConvoRef.current,
         new: conversationId,
       });
@@ -409,7 +412,7 @@ export function useResumeOnLoad(
       consumedHandoffGenerationRef.current = null;
       answeredActiveJobRef.current = null;
     }
-  }, [conversationId]);
+  }, [conversationId, logger]);
 
   /** The route can name a conversation before this pane has loaded it; until then the endpoint
    *  that decides resumability is the previous conversation's, so the request waits. */

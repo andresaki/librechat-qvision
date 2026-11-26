@@ -3,6 +3,7 @@ import { apiBaseUrl, EModelEndpoint } from 'librechat-data-provider';
 import type { AbortStreamParams, AbortStreamResponse } from '@librechat/chat/react';
 import type { Agents, TMessage, TEphemeralAgent } from 'librechat-data-provider';
 import { useChatTransport } from '~/Providers/ChatTransportContext';
+import logger from '~/utils/logger';
 import { postGenerationRequest } from './protocol';
 
 export type { AbortStreamParams, AbortStreamResponse } from '@librechat/chat/react';
@@ -15,12 +16,12 @@ export type { AbortStreamParams, AbortStreamResponse } from '@librechat/chat/rea
  * Can pass either streamId or conversationId - backend will find the job.
  */
 export const abortStream = async (params: AbortStreamParams): Promise<AbortStreamResponse> => {
-  console.log('[abortStream] Calling abort endpoint with params:', params);
+  logger.log('[abortStream] Calling abort endpoint with params:', params);
   const result = await postGenerationRequest<AbortStreamResponse>(
     `${apiBaseUrl()}/api/agents/chat/abort`,
     params,
   );
-  console.log('[abortStream] Abort response:', result);
+  logger.log('[abortStream] Abort response:', result);
   return result;
 };
 

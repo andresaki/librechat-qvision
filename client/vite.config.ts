@@ -227,9 +227,21 @@ export default defineConfig(({ command }) => ({
     sourcemap: buildSourceMap,
     outDir: './dist',
     minify: 'oxc',
+    /**
+     * Remove direct debug calls from production bundles without dropping operational
+     * warnings and errors. Calls routed through the app logger remain controlled by
+     * VITE_ENABLE_LOGGER and can still reach the remote telemetry sink.
+     */
     rolldownOptions: {
       preserveEntrySignatures: 'strict',
       output: {
+        minify: {
+          compress: {
+            treeshake: {
+              manualPureFunctions: ['console.log', 'console.info', 'console.debug'],
+            },
+          },
+        },
         codeSplitting: {
           groups: [
             /**

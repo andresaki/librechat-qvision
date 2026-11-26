@@ -43,7 +43,9 @@ export function useResumeAnnouncements({
   hasLiveSubmissionForThisConvo: boolean;
   attachedGenerationCreatedAt: number | null;
 }): void {
-  const cache = useChatHost().useMessageCache();
+  const host = useChatHost();
+  const cache = host.useMessageCache();
+  const { logger } = host;
   const { successorOwed, hasActiveJobForThisConvo, activeJobsUpdatedAt, receiptSignature } = owed;
   /** Receipt state at the last arm, so history is refetched on a transition
    *  rather than on every heartbeat of an unchanged queued turn. */
@@ -97,7 +99,7 @@ export function useResumeAnnouncements({
     }
     answeredActiveJobRef.current = { conversationId, at: now };
 
-    console.log('[ResumeOnLoad] Active job announced without an attachment', { conversationId });
+    logger.log('[ResumeOnLoad] Active job announced without an attachment', { conversationId });
     /**
      * A finished submission still installed here is the one thing standing
      * between this announcement and the attachment: it is what the check below
@@ -140,6 +142,7 @@ export function useResumeAnnouncements({
     processedConvoRef,
     answeredActiveJobRef,
     setExternalRunArm,
+    logger,
   ]);
 
   /**

@@ -25,6 +25,7 @@ import {
   markLocallyCommittedReply,
   removeConvoFromAllQueries,
   preserveStreamedContentIdentity,
+  logger,
 } from '~/utils';
 import { startupConfigKey, queueTitleGeneration } from '~/data-provider';
 import { withFileSearchPreference } from '~/hooks/Files/search';
@@ -68,7 +69,7 @@ export default function useFinalHandler(ctx: EventHandlerContext) {
       try {
         // Handle early abort - aborted before any response message was saved.
         if ((data as Record<string, unknown>).earlyAbort) {
-          console.log('[finalHandler] Early abort detected - no response message saved');
+          logger.log('[finalHandler] Early abort detected - no response message saved');
           setShowStopButton(false);
           setIsSubmitting(false);
 

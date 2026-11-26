@@ -20,6 +20,7 @@ import type { TModelsConfig, TEndpointsConfig } from 'librechat-data-provider';
 import { useSetIndexOptions, useLocalize, useDebouncedInput } from '~/hooks';
 import PopoverButtons from '~/components/Chat/Input/PopoverButtons';
 import { mapEndpoints, getConvoSwitchLogic } from '~/utils';
+import logger from '~/utils/logger';
 import { EndpointSettings } from '~/components/Endpoints';
 import { useGetEndpointsQuery } from '~/data-provider';
 import { useChatContext } from '~/Providers';
@@ -97,7 +98,7 @@ const EditPresetDialog = ({
     }
 
     if (!models.includes(preset.model ?? '')) {
-      console.log('setting model', models[0]);
+      logger.log('setting model', models[0]);
       setOption('model')(models[0]);
     }
   }, [preset, queryClient, setOption]);

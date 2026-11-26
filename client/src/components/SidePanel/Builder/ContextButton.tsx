@@ -12,6 +12,7 @@ import type { UseMutationResult } from '@tanstack/react-query';
 import { useDeleteAssistantMutation } from '~/data-provider';
 import { useLocalize, useSetIndexOptions } from '~/hooks';
 import { useChatContext } from '~/Providers';
+import logger from '~/utils/logger';
 
 export default function ContextButton({
   activeModel,
@@ -44,7 +45,7 @@ export default function ContextButton({
       });
 
       if (createMutation.data?.id !== undefined) {
-        console.log('[deleteAssistant] resetting createMutation');
+      logger.log('[deleteAssistant] resetting createMutation');
         createMutation.reset();
       }
 

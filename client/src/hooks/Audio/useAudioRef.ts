@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import logger from '~/utils/logger';
 
 export default function useCustomAudioRef({
   setIsPlaying,
@@ -9,7 +10,7 @@ export default function useCustomAudioRef({
   useEffect(() => {
     const handleEnded = () => {
       setIsPlaying(false);
-      console.log('message audio ended');
+      logger.log('message audio ended');
       if (audioRef.current) {
         URL.revokeObjectURL(audioRef.current.src);
       }
@@ -17,12 +18,12 @@ export default function useCustomAudioRef({
 
     const handleStart = () => {
       setIsPlaying(true);
-      console.log('message audio started');
+      logger.log('message audio started');
     };
 
     const handlePause = () => {
       setIsPlaying(false);
-      console.log('message audio paused');
+      logger.log('message audio paused');
     };
 
     const audioElement = audioRef.current;

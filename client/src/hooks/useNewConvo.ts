@@ -104,10 +104,10 @@ const useNewConvo = (index = 0) => {
 
   const { mutateAsync } = useDeleteFilesMutation({
     onSuccess: () => {
-      console.log('Files deleted');
+      logger.log('Files deleted');
     },
     onError: (error) => {
-      console.log('Error deleting files:', error);
+      logger.error('Error deleting files:', error);
     },
   });
 

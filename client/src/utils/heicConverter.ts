@@ -1,4 +1,5 @@
 import { importWithRecovery } from '~/lib/assets/lazy';
+import logger from './logger';
 const HEIC_MIME_TYPES = new Set(['image/heic', 'image/heif']);
 const HEIC_EXTENSION_REGEX = /\.(heic|heif)$/i;
 type HeicToModule = typeof import('heic-to');
@@ -93,7 +94,7 @@ export const processFileForUpload = async (
   const isHEIC = await isHEICFile(file);
 
   if (isHEIC) {
-    console.log('HEIC file detected, converting to JPEG...');
+    logger.log('HEIC file detected, converting to JPEG...');
     return convertHEICToJPEG(file, quality, onProgress);
   }
 

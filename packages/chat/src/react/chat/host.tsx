@@ -15,6 +15,7 @@ import type {
 } from 'librechat-data-provider';
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
 import type { BuildTurnInput, ExtendedFile } from '../../core';
+import type { ResumableLogger } from '../../core/resumable/host';
 import type { ChatContract } from './contract';
 
 export interface AbortStreamParams {
@@ -164,6 +165,8 @@ export type ChatMessagesQuery = {
  * cache or store. A host must stay the same object for the life of the tree it wraps.
  */
 export interface ChatHost {
+  /** The app logger used by chat diagnostics and resumable-stream lifecycle messages. */
+  logger: ResumableLogger;
   /** The pane's conversation in the app's pane store; mounting it registers the pane. */
   usePaneConversation(index: number): ChatPaneConversation;
   /** Starts a fresh conversation in a pane. */

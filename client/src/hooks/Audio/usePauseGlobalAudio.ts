@@ -3,6 +3,7 @@ import { useSetAtom } from 'jotai';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { activeRunFamily } from '~/hooks/SSE/atoms';
 import { globalAudioId } from '~/common';
+import logger from '~/utils/logger';
 import store from '~/store';
 
 function usePauseGlobalAudio(index = 0) {
@@ -17,7 +18,7 @@ function usePauseGlobalAudio(index = 0) {
     if (globalAudioURL != null && globalAudioURL !== '') {
       const globalAudio = document.getElementById(globalAudioId);
       if (globalAudio) {
-        console.log('Pausing global audio', globalAudioURL);
+        logger.log('Pausing global audio', globalAudioURL);
         (globalAudio as HTMLAudioElement).pause();
         setGlobalIsPlaying(false);
       }

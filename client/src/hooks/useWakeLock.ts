@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { logger } from '~/utils';
 
 /**
  * Extended Navigator type that includes the Screen Wake Lock API
@@ -58,7 +59,7 @@ export const useWakeLock = (shouldHold: boolean) => {
   useEffect(() => {
     if (!supportsWakeLock) {
       if (DEBUG_WAKE_LOCK) {
-        console.log('[WakeLock] API not supported in this browser');
+        logger.log('[WakeLock] API not supported in this browser');
       }
       return;
     }
@@ -89,7 +90,7 @@ export const useWakeLock = (shouldHold: boolean) => {
       try {
         await wakeLockRef.current.release();
         if (DEBUG_WAKE_LOCK) {
-          console.log('[WakeLock] Lock released successfully');
+          logger.log('[WakeLock] Lock released successfully');
         }
       } catch (error) {
         console.warn('[WakeLock] release failed', error);
@@ -126,7 +127,7 @@ export const useWakeLock = (shouldHold: boolean) => {
         wakeLockRef.current = sentinel;
 
         if (DEBUG_WAKE_LOCK) {
-          console.log('[WakeLock] Lock acquired successfully');
+          logger.log('[WakeLock] Lock acquired successfully');
         }
 
         /**
@@ -152,12 +153,12 @@ export const useWakeLock = (shouldHold: boolean) => {
           sentinel.removeEventListener('release', handleRelease);
 
           if (DEBUG_WAKE_LOCK) {
-            console.log('[WakeLock] Lock released, checking if re-acquire needed');
+            logger.log('[WakeLock] Lock released, checking if re-acquire needed');
           }
 
           if (!cancelled && shouldHold && document.visibilityState === 'visible') {
             if (DEBUG_WAKE_LOCK) {
-              console.log('[WakeLock] Re-acquiring lock');
+              logger.log('[WakeLock] Re-acquiring lock');
             }
             void requestLock();
           }
@@ -180,7 +181,7 @@ export const useWakeLock = (shouldHold: boolean) => {
       }
 
       if (DEBUG_WAKE_LOCK) {
-        console.log('[WakeLock] Visibility changed:', document.visibilityState);
+        logger.log('[WakeLock] Visibility changed:', document.visibilityState);
       }
 
       if (document.visibilityState === 'visible' && shouldHold) {
