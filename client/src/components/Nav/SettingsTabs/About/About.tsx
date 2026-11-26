@@ -84,18 +84,6 @@ function About() {
     <div className="text-text-primary flex flex-col text-sm">
       <dl className="divide-border-light flex flex-col divide-y">
         <Row label={localize('com_nav_about_version')} value={version} />
-        <Row
-          label={localize('com_nav_about_commit')}
-          value={buildInfo?.commitShort ?? UNKNOWN_PLACEHOLDER}
-        />
-        <Row
-          label={localize('com_nav_about_branch')}
-          value={buildInfo?.branch ?? UNKNOWN_PLACEHOLDER}
-        />
-        <Row
-          label={localize('com_nav_about_build_date')}
-          value={formatBuildDate(buildInfo?.buildDate)}
-        />
       </dl>
 
       <div className="border-border-light mt-4 flex flex-col items-start gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">

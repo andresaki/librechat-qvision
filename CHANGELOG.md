@@ -2,6 +2,13 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-26 — Modal «Acerca de» reducido a la versión
+
+- La sección «Acerca de» conserva únicamente la fila de versión, oculta commit, rama y fecha de
+  compilación, y mantiene la copia de diagnósticos para soporte.
+
+**Validación:** prueba `About.spec.tsx` y verificación manual del modal de configuración.
+
 ## 2026-11-26 — Búsqueda de agentes sin distinguir tildes
 
 - La búsqueda del marketplace de agentes normaliza las variantes acentuadas en `name` y

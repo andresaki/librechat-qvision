@@ -2,6 +2,12 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Información técnica del modal «Acerca de» — resuelto el 2026-11-26
+
+La sección mostraba commit, rama y fecha de compilación como filas independientes. Q-Vision solo
+requiere la versión, así que el cliente oculta esas filas y conserva la acción para copiar
+diagnósticos de soporte.
+
 ## Búsqueda de agentes sensible a tildes — resuelto el 2026-11-26
 
 La búsqueda del marketplace generaba una expresión regular literal, así que una consulta sin
