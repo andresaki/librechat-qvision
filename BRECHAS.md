@@ -2,6 +2,14 @@
 
 <!-- Formato: ## Punto — qué se intentó — por qué no se logró / qué falta confirmar -->
 
+## Run Code activo en chats nuevos — resuelto el 2026-11-27
+
+`interface.runCode: true` habilitaba la capacidad, pero el interruptor `execute_code` seguía
+apagado al abrir un chat nuevo. `interface.defaultActiveTools: [execute_code]` ahora inicializa
+Run Code activo y fijado solo en el endpoint de Quinn (`AI-Gateway-QVision`). Una desactivación
+explícita del usuario se conserva. Requiere rebuild del frontend y reinicio de `api` para recargar
+`librechat.yaml`.
+
 ## Pantalla 404 sin detalles técnicos para usuarios — resuelto el 2026-11-26
 
 La URL inexistente (`/ddd`, por ejemplo) muestra una pantalla 404 amigable con marca Quinn y un

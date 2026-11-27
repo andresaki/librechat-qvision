@@ -3,6 +3,7 @@ import { RecoilRoot } from 'recoil';
 import { useForm } from 'react-hook-form';
 import { render, act } from '@testing-library/react';
 import { LocalStorageKeys } from 'librechat-data-provider';
+import type { TEndpointsConfig } from 'librechat-data-provider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ExtendedFile, ChatFormValues } from '~/common';
 import { getFilesDraft, getComposerDraftId, getAskAnswerDraftId } from '~/utils/drafts';
@@ -38,6 +39,10 @@ jest.mock('@librechat/client', () => ({
 const mockTranslate = (key: string) => key;
 const mockToolAuth = { authenticated: false };
 let mockCachedFiles: object[] = [];
+let mockEndpointsConfig: TEndpointsConfig | undefined;
+let mockStartupConfig:
+  | { interface?: { defaultActiveTools?: string[] }; modelSpecs?: { list?: unknown[] } }
+  | undefined;
 jest.mock('react-i18next', () => ({
   ...jest.requireActual('react-i18next'),
   useTranslation: () => ({ t: mockTranslate, i18n: { changeLanguage: jest.fn() } }),
@@ -48,8 +53,8 @@ jest.mock('react-i18next', () => ({
    rejected `/api/config` request report after Jest has torn the test down. */
 jest.mock('~/data-provider', () => ({
   ...jest.requireActual('~/data-provider'),
-  useGetEndpointsQuery: () => ({ data: undefined }),
-  useGetStartupConfig: () => ({ data: undefined }),
+  useGetEndpointsQuery: () => ({ data: mockEndpointsConfig }),
+  useGetStartupConfig: () => ({ data: mockStartupConfig }),
   useMCPServersQuery: () => ({ data: undefined, isLoading: false }),
   useVerifyAgentToolAuth: () => ({ data: mockToolAuth }),
   useGetFiles: () => ({ data: mockCachedFiles }),
@@ -57,7 +62,12 @@ jest.mock('~/data-provider', () => ({
 
 type DraftScope = { index?: number; isSubmitting?: boolean; draftId?: string };
 
-function renderProvider(initialId = 'convo-badge-row', restoreDraft = false, initiallyOff = false) {
+function renderProvider(
+  initialId = 'convo-badge-row',
+  restoreDraft = false,
+  initiallyOff = false,
+  endpoint?: string,
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false, cacheTime: 0 } },
   });
@@ -91,7 +101,7 @@ function renderProvider(initialId = 'convo-badge-row', restoreDraft = false, ini
           if (initiallyOff) set(ephemeralAgentByConvoId(initialId), { file_search: false });
         }}
       >
-        <BadgeRowProvider conversationId={id}>
+        <BadgeRowProvider conversationId={id} endpoint={endpoint}>
           {/* Re-rendered along with the provider, the way `Bar` is. */}
           <span>{marker}</span>
           <Consumer />
@@ -264,6 +274,39 @@ describe('File Search deferred upload effects', () => {
 });
 
 describe('BadgeRowProvider', () => {
+  it('activates Run Code by default for a new Quinn chat', () => {
+    localStorage.clear();
+    mockEndpointsConfig = {
+      'AI-Gateway-QVision': { modelDisplayLabel: 'Quinn' },
+    } as unknown as TEndpointsConfig;
+    mockStartupConfig = { interface: { defaultActiveTools: ['execute_code'] } };
+
+    const view = renderProvider('new', false, false, 'AI-Gateway-QVision');
+
+    expect(view.getValue()?.codeInterpreter.isToolEnabled).toBe(true);
+    view.unmount();
+    mockEndpointsConfig = undefined;
+    mockStartupConfig = undefined;
+    localStorage.clear();
+  });
+
+  it('preserves an explicit Run Code disable in a new Quinn chat', () => {
+    localStorage.clear();
+    localStorage.setItem(`${LocalStorageKeys.LAST_CODE_TOGGLE_}new`, 'false');
+    mockEndpointsConfig = {
+      'AI-Gateway-QVision': { modelDisplayLabel: 'Quinn' },
+    } as unknown as TEndpointsConfig;
+    mockStartupConfig = { interface: { defaultActiveTools: ['execute_code'] } };
+
+    const view = renderProvider('new', false, false, 'AI-Gateway-QVision');
+
+    expect(view.getValue()?.codeInterpreter.isToolEnabled).toBe(false);
+    view.unmount();
+    mockEndpointsConfig = undefined;
+    mockStartupConfig = undefined;
+    localStorage.clear();
+  });
+
   it('recovers completed explicit uploads on reload without overriding a later disable', () => {
     localStorage.clear();
     beginFileSearchUpload('upload-id', 'convo-badge-row');

@@ -1614,6 +1614,14 @@ describe('interfaceSchema', () => {
     expect(result.defaultPinnedTools).toEqual(['artifacts', 'execute_code', 'mcp']);
   });
 
+  it('accepts defaultActiveTools as a string array', () => {
+    const result = interfaceSchema.parse({
+      defaultActiveTools: ['execute_code'],
+    });
+
+    expect(result.defaultActiveTools).toEqual(['execute_code']);
+  });
+
   it('leaves defaultPinnedTools undefined when not provided', () => {
     const result = interfaceSchema.parse({ modelSelect: true });
 

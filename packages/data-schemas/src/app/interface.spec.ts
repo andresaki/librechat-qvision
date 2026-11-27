@@ -430,6 +430,21 @@ describe('loadDefaultInterface', () => {
     expect(interfaceConfig?.defaultPinnedTools).toEqual(['artifacts', 'execute_code', 'mcp']);
   });
 
+  it('passes through configured default active tools', async () => {
+    const config: Partial<TCustomConfig> = {
+      interface: {
+        defaultActiveTools: ['execute_code'],
+      },
+    };
+
+    const interfaceConfig = await loadDefaultInterface({
+      config,
+      configDefaults: getConfigDefaults(),
+    });
+
+    expect(interfaceConfig?.defaultActiveTools).toEqual(['execute_code']);
+  });
+
   it('omits default pinned tools when not explicitly configured', async () => {
     const interfaceConfig = await loadDefaultInterface({
       config: {},

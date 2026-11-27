@@ -2,6 +2,16 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-27 — Run Code activo por defecto en Chat Quinn
+
+- Los chats nuevos que usan el endpoint `AI-Gateway-QVision` abren con `execute_code` activo y
+  fijado en la barra de herramientas.
+- `interface.runCode: true` mantiene habilitado el permiso global; `interface.defaultActiveTools`
+  define el estado inicial sin impedir que el usuario lo desactive explícitamente.
+
+**Validación:** `npm run frontend` con Node 24, typecheck de `client`, `data-provider` y
+`data-schemas`, prueba de `BadgeRowContext` y aserción de `defaultActiveTools`.
+
 ## 2026-11-26 — 404 amigable con detalle técnico opcional
 
 - Las URL inexistentes muestran una pantalla 404 limpia con branding Quinn y un botón para volver

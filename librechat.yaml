@@ -3,10 +3,9 @@ version: 1.3.16
 # Q-Vision: kill-switches globales de features. OJO: cada clave aquí SOBRESCRIBE el
 # permiso en los roles de sistema USER y ADMIN en cada arranque (los roles
 # personalizados Creador/Consumidor NO los toca el yaml: se gobiernan en el panel).
-# runCode en false = nadie puede ejecutar código aunque su rol lo tuviera en true
-# (además ya está en OFF en Creador/Consumidor desde el panel; esto cubre a quien
-# quede en USER y al ADMIN). El sandbox (code-interpreter) no va en este compose:
-# se despliega aparte y solo entonces se vuelve a poner en true.
+# runCode en false = nadie puede ejecutar código aunque su rol lo tuviera en true.
+# El sandbox (code-interpreter) se despliega aparte; esta instancia de laboratorio ya lo tiene
+# configurado mediante LIBRECHAT_CODE_BASEURL.
 interface:
   runCode: true
   # Q-Vision: el modelo lo fija LiteLLM; el selector solo ofrece Chat Quinn y Agentes.
@@ -158,6 +157,10 @@ interface:
   defaultPinnedTools:
     - mcp
     - browser
+    - execute_code
+  # Chat Quinn abre con Run Code activo; el usuario puede apagarlo explícitamente.
+  defaultActiveTools:
+    - execute_code
 
 # Laboratorio Q-Vision. Balance desactivado (sin tope de créditos en la UI).
 balance:

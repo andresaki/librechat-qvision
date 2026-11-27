@@ -9,7 +9,8 @@ import {
   useToolToggle,
 } from '~/hooks';
 import { getTimestampedValue } from '~/utils/timestamps';
-import { useGetStartupConfig } from '~/data-provider';
+import { useGetEndpointsQuery, useGetStartupConfig } from '~/data-provider';
+import { isQuinnBrandedEndpoint } from '~/utils/quinnBrand';
 import { ephemeralAgentByConvoId } from '~/store';
 
 interface BadgeRowContextType {
@@ -36,6 +37,7 @@ interface BadgeRowProviderProps {
   children: React.ReactNode;
   isSubmitting?: boolean;
   conversationId?: string | null;
+  endpoint?: string | null;
   specName?: string | null;
   observeToolAuthorization?: boolean;
 }
@@ -44,15 +46,19 @@ export default function BadgeRowProvider({
   children,
   isSubmitting,
   conversationId,
+  endpoint,
   specName,
   observeToolAuthorization = false,
 }: BadgeRowProviderProps) {
   const lastContextKeyRef = useRef<string>('');
   const hasInitializedRef = useRef(false);
   const { agentsConfig } = useGetAgentsConfig();
+  const { data: endpointsConfig } = useGetEndpointsQuery();
   const { data: startupConfig } = useGetStartupConfig();
   const key = conversationId ?? Constants.NEW_CONVO;
   const hasModelSpecs = (startupConfig?.modelSpecs?.list?.length ?? 0) > 0;
+  const defaultActiveTools = startupConfig?.interface?.defaultActiveTools;
+  const isQuinnEndpoint = isQuinnBrandedEndpoint(endpointsConfig, endpoint);
 
   /**
    * Compute the storage context key for non-spec persistence:
@@ -76,6 +82,12 @@ export default function BadgeRowProvider({
    */
   const isNewConvo = key === Constants.NEW_CONVO;
   const storageSuffix = isNewConvo && storageContextKey ? storageContextKey : key;
+  const shouldActivateQuinnTools =
+    isNewConvo &&
+    isQuinnEndpoint &&
+    startupConfig != null &&
+    Array.isArray(defaultActiveTools) &&
+    defaultActiveTools.includes(Tools.execute_code);
 
   const setEphemeralAgent = useSetRecoilState(ephemeralAgentByConvoId(key));
 
@@ -94,7 +106,11 @@ export default function BadgeRowProvider({
       return;
     }
     // Check if this is a new conversation/spec or the first load
-    if (!hasInitializedRef.current || lastContextKeyRef.current !== storageSuffix) {
+    if (
+      !hasInitializedRef.current ||
+      lastContextKeyRef.current !== storageSuffix ||
+      shouldActivateQuinnTools
+    ) {
       hasInitializedRef.current = true;
       lastContextKeyRef.current = storageSuffix;
 
@@ -120,6 +136,8 @@ export default function BadgeRowProvider({
         } catch (e) {
           console.error('Failed to parse code toggle value:', e);
         }
+      } else if (shouldActivateQuinnTools) {
+        initialValues[Tools.execute_code] = true;
       }
 
       if (webSearchToggleValue !== null) {
@@ -208,7 +226,14 @@ export default function BadgeRowProvider({
         return changed ? result : prev;
       });
     }
-  }, [storageSuffix, specName, isSubmitting, setEphemeralAgent]);
+  }, [
+    storageSuffix,
+    specName,
+    isSubmitting,
+    setEphemeralAgent,
+    shouldActivateQuinnTools,
+    defaultActiveTools,
+  ]);
 
   /** CodeInterpreter hook — sandbox auth is handled server-side by the
    *  agents library, so the toggle no longer has an auth dialog gate. */

@@ -12,18 +12,21 @@ El cliente reconoce el endpoint que `librechat.yaml` presenta con `modelDisplayL
 
 - etiqueta visible: `Chat Quinn`;
 - endpoint: `AI-Gateway-QVision`;
+- `execute_code` activo y fijado en la barra por defecto en chats nuevos.
 
 Al construir una conversación nueva, ese endpoint tiene prioridad sobre la selección persistida
 en `LAST_CONVO_SETUP`. No se crea un `modelSpec` adicional ni otra opción visible en el selector.
 Una selección explícita de agente continúa funcionando en el chat donde se realiza; solo el
-siguiente «Nuevo chat» vuelve al endpoint de Quinn.
+siguiente «Nuevo chat» vuelve al endpoint de Quinn. La activación predeterminada respeta una
+desactivación explícita guardada por el usuario.
 
 ## Validación
 
 1. Reconstruir el frontend o levantar `frontend:dev` para cargar el cambio del cliente.
 2. Abrir un chat nuevo y confirmar que el selector muestra `Chat Quinn`.
-3. Seleccionar un agente y confirmar que el chat actual usa ese agente.
-4. Pulsar «Nuevo chat» y confirmar que vuelve a mostrar `Chat Quinn`.
+3. Confirmar que `Run Code` aparece activo en la barra de herramientas.
+4. Seleccionar un agente y confirmar que el chat actual usa ese agente.
+5. Pulsar «Nuevo chat» y confirmar que vuelve a mostrar `Chat Quinn` con `Run Code` activo.
 
 El cambio está acotado al cliente de Q-Vision y reutiliza `modelDisplayLabel`; si se rebasea la
 rama sobre una versión que cambie la resolución de endpoints predeterminados, revisar la prioridad

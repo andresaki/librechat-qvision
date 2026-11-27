@@ -3226,6 +3226,8 @@ export const interfaceSchema = z
     traceViewer: traceViewerSchema.optional(),
     /** Tool keys (and `'mcp'` or an MCP server name) pinned to the prompt bar by default */
     defaultPinnedTools: z.array(z.string()).optional(),
+    /** Tool keys enabled by default when a new conversation is opened */
+    defaultActiveTools: z.array(z.string()).optional(),
     buildInfo: z.boolean().optional(),
     /** Allows Lia, the welcome screen mascot. Users still opt in from Settings. */
     mascot: z.boolean().optional(),

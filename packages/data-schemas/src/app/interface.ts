@@ -134,6 +134,7 @@ export async function loadDefaultInterface({
     fileCitations: interfaceConfig?.fileCitations,
     traceViewer: interfaceConfig?.traceViewer,
     defaultPinnedTools: interfaceConfig?.defaultPinnedTools,
+    defaultActiveTools: interfaceConfig?.defaultActiveTools,
     peoplePicker: interfaceConfig?.peoplePicker,
     marketplace: interfaceConfig?.marketplace,
     remoteAgents: interfaceConfig?.remoteAgents,

@@ -980,6 +980,7 @@ const ChatForm = memo(function ChatForm({
                   lists reads as unknown and offers to connect instead of toggling. */}
               <BadgeRowProvider
                 conversationId={conversationId}
+                endpoint={conversation?.endpoint}
                 specName={conversation?.spec}
                 isSubmitting={isSubmitting}
                 observeToolAuthorization={showTools}
