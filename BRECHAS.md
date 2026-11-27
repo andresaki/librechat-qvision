@@ -273,6 +273,11 @@ Stack **LibreChat-AI/code-interpreter** `v1.10.4` en `C:\Users\AndresDanielHerre
 
 **UI:** generación de CSV en chat confirmada 2026-10-13. **Opcional:** Node/Bun en `data/pkgs` si hace falta JS en sandbox.
 
+**Recuperación 2026-11-27:** «Branch without files» conserva el estado efímero de las
+herramientas del chat origen. Run Code permanece activo en la rama cuando estaba activo y una
+desactivación explícita también se conserva. La prueba cubre el problema observado cuando el
+gateway bloquea una solicitud y la rama de recuperación mostraba `execute_code` desactivado.
+
 **Prod (2026-10-16):** `interface.runCode: false` y sin `execute_code` en el yaml que se despliega. El stack de arriba es el laboratorio Windows; no se copia al servidor de Quinn. Cuando exista una VM Linux con KVM, se vuelve a encender.
 
 ## RAG con GPT-5 / 4o y .txt — Chat Completions solo admite PDF como `file`

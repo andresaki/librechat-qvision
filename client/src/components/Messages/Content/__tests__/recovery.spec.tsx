@@ -10,7 +10,7 @@ import {
   pendingManualSkillsByConvoId,
   pendingReasoningOverrideFamily,
 } from '@librechat/chat/react';
-import type { TConversation, TMessage } from 'librechat-data-provider';
+import type { TEphemeralAgent, TConversation, TMessage } from 'librechat-data-provider';
 import type { MessagesViewContextValue } from '~/Providers/MessagesViewContext';
 import type { ChatContract } from '~/hooks/Chat/contract';
 import {
@@ -20,9 +20,9 @@ import {
 } from '~/Providers/MessagesViewContext';
 import { MessageContext } from '~/Providers/MessageContext';
 import AttachmentRecoveryActions from '../Error/recovery';
+import store, { ephemeralAgentByConvoId } from '~/store';
 import translation from '~/locales/en/translation.json';
 import { ChatContext } from '~/Providers/ChatContext';
-import store from '~/store';
 
 const catalog = translation as Record<string, string>;
 
@@ -80,12 +80,17 @@ const answer = (messageId: string, parentMessageId: string, fields: Partial<TMes
 
 /** Reads what the forked conversation's composer was handed. */
 let composerHandoff: { text?: string; quotes: string[]; skills: string[] } | undefined;
+let forkedAgent: TEphemeralAgent | null | undefined;
 function ComposerProbe() {
   composerHandoff = {
     text: useRecoilValue(store.pendingComposerTextByConvoId('forked')),
     quotes: useAtomValue(pendingQuotesByConvoId('forked')),
     skills: useAtomValue(pendingManualSkillsByConvoId('forked')),
   };
+  return null;
+}
+function AgentProbe() {
+  forkedAgent = useRecoilValue(ephemeralAgentByConvoId('forked'));
   return null;
 }
 
@@ -101,6 +106,7 @@ function renderRecovery({
   isSubmitting = false,
   ask = jest.fn(() => true),
   endpoint = 'agents',
+  ephemeralAgent = null,
 }: {
   messages: TMessage[];
   messageId?: string;
@@ -111,6 +117,7 @@ function renderRecovery({
   isSubmitting?: boolean;
   ask?: jest.Mock;
   endpoint?: string;
+  ephemeralAgent?: TEphemeralAgent | null;
 }) {
   const conversation = { conversationId: 'convo', endpoint } as TConversation;
   const operations = {
@@ -141,8 +148,13 @@ function renderRecovery({
     </MessagesOperationsContext.Provider>
   );
   render(
-    <RecoilRoot>
+    <RecoilRoot
+      initializeState={({ set }) => {
+        set(ephemeralAgentByConvoId('convo'), ephemeralAgent);
+      }}
+    >
       <ComposerProbe />
+      <AgentProbe />
       {inChat ? (
         <ChatContext.Provider value={{ conversation } as unknown as ChatContract}>
           {content}
@@ -182,6 +194,7 @@ describe('AttachmentRecoveryActions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     composerHandoff = undefined;
+    forkedAgent = undefined;
     getDefaultStore().set(pendingQuotesByConvoId('forked'), []);
     getDefaultStore().set(pendingManualSkillsByConvoId('forked'), []);
   });
@@ -208,7 +221,7 @@ describe('AttachmentRecoveryActions', () => {
   });
 
   it('branches into a copy without files that ends before the failed turn', async () => {
-    renderRecovery({ messages: branchFixture() });
+    renderRecovery({ messages: branchFixture(), ephemeralAgent: { execute_code: true } });
 
     expect(
       screen.getByText(catalog.com_error_attachments_both_info, { exact: false }),
@@ -237,10 +250,25 @@ describe('AttachmentRecoveryActions', () => {
     expect(
       getDefaultStore().get(pendingReasoningOverrideFamily(getReasoningStateKey('forked', 0))),
     ).toEqual({ key: 'reasoning_effort', value: 'high' });
+    expect(forkedAgent?.execute_code).toBe(true);
     expect(mockNavigateToConvo).toHaveBeenCalledWith(forked);
     expect(mockShowToast).toHaveBeenCalledWith(
       expect.objectContaining({ message: catalog.com_ui_branch_without_files_draft }),
     );
+  });
+
+  it('preserves an explicit Run Code disable when branching without files', async () => {
+    renderRecovery({ messages: branchFixture(), ephemeralAgent: { execute_code: false } });
+
+    await userEvent.click(
+      screen.getByRole('button', { name: catalog.com_ui_branch_without_files }),
+    );
+
+    const forked = { conversationId: 'forked' } as TConversation;
+    const copied = [user('c1', Constants.NO_PARENT), answer('c2', 'c1')];
+    act(() => mockForkOptions.onSuccess?.({ conversation: forked, messages: copied }));
+
+    expect(forkedAgent?.execute_code).toBe(false);
   });
 
   it('reports a copy that still has its files instead of announcing a recovery', async () => {

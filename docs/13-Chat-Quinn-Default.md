@@ -28,6 +28,14 @@ desactivación explícita guardada por el usuario.
 4. Seleccionar un agente y confirmar que el chat actual usa ese agente.
 5. Pulsar «Nuevo chat» y confirmar que vuelve a mostrar `Chat Quinn` con `Run Code` activo.
 
+6. Provocar un error que muestre «Branch without files», pulsarlo y confirmar que la nueva rama
+   conserva `Run Code` activo; si se había desactivado explícitamente antes, debe conservarse
+   desactivado.
+
 El cambio está acotado al cliente de Q-Vision y reutiliza `modelDisplayLabel`; si se rebasea la
 rama sobre una versión que cambie la resolución de endpoints predeterminados, revisar la prioridad
 frente a `LAST_CONVO_SETUP`.
+
+La recuperación copia el estado de herramientas del chat origen al nuevo ID antes de navegar. Esto
+es necesario porque una rama deja de usar `Constants.NEW_CONVO`, por lo que el inicializador del
+default de Quinn ya no se ejecuta por sí solo.

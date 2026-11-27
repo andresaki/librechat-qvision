@@ -28,10 +28,10 @@ import { findAttachmentRecovery, isAttachmentError, mayBeAttachmentError } from 
 import useGetAddedConvo from '~/hooks/Conversations/useGetAddedConvo';
 import { useMessageContext } from '~/Providers/MessageContext';
 import { useLocalize, useNavigateToConvo } from '~/hooks';
+import store, { ephemeralAgentByConvoId } from '~/store';
 import { useForkConvoMutation } from '~/data-provider';
 import { ChatContext } from '~/Providers/ChatContext';
 import { ErrorAction, ErrorActions } from './parts';
-import store from '~/store';
 
 /** What the card says the actions do, matched to the ones it offers. */
 function getExplanationKey({ canRetry, branchTargetId }: AttachmentRecovery): TranslationKeys {
@@ -121,6 +121,19 @@ function RecoveryActions({
     [reasoningStore],
   );
 
+  /** A fork gets a real conversation id, so BadgeRowContext cannot seed it from NEW_CONVO.
+   * Preserve the source chat's tool choices before navigation, including an explicit disable. */
+  const copyEphemeralAgent = useRecoilCallback(
+    ({ snapshot, set }) =>
+      (forkedId: string) => {
+        const sourceAgent = snapshot.getLoadable(ephemeralAgentByConvoId(conversationId));
+        if (sourceAgent.state === 'hasValue') {
+          set(ephemeralAgentByConvoId(forkedId), sourceAgent.contents);
+        }
+      },
+    [conversationId],
+  );
+
   const forkConvo = useForkConvoMutation({
     onSuccess: (data) => {
       /** A server that predates `excludeFiles` ignores it and returns an ordinary copy, which
@@ -134,6 +147,9 @@ function RecoveryActions({
       }
       const turn = failedTurnRef.current;
       const forkedId = data.conversation.conversationId;
+      if (forkedId != null) {
+        copyEphemeralAgent(forkedId);
+      }
       const staged = turn != null && forkedId != null && stageFailedTurn(forkedId, turn);
       navigateToConvo(data.conversation);
       showToast({

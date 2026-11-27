@@ -2,6 +2,14 @@
 
 <!-- Formato: ## YYYY-MM-DD — qué se hizo -->
 
+## 2026-11-27 — Run Code se conserva al ramificar una recuperación
+
+- «Branch without files» copia al nuevo chat el estado de herramientas de la conversación origen.
+- `execute_code` permanece activo si estaba activo y una desactivación explícita continúa
+  respetándose.
+
+**Validación:** prueba focalizada de recuperación con Run Code activo y desactivado explícitamente.
+
 ## 2026-11-27 — Run Code activo por defecto en Chat Quinn
 
 - Los chats nuevos que usan el endpoint `AI-Gateway-QVision` abren con `execute_code` activo y
